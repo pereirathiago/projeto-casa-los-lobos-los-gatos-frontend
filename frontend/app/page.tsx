@@ -1,102 +1,219 @@
-import Image from "next/image";
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import SectionTitle from './components/SectionTitle';
+import Card from './components/Card';
+import Footer from './components/Footer';
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen">
+      <Navbar />
+      
+      {/* Hero Section */}
+      <div className="pt-16"> {/* Offset for fixed navbar */}
+        <section className="relative overflow-hidden">
+          {/* Background shapes */}
+          <div className="absolute inset-0">
+            <div className="absolute left-0 top-0 w-1/2 h-full bg-gray-50"></div>
+            <div className="absolute right-0 top-0 w-1/2 h-full" style={{ backgroundColor: '#EA8C55' }}>
+              <div className="absolute inset-0 transform skew-x-12 origin-top-left" style={{ backgroundColor: '#EA8C55' }}></div>
+            </div>
+          </div>
+          
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[500px]">
+              {/* Left side - Text content */}
+              <div className="z-10">
+                <h1 className="text-5xl md:text-7xl font-bold mb-4" style={{ color: '#8B5DDD' }}>
+                  Cuidar é amar.
+                </h1>
+                <h2 className="text-2xl md:text-4xl font-bold mb-8" style={{ color: '#8B5DDD' }}>
+                  Apadrinhe um amigo
+                </h2>
+              </div>
+              
+              {/* Right side - Dog image */}
+              <div className="relative z-10 flex justify-center lg:justify-end">
+                <div className="relative">
+                  <div className="w-80 h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden">
+                    <div className="w-full h-full flex items-center justify-center text-8xl" style={{ backgroundColor: '#EA8C55' }}>
+                      🐕
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      
+      {/* Seção Quem Somos */}
+      <section id="sobre" className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Text content */}
+            <div>
+              <h2 className="text-4xl font-bold text-black mb-8">QUEM SOMOS?</h2>
+              <p className="text-lg text-black leading-relaxed">
+                Somos uma ONG dedicada a resgatar, cuidar e dar uma nova chance a cães e gatos em 
+                situação de vulnerabilidade. Nosso trabalho vai além do resgate: garantimos cuidados 
+                veterinários, alimentação, carinho e buscamos famílias amorosas para cada um dos nossos 
+                animais.
+              </p>
+            </div>
+            
+            {/* Right side - Dog with lion costume */}
+            <div className="relative flex justify-center lg:justify-end">
+              <div className="relative">
+                <div className="w-80 h-80 rounded-full overflow-hidden" style={{ backgroundColor: '#8B5DDD' }}>
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-64 h-64 rounded-full overflow-hidden bg-white flex items-center justify-center">
+                      <span className="text-6xl">🦁</span> {/* Dog with lion costume */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </section>
+      
+      {/* Seção Como Atuamos */}
+      <section id="como-atuamos" className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-4xl font-bold text-black text-center mb-16">COMO ATUAMOS?</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* Card 1 - Resgate */}
+            <div className="text-center">
+              <div className="mb-6 flex justify-center">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E8D5F2' }}>
+                  <div className="w-16 h-16 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#8B5DDD' }}>
+                    <span className="text-white text-2xl">🏠</span>
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-black mb-4">RESGATE</h3>
+              <p className="text-black text-sm leading-relaxed">
+                Resgatar animais abandonados ou em risco.
+              </p>
+            </div>
+            
+            {/* Card 2 - Cuidados */}
+            <div className="text-center">
+              <div className="mb-6 flex justify-center">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E8D5F2' }}>
+                  <div className="w-16 h-16 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#8B5DDD' }}>
+                    <span className="text-white text-2xl">👨‍⚕️</span>
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-black mb-4">RESGATE</h3>
+              <p className="text-black text-sm leading-relaxed">
+                Proporcionar cuidados médicos, alimentação e abrigo.
+              </p>
+            </div>
+            
+            {/* Card 3 - Conexão */}
+            <div className="text-center">
+              <div className="mb-6 flex justify-center">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E8D5F2' }}>
+                  <div className="w-16 h-16 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#8B5DDD' }}>
+                    <span className="text-white text-2xl">💜</span>
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-black mb-4">RESGATE</h3>
+              <p className="text-black text-sm leading-relaxed">
+                Conectar pessoas que querem ajudar com os animais que precisam.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Seção Como Ajudar */}
+      <section id="como-ajudar" className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Text content */}
+            <div>
+              <h2 className="text-4xl font-bold text-black mb-8">COMO AJUDAR?</h2>
+              <p className="text-lg text-black leading-relaxed mb-6">
+                Você pode ser dindo ou dinda de um dos nossos animais!
+              </p>
+              <p className="text-lg text-black leading-relaxed mb-6">
+                Funciona assim:
+              </p>
+              
+              <ul className="space-y-4 text-lg text-black mb-6">
+                <li className="flex items-start">
+                  <span className="text-lg mr-2">•</span>
+                  Escolha um animal disponível para apadrinhar.
+                </li>
+                <li className="flex items-start">
+                  <span className="text-lg mr-2">•</span>
+                  Contribua mensalmente com ração, medicamentos ou qualquer valor a partir de R$20,00.
+                </li>
+                <li className="flex items-start">
+                  <span className="text-lg mr-2">•</span>
+                  Todo mês, você recebe uma foto e novidades sobre o seu afilhado.
+                </li>
+              </ul>
+              
+              <p className="text-lg text-black leading-relaxed">
+                É uma forma linda de fazer parte da vida deles, mesmo que não possa adotar.
+              </p>
+            </div>
+            
+            {/* Right side - Poodle image */}
+            <div className="relative flex justify-center lg:justify-end">
+              <div className="relative">
+                <div className="w-80 h-80 rounded-full overflow-hidden" style={{ backgroundColor: '#EA8C55' }}>
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-6xl">�</span> {/* Poodle */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Footer */}
+      <footer className="text-white py-12" style={{ backgroundColor: '#8B5DDD' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Contatos */}
+          <div className="mb-8">
+            <div className="flex justify-center items-center space-x-4 mb-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">📞</span>
+                <span className="text-lg">@Instagram</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-center items-center space-x-4 mb-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">📘</span>
+                <span className="text-lg">@facebook</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-center items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">📱</span>
+                <span className="text-lg">(42) 9 9999-9999</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Direitos reservados */}
+          <div className="border-t border-purple-400 pt-6">
+            <p className="text-sm">
+              TODOS OS DIREITOS RESERVADOS
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

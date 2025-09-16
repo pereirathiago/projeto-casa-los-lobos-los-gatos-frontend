@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --ong-purple: #8B5DDD;
+  --ong-orange: #EA8C55;
 }
 
 @theme inline {
@@ -10,6 +12,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-ong-purple: var(--ong-purple);
+  --color-ong-orange: var(--ong-orange);
 }
 
 @media (prefers-color-scheme: dark) {
