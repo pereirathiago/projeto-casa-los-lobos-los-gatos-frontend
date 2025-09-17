@@ -7,24 +7,22 @@ interface SectionTitleProps {
   children?: ReactNode;
 }
 
-export default function SectionTitle({ 
-  title, 
-  subtitle, 
-  className = "",
-  children 
+export default function SectionTitle({
+  title,
+  subtitle,
+  className = '',
+  children,
 }: SectionTitleProps) {
   return (
-    <div className={`text-center mb-12 ${className}`}>
-      <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+    <div className={`mb-12 text-center ${className}`}>
+      <h2 className="mb-4 text-3xl font-bold text-gray-800 md:text-4xl">
         {title}
       </h2>
-      
+
       {subtitle && (
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          {subtitle}
-        </p>
+        <p className="mx-auto max-w-2xl text-lg text-gray-600">{subtitle}</p>
       )}
-      
+
       {children}
     </div>
   );

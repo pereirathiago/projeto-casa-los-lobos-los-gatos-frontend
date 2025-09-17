@@ -2,52 +2,54 @@ interface NavbarProps {
   className?: string;
 }
 
-export default function Navbar({ className = "" }: NavbarProps) {
+export default function Navbar({ className = '' }: NavbarProps) {
   return (
-    <nav className={`bg-white shadow-sm fixed w-full top-0 z-50 ${className}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className={`fixed top-0 z-50 w-full bg-white shadow-sm ${className}`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
             <div className="flex items-center">
-              <span className="text-2xl mr-2">🐕</span>
+              <span className="mr-2 text-2xl">🐕</span>
               <h1 className="text-lg font-bold" style={{ color: '#000' }}>
-                CASA<br />
-                <span style={{ color: '#000' }}>Los Lobos</span><br />
+                CASA
+                <br />
+                <span style={{ color: '#000' }}>Los Lobos</span>
+                <br />
                 <span style={{ color: '#000' }}>Los Gatos</span>
               </h1>
             </div>
           </div>
-          
+
           {/* Desktop Menu */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               <a
                 href="#sobre"
-                className="text-black hover:text-gray-600 font-medium text-sm transition-colors"
+                className="text-sm font-medium text-black transition-colors hover:text-gray-600"
               >
                 Sobre
               </a>
               <a
                 href="#como-atuamos"
-                className="text-black hover:text-gray-600 font-medium text-sm transition-colors"
+                className="text-sm font-medium text-black transition-colors hover:text-gray-600"
               >
                 Como atuamos
               </a>
               <a
                 href="#como-ajudar"
-                className="text-black hover:text-gray-600 font-medium text-sm transition-colors"
+                className="text-sm font-medium text-black transition-colors hover:text-gray-600"
               >
                 Como ajudar
               </a>
             </div>
           </div>
-          
+
           {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               type="button"
-              className="bg-white p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
+              className="rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none"
             >
               <span className="sr-only">Abrir menu principal</span>
               <svg

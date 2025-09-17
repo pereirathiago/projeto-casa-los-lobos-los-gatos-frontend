@@ -1,10 +1,10 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --ong-purple: #8B5DDD;
-  --ong-orange: #EA8C55;
+  --ong-purple: #8b5ddd;
+  --ong-orange: #ea8c55;
 }
 
 @theme inline {
