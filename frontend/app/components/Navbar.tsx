@@ -1,23 +1,23 @@
+import Image from 'next/image';
+
 interface NavbarProps {
   className?: string;
 }
 
 export default function Navbar({ className = '' }: NavbarProps) {
   return (
-    <nav className={`fixed top-0 z-50 w-full bg-white shadow-sm ${className}`}>
+    <nav className={`fixed top-0 z-50 w-full  bg-[#CD6B16] shadow-none ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+  <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
             <div className="flex items-center">
-              <span className="mr-2 text-2xl">🐕</span>
-              <h1 className="text-lg font-bold" style={{ color: '#000' }}>
-                CASA
-                <br />
-                <span style={{ color: '#000' }}>Los Lobos</span>
-                <br />
-                <span style={{ color: '#000' }}>Los Gatos</span>
-              </h1>
+              <Image
+                src="/assets/icons/logo-ong.svg"
+                alt="Logo Casa Los Lobos Los Gatos"
+                width={140}
+                height={70}
+              />
             </div>
           </div>
 
@@ -26,19 +26,19 @@ export default function Navbar({ className = '' }: NavbarProps) {
             <div className="ml-10 flex items-baseline space-x-8">
               <a
                 href="#sobre"
-                className="text-sm font-medium text-black transition-colors hover:text-gray-600"
+                className="text-lg font-medium text-white transition-colors hover:text-white/80"
               >
                 Sobre
               </a>
               <a
                 href="#como-atuamos"
-                className="text-sm font-medium text-black transition-colors hover:text-gray-600"
+                className="text-lg font-medium text-white transition-colors hover:text-white/80"
               >
                 Como atuamos
               </a>
               <a
                 href="#como-ajudar"
-                className="text-sm font-medium text-black transition-colors hover:text-gray-600"
+                className="text-lg font-medium text-white transition-colors hover:text-white/80"
               >
                 Como ajudar
               </a>
@@ -49,7 +49,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
           <div className="md:hidden">
             <button
               type="button"
-              className="rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none"
+              className="rounded-md bg-transparent p-2 text-white hover:bg-white/10 hover:text-white focus:outline-none"
             >
               <span className="sr-only">Abrir menu principal</span>
               <svg

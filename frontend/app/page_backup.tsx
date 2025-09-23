@@ -3,63 +3,66 @@ import Hero from './components/Hero';
 import SectionTitle from './components/SectionTitle';
 import Card from './components/Card';
 import Footer from './components/Footer';
-import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative max-h-[800px] overflow-hidden">
-          {/* Background shape (orange blob) on the right */}
-          <div className="pointer-events-none absolute inset-0">
-            <Image
-              src="/assets/images/background-cachorro1.png"
-              alt=""
-              priority
-              fill
-              sizes="100vw"
-              className="object-contain object-right origin-right scale-[1.15] lg:scale-[1.25]"
-            />
+      <div className="pt-16">
+        {' '}
+        {/* Offset for fixed navbar */}
+        <section className="relative overflow-hidden">
+          {/* Background shapes */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-0 h-full w-1/2 bg-gray-50"></div>
+            <div
+              className="absolute top-0 right-0 h-full w-1/2"
+              style={{ backgroundColor: '#EA8C55' }}
+            >
+              <div
+                className="absolute inset-0 origin-top-left skew-x-12 transform"
+                style={{ backgroundColor: '#EA8C55' }}
+              ></div>
+            </div>
           </div>
 
-          {/* Solid white background behind the hero text (left side) */}
-          <div className="absolute inset-y-0 left-0 w-[40%] bg-white"></div>
-
-          <div className="relative mx-auto max-w-none px-4 pt-28 pb-16 sm:px-6 lg:pl-8 lg:pr-0">
-            <div className="grid min-h-[640px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_720px]">
+          <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+            <div className="grid min-h-[500px] grid-cols-1 items-center gap-12 lg:grid-cols-2">
               {/* Left side - Text content */}
-                <div className="z-10 flex flex-col items-start justify-center h-full pl-5">
-                  <h1
-                  className="mb-4 text-5xl font-bold md:text-8xl"
-                  style={{ color: '#5E3CBA' }}
-                  >
+              <div className="z-10">
+                <h1
+                  className="mb-4 text-5xl font-bold md:text-7xl"
+                  style={{ color: '#8B5DDD' }}
+                >
                   Cuidar é amar.
-                  </h1>
-                  <h2
-                  className="mb-8 text-2xl font-bold md:text-4xl pl-3"
-                  style={{ color: '#5E3CBA' }}
-                  >
+                </h1>
+                <h2
+                  className="mb-8 text-2xl font-bold md:text-4xl"
+                  style={{ color: '#8B5DDD' }}
+                >
                   Apadrinhe um amigo
-                  </h2>
-                </div>
+                </h2>
+              </div>
 
-              {/* Right side - Dog image over the shape */}
-              <div className="relative z-10 flex items-center justify-center lg:justify-end">
-                <div className="relative ml-auto h-[580px] w-[580px] lg:h-[760px] lg:w-[760px]">
-                  <Image
-                    src="/assets/images/cachorro1.png"
-                    alt="Cachorro para adoção"
-                    fill
-                    sizes="(min-width: 1024px) 760px, 580px"
-                    className="object-contain"
-                  />
+              {/* Right side - Dog image */}
+              <div className="relative z-10 flex justify-center lg:justify-end">
+                <div className="relative">
+                  <div className="h-80 w-80 overflow-hidden rounded-full lg:h-96 lg:w-96">
+                    <div
+                      className="flex h-full w-full items-center justify-center text-8xl"
+                      style={{ backgroundColor: '#EA8C55' }}
+                    >
+                      🐕
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-      </section>
+        </section>
+      </div>
 
       {/* Seção Quem Somos */}
       <section id="sobre" className="bg-white py-16">
@@ -79,23 +82,20 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Right side - Dog 2 over purple blob */}
+            {/* Right side - Dog with lion costume */}
             <div className="relative flex justify-center lg:justify-end">
-              <div className="relative h-[320px] w-[460px]">
-                <Image
-                  src="/assets/images/background-cachorro2.png"
-                  alt=""
-                  fill
-                  sizes="440px"
-                  className="object-contain"
-                />
-                <Image
-                  src="/assets/images/cachorro2.png"
-                  alt="Cachorro resgatado"
-                  width={280}
-                  height={280}
-                  className="absolute -bottom-2 right-10 h-auto w-[280px] object-contain"
-                />
+              <div className="relative">
+                <div
+                  className="h-80 w-80 overflow-hidden rounded-full"
+                  style={{ backgroundColor: '#8B5DDD' }}
+                >
+                  <div className="flex h-full w-full items-center justify-center">
+                    <div className="flex h-64 w-64 items-center justify-center overflow-hidden rounded-full bg-white">
+                      <span className="text-6xl">🦁</span>{' '}
+                      {/* Dog with lion costume */}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -113,12 +113,17 @@ export default function Home() {
             {/* Card 1 - Resgate */}
             <div className="text-center">
               <div className="mb-6 flex justify-center">
-                <Image
-                  src="/assets/icons/Animal Shelter.svg"
-                  alt="Resgate de animais"
-                  width={80}
-                  height={80}
-                />
+                <div
+                  className="flex h-20 w-20 items-center justify-center rounded-full"
+                  style={{ backgroundColor: '#E8D5F2' }}
+                >
+                  <div
+                    className="flex h-16 w-16 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: '#8B5DDD' }}
+                  >
+                    <span className="text-2xl text-white">🏠</span>
+                  </div>
+                </div>
               </div>
               <h3 className="mb-4 text-xl font-bold text-black">RESGATE</h3>
               <p className="text-sm leading-relaxed text-black">
@@ -129,14 +134,19 @@ export default function Home() {
             {/* Card 2 - Cuidados */}
             <div className="text-center">
               <div className="mb-6 flex justify-center">
-                <Image
-                  src="/assets/icons/Medical Doctor.svg"
-                  alt="Cuidados veterinários"
-                  width={80}
-                  height={80}
-                />
+                <div
+                  className="flex h-20 w-20 items-center justify-center rounded-full"
+                  style={{ backgroundColor: '#E8D5F2' }}
+                >
+                  <div
+                    className="flex h-16 w-16 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: '#8B5DDD' }}
+                  >
+                    <span className="text-2xl text-white">👨‍⚕️</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="mb-4 text-xl font-bold text-black">CUIDADOS</h3>
+              <h3 className="mb-4 text-xl font-bold text-black">RESGATE</h3>
               <p className="text-sm leading-relaxed text-black">
                 Proporcionar cuidados médicos, alimentação e abrigo.
               </p>
@@ -145,14 +155,19 @@ export default function Home() {
             {/* Card 3 - Conexão */}
             <div className="text-center">
               <div className="mb-6 flex justify-center">
-                <Image
-                  src="/assets/icons/Heart with dog paw.svg"
-                  alt="Conexão com famílias"
-                  width={80}
-                  height={80}
-                />
+                <div
+                  className="flex h-20 w-20 items-center justify-center rounded-full"
+                  style={{ backgroundColor: '#E8D5F2' }}
+                >
+                  <div
+                    className="flex h-16 w-16 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: '#8B5DDD' }}
+                  >
+                    <span className="text-2xl text-white">💜</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="mb-4 text-xl font-bold text-black">CONEXÃO</h3>
+              <h3 className="mb-4 text-xl font-bold text-black">RESGATE</h3>
               <p className="text-sm leading-relaxed text-black">
                 Conectar pessoas que querem ajudar com os animais que precisam.
               </p>
@@ -200,23 +215,17 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Right side - Dog 3 over orange blob */}
+            {/* Right side - Poodle image */}
             <div className="relative flex justify-center lg:justify-end">
-              <div className="relative h-[340px] w-[460px]">
-                <Image
-                  src="/assets/images/background-cachorro3.png"
-                  alt=""
-                  fill
-                  sizes="440px"
-                  className="object-contain"
-                />
-                <Image
-                  src="/assets/images/cachorro3.png"
-                  alt="Cachorro para apadrinhar"
-                  width={300}
-                  height={300}
-                  className="absolute -bottom-1 right-8 h-auto w-[300px] object-contain"
-                />
+              <div className="relative">
+                <div
+                  className="h-80 w-80 overflow-hidden rounded-full"
+                  style={{ backgroundColor: '#EA8C55' }}
+                >
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-6xl">�</span> {/* Poodle */}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -226,43 +235,28 @@ export default function Home() {
       {/* Footer */}
       <footer
         className="py-12 text-white"
-        style={{ backgroundColor: '#5E3CBA' }}
+        style={{ backgroundColor: '#8B5DDD' }}
       >
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           {/* Contatos */}
           <div className="mb-8">
             <div className="mb-4 flex items-center justify-center space-x-4">
               <div className="flex items-center space-x-2">
-                <Image
-                  src="/assets/icons/Instagram.svg"
-                  alt="Instagram"
-                  width={24}
-                  height={24}
-                />
+                <span className="text-2xl">📞</span>
                 <span className="text-lg">@Instagram</span>
               </div>
             </div>
 
             <div className="mb-4 flex items-center justify-center space-x-4">
               <div className="flex items-center space-x-2">
-                <Image
-                  src="/assets/icons/Facebook.svg"
-                  alt="Facebook"
-                  width={24}
-                  height={24}
-                />
+                <span className="text-2xl">📘</span>
                 <span className="text-lg">@facebook</span>
               </div>
             </div>
 
             <div className="flex items-center justify-center space-x-4">
               <div className="flex items-center space-x-2">
-                <Image
-                  src="/assets/icons/WhatsApp.svg"
-                  alt="WhatsApp"
-                  width={24}
-                  height={24}
-                />
+                <span className="text-2xl">📱</span>
                 <span className="text-lg">(42) 9 9999-9999</span>
               </div>
             </div>
