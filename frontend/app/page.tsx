@@ -87,14 +87,14 @@ export default function Home() {
                   alt=""
                   fill
                   sizes="440px"
-                  className="object-contain"
+                  className="object-contain scale-105 -translate-y-1"
                 />
                 <Image
                   src="/assets/images/cachorro2.png"
                   alt="Cachorro resgatado"
-                  width={280}
-                  height={280}
-                  className="absolute -bottom-2 right-10 h-auto w-[280px] object-contain"
+                  fill
+                  sizes="280px"
+                  className="absolute -bottom-2 right-10 w-[280px] h-[400px] object-contain"
                 />
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function Home() {
                   alt=""
                   fill
                   sizes="440px"
-                  className="object-contain"
+                  className="object-contain scale-104 translate-x-6"
                 />
                 <Image
                   src="/assets/images/cachorro3.png"
