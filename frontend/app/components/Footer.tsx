@@ -6,7 +6,7 @@ export default function Footer({ className = '' }: FooterProps) {
   return (
     <footer
       className={`py-8 text-white ${className}`}
-      style={{ backgroundColor: '#8B5DDD' }}
+      style={{ backgroundColor: '#472B74' }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">

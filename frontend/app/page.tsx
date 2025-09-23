@@ -33,13 +33,13 @@ export default function Home() {
                 <div className="z-10 flex flex-col items-start justify-center h-full pl-5">
                   <h1
                   className="mb-4 text-5xl font-bold md:text-8xl"
-                  style={{ color: '#5E3CBA' }}
+                  style={{ color: '#472B74' }}
                   >
                   Cuidar é amar.
                   </h1>
                   <h2
                   className="mb-8 text-2xl font-bold md:text-4xl pl-3"
-                  style={{ color: '#5E3CBA' }}
+                  style={{ color: '#472B74' }}
                   >
                   Apadrinhe um amigo
                   </h2>
@@ -226,7 +226,7 @@ export default function Home() {
       {/* Footer */}
       <footer
         className="py-12 text-white"
-        style={{ backgroundColor: '#5E3CBA' }}
+        style={{ backgroundColor: '#472B74' }}
       >
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           {/* Contatos */}
