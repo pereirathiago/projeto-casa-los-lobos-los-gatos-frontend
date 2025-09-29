@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import React from 'react';
+import logo from '../assets/icons/logo-ong.svg';
 
 interface NavbarProps {
   className?: string;
@@ -6,14 +8,16 @@ interface NavbarProps {
 
 export default function Navbar({ className = '' }: NavbarProps) {
   return (
-    <nav className={`fixed top-0 z-50 w-full  bg-[#CD6B16] shadow-none ${className}`}>
+    <nav
+      className={`fixed top-0 z-50 w-full bg-transparent shadow-none ${className}`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-  <div className="flex h-20 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
             <div className="flex items-center">
               <Image
-                src="/assets/icons/logo-ong.svg"
+                src={logo}
                 alt="Logo Casa Los Lobos Los Gatos"
                 width={140}
                 height={70}

@@ -1,27 +1,26 @@
-import { ReactNode } from 'react';
+import { StaticImport } from 'next/dist/shared/lib/get-img-props';
+import Image from 'next/image';
 
 interface CardProps {
   title: string;
   description: string;
-  icon?: ReactNode;
-  className?: string;
+  icon: string | StaticImport;
+  iconAlt?: string;
 }
 
 export default function Card({
   title,
   description,
   icon,
-  className = '',
+  iconAlt = 'Ícone',
 }: CardProps) {
   return (
-    <div
-      className={`rounded-lg bg-white p-6 text-center shadow-lg transition-shadow hover:shadow-xl ${className}`}
-    >
-      {icon && <div className="mb-4 flex justify-center">{icon}</div>}
-
-      <h3 className="mb-3 text-xl font-bold text-gray-800">{title}</h3>
-
-      <p className="leading-relaxed text-gray-600">{description}</p>
+    <div className="text-center">
+      <div className="mb-6 flex justify-center">
+        <Image src={icon} alt={iconAlt} width={80} height={80} />
+      </div>
+      <h3 className="mb-4 text-xl font-bold text-black">{title}</h3>
+      <p className="text-sm leading-relaxed text-black">{description}</p>
     </div>
   );
 }

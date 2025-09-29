@@ -1,71 +1,22 @@
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import SectionTitle from './components/SectionTitle';
 import Card from './components/Card';
 import Footer from './components/Footer';
 import Image from 'next/image';
+import Animal_Shelter from './assets/icons/Animal_Shelter.svg';
+import Medical_Doctor from './assets/icons/Medical_Doctor.svg';
+import Heart_with_dog_paw from './assets/icons/Heart_with_dog_paw.svg';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative max-h-[800px] overflow-hidden">
-          {/* Background shape (orange blob) on the right */}
-          <div className="pointer-events-none absolute inset-0">
-            <Image
-              src="/assets/images/background-cachorro1.png"
-              alt=""
-              priority
-              fill
-              sizes="100vw"
-              className="object-contain object-right origin-right scale-[1.15] lg:scale-[1.25]"
-            />
-          </div>
+      <Hero />
 
-          {/* Solid white background behind the hero text (left side) */}
-          <div className="absolute inset-y-0 left-0 w-[40%] bg-white"></div>
-
-          <div className="relative mx-auto max-w-none px-4 pt-28 pb-16 sm:px-6 lg:pl-8 lg:pr-0">
-            <div className="grid min-h-[640px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_720px]">
-              {/* Left side - Text content */}
-                <div className="z-10 flex flex-col items-start justify-center h-full pl-5">
-                  <h1
-                  className="mb-4 text-5xl font-bold md:text-8xl"
-                  style={{ color: '#472B74' }}
-                  >
-                  Cuidar é amar.
-                  </h1>
-                  <h2
-                  className="mb-8 text-2xl font-bold md:text-4xl pl-3"
-                  style={{ color: '#472B74' }}
-                  >
-                  Apadrinhe um amigo
-                  </h2>
-                </div>
-
-              {/* Right side - Dog image over the shape */}
-              <div className="relative z-10 flex items-center justify-center lg:justify-end">
-                <div className="relative ml-auto h-[580px] w-[580px] lg:h-[760px] lg:w-[760px]">
-                  <Image
-                    src="/assets/images/cachorro1.png"
-                    alt="Cachorro para adoção"
-                    fill
-                    sizes="(min-width: 1024px) 760px, 580px"
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-      </section>
-
-      {/* Seção Quem Somos */}
       <section id="sobre" className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            {/* Left side - Text content */}
             <div>
               <h2 className="mb-8 text-4xl font-bold text-black">
                 QUEM SOMOS?
@@ -79,7 +30,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Right side - Dog 2 over purple blob */}
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative h-[320px] w-[460px]">
                 <Image
@@ -87,14 +37,14 @@ export default function Home() {
                   alt=""
                   fill
                   sizes="440px"
-                  className="object-contain scale-105 -translate-y-1"
+                  className="-translate-y-1 scale-105 object-contain"
                 />
                 <Image
                   src="/assets/images/cachorro2.png"
                   alt="Cachorro resgatado"
                   fill
                   sizes="280px"
-                  className="absolute -bottom-2 right-10 w-[280px] h-[400px] object-contain"
+                  className="absolute right-10 -bottom-2 h-[400px] w-[280px] object-contain"
                 />
               </div>
             </div>
@@ -102,7 +52,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seção Como Atuamos */}
       <section id="como-atuamos" className="bg-gray-50 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="mb-16 text-center text-4xl font-bold text-black">
@@ -110,62 +59,31 @@ export default function Home() {
           </h2>
 
           <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-            {/* Card 1 - Resgate */}
-            <div className="text-center">
-              <div className="mb-6 flex justify-center">
-                <Image
-                  src="/assets/icons/Animal Shelter.svg"
-                  alt="Resgate de animais"
-                  width={80}
-                  height={80}
-                />
-              </div>
-              <h3 className="mb-4 text-xl font-bold text-black">RESGATE</h3>
-              <p className="text-sm leading-relaxed text-black">
-                Resgatar animais abandonados ou em risco.
-              </p>
-            </div>
-
-            {/* Card 2 - Cuidados */}
-            <div className="text-center">
-              <div className="mb-6 flex justify-center">
-                <Image
-                  src="/assets/icons/Medical Doctor.svg"
-                  alt="Cuidados veterinários"
-                  width={80}
-                  height={80}
-                />
-              </div>
-              <h3 className="mb-4 text-xl font-bold text-black">CUIDADOS</h3>
-              <p className="text-sm leading-relaxed text-black">
-                Proporcionar cuidados médicos, alimentação e abrigo.
-              </p>
-            </div>
-
-            {/* Card 3 - Conexão */}
-            <div className="text-center">
-              <div className="mb-6 flex justify-center">
-                <Image
-                  src="/assets/icons/Heart with dog paw.svg"
-                  alt="Conexão com famílias"
-                  width={80}
-                  height={80}
-                />
-              </div>
-              <h3 className="mb-4 text-xl font-bold text-black">CONEXÃO</h3>
-              <p className="text-sm leading-relaxed text-black">
-                Conectar pessoas que querem ajudar com os animais que precisam.
-              </p>
-            </div>
+            <Card
+              description="Resgatar animais abandonados ou em risco."
+              icon={Animal_Shelter}
+              title="RESGATE"
+              iconAlt="Resgate de animais"
+            />
+            <Card
+              description="Proporcionar cuidados médicos, alimentação e abrigo."
+              icon={Medical_Doctor}
+              title="CUIDADOS"
+              iconAlt="Cuidados veterinários"
+            />
+            <Card
+              description="Conectar pessoas que querem ajudar com os animais que precisam."
+              icon={Heart_with_dog_paw}
+              title="CONEXÃO"
+              iconAlt="Conexão com famílias"
+            />
           </div>
         </div>
       </section>
 
-      {/* Seção Como Ajudar */}
       <section id="como-ajudar" className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            {/* Left side - Text content */}
             <div>
               <h2 className="mb-8 text-4xl font-bold text-black">
                 COMO AJUDAR?
@@ -200,7 +118,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Right side - Dog 3 over orange blob */}
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative h-[340px] w-[460px]">
                 <Image
@@ -208,14 +125,14 @@ export default function Home() {
                   alt=""
                   fill
                   sizes="440px"
-                  className="object-contain scale-104 translate-x-6"
+                  className="translate-x-6 scale-104 object-contain"
                 />
                 <Image
                   src="/assets/images/cachorro3.png"
                   alt="Cachorro para apadrinhar"
                   width={300}
                   height={300}
-                  className="absolute -bottom-1 right-8 h-auto w-[300px] object-contain"
+                  className="absolute right-8 -bottom-1 h-auto w-[300px] object-contain"
                 />
               </div>
             </div>
@@ -223,57 +140,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer
-        className="py-12 text-white"
-        style={{ backgroundColor: '#472B74' }}
-      >
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          {/* Contatos */}
-          <div className="mb-8">
-            <div className="mb-4 flex items-center justify-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Image
-                  src="/assets/icons/Instagram.svg"
-                  alt="Instagram"
-                  width={24}
-                  height={24}
-                />
-                <span className="text-lg">@Instagram</span>
-              </div>
-            </div>
-
-            <div className="mb-4 flex items-center justify-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Image
-                  src="/assets/icons/Facebook.svg"
-                  alt="Facebook"
-                  width={24}
-                  height={24}
-                />
-                <span className="text-lg">@facebook</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Image
-                  src="/assets/icons/WhatsApp.svg"
-                  alt="WhatsApp"
-                  width={24}
-                  height={24}
-                />
-                <span className="text-lg">(42) 9 9999-9999</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Direitos reservados */}
-          <div className="border-t border-purple-400 pt-6">
-            <p className="text-sm">TODOS OS DIREITOS RESERVADOS</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

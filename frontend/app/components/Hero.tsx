@@ -1,62 +1,49 @@
-import { ReactNode } from 'react';
+import Image from 'next/image';
 
-interface HeroProps {
-  title: string;
-  subtitle?: string;
-  description?: string;
-  buttonText?: string;
-  buttonHref?: string;
-  className?: string;
-  children?: ReactNode;
-}
-
-export default function Hero({
-  title,
-  subtitle,
-  description,
-  buttonText,
-  buttonHref = '#',
-  className = '',
-  children,
-}: HeroProps) {
+export default function Hero() {
   return (
-    <section
-      className={`py-20 text-white ${className}`}
-      style={{ background: 'linear-gradient(45deg, #8B5DDD, #EA8C55)' }}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h1 className="mb-6 text-4xl font-bold md:text-6xl">{title}</h1>
+    <section className="relative max-h-[800px] overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <Image
+          src="/assets/images/background-cachorro1.png"
+          alt=""
+          priority
+          fill
+          sizes="100vw"
+          className="origin-right scale-[1.15] object-contain object-right lg:scale-[1.25]"
+        />
+      </div>
 
-          {subtitle && (
+      <div className="absolute inset-y-0 left-0 w-[40%] bg-white"></div>
+
+      <div className="relative mx-auto max-w-none px-4 pt-28 pb-16 sm:px-6 lg:pr-0 lg:pl-8">
+        <div className="grid min-h-[640px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_720px]">
+          <div className="z-10 flex h-full flex-col items-start justify-center pl-5">
+            <h1
+              className="mb-4 text-5xl font-bold md:text-8xl"
+              style={{ color: '#472B74' }}
+            >
+              Cuidar é amar.
+            </h1>
             <h2
-              className="mb-8 text-xl font-semibold md:text-3xl"
-              style={{ color: '#FFE4B5' }}
+              className="mb-8 pl-3 text-2xl font-bold md:text-4xl"
+              style={{ color: '#472B74' }}
             >
-              {subtitle}
+              Apadrinhe um amigo
             </h2>
-          )}
+          </div>
 
-          {description && (
-            <p
-              className="mx-auto mb-8 max-w-3xl text-lg md:text-xl"
-              style={{ color: '#E6E6FA' }}
-            >
-              {description}
-            </p>
-          )}
-
-          {buttonText && (
-            <a
-              href={buttonHref}
-              className="inline-block transform rounded-lg px-8 py-4 text-lg font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              style={{ backgroundColor: '#EA8C55', color: 'white' }}
-            >
-              {buttonText}
-            </a>
-          )}
-
-          {children}
+          <div className="relative z-10 flex items-center justify-center lg:justify-end">
+            <div className="relative ml-auto h-[580px] w-[580px] lg:h-[760px] lg:w-[760px]">
+              <Image
+                src="/assets/images/cachorro1.png"
+                alt="Cachorro para adoção"
+                fill
+                sizes="(min-width: 1024px) 760px, 580px"
+                className="object-contain"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>
