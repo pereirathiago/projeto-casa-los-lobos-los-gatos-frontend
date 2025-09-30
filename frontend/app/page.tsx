@@ -9,12 +9,13 @@ import Heart_with_dog_paw from './assets/icons/Heart_with_dog_paw.svg';
 
 export default function Home() {
   return (
-    <div className="min-h-screen max-w-4/5 m-auto bg-white">
-      <Navbar />
+    <div className="min-h-screen bg-white">
+      <div className="relative">
+        <Navbar />
+        <Hero />
+      </div>
 
-      <Hero />
-
-      <section id="sobre" className="bg-white py-16">
+      <section id="sobre" className="bg-white py-16 mt-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             <div>
