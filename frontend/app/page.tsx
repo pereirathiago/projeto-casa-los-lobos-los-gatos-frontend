@@ -6,6 +6,8 @@ import Image from 'next/image';
 import Animal_Shelter from './assets/icons/Animal_Shelter.svg';
 import Medical_Doctor from './assets/icons/Medical_Doctor.svg';
 import Heart_with_dog_paw from './assets/icons/Heart_with_dog_paw.svg';
+import Cachorro2 from './assets/images/cachorro2-montado.png';
+import Cachorro3 from './assets/images/cachorro3-montado.png';
 
 export default function Home() {
   return (
@@ -34,14 +36,7 @@ export default function Home() {
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative h-[320px] w-[460px]">
                 <Image
-                  src="/assets/images/background-cachorro2.png"
-                  alt=""
-                  fill
-                  sizes="440px"
-                  className="-translate-y-1 scale-105 object-contain"
-                />
-                <Image
-                  src="/assets/images/cachorro2.png"
+                  src={Cachorro2}
                   alt="Cachorro resgatado"
                   fill
                   sizes="280px"
@@ -122,18 +117,11 @@ export default function Home() {
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative h-[340px] w-[460px]">
                 <Image
-                  src="/assets/images/background-cachorro3.png"
-                  alt=""
-                  fill
-                  sizes="440px"
-                  className="translate-x-6 scale-104 object-contain"
-                />
-                <Image
-                  src="/assets/images/cachorro3.png"
+                  src={Cachorro3}
                   alt="Cachorro para apadrinhar"
                   width={300}
                   height={300}
-                  className="absolute right-8 -bottom-1 h-auto w-[300px] object-contain"
+                  className="absolute right-8 -bottom-1 h-auto w-[400px] object-contain -mb-10"
                 />
               </div>
             </div>

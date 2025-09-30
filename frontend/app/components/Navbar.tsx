@@ -9,7 +9,7 @@ interface NavbarProps {
 export default function Navbar({ className = '' }: NavbarProps) {
   return (
     <nav
-      className={`fixed top-0 z-50 w-full bg-transparent shadow-none ${className}`}
+      className={`top-0 z-500 w-full bg-transparent shadow-none ${className}`}
     >
       <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between px-28">
@@ -17,6 +17,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
           <div className="flex-shrink-0 pl-45">
             <div className="flex items-center">
               <Image
+                className='z-50'
                 src={logo}
                 alt="Logo Casa Los Lobos Los Gatos"
                 width={140}
@@ -26,7 +27,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:block">
+          <div className="hidden md:block z-50">
             <div className="flex items-baseline space-x-8">
               <a
                 href="#sobre"
