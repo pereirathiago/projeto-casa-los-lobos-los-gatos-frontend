@@ -1,20 +1,22 @@
 import Image from 'next/image';
+import cachorroMontado from '../assets/images/cachorro1-montado.png';
+import background from '../assets/images/background-cachorro1.png';
 
 export default function Hero() {
   return (
-    <section className="relative max-h-[800px] overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
+    <section className="relative max-h:[600px] overflow-hidden max-h-[800px]">
+      <div className="pointer-events-none absolute inset-0 max-h-[710px]">
         <Image
-          src="/assets/images/background-cachorro1.png"
+          src={background}
           alt=""
           priority
           fill
           sizes="100vw"
-          className="origin-right scale-[1.15] object-contain object-right lg:scale-[1.25]"
+          className="origin-right object-contain object-right"
         />
       </div>
 
-      <div className="absolute inset-y-0 left-0 w-[40%] bg-white"></div>
+      <div className="absolute inset-y-0 left-0 w-[40%] bg-white" />
 
       <div className="relative mx-auto max-w-none px-4 pt-28 pb-16 sm:px-6 lg:pr-0 lg:pl-8">
         <div className="grid min-h-[640px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_720px]">
@@ -36,11 +38,12 @@ export default function Hero() {
           <div className="relative z-10 flex items-center justify-center lg:justify-end">
             <div className="relative ml-auto h-[580px] w-[580px] lg:h-[760px] lg:w-[760px]">
               <Image
-                src="/assets/images/cachorro1.png"
+                src={cachorroMontado}
                 alt="Cachorro para adoção"
                 fill
                 sizes="(min-width: 1024px) 760px, 580px"
                 className="object-contain"
+                priority
               />
             </div>
           </div>

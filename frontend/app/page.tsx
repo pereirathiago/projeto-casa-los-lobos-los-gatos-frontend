@@ -9,7 +9,7 @@ import Heart_with_dog_paw from './assets/icons/Heart_with_dog_paw.svg';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen max-w-4/5 m-auto bg-white">
       <Navbar />
 
       <Hero />
