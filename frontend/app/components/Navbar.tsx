@@ -9,14 +9,15 @@ interface NavbarProps {
 export default function Navbar({ className = '' }: NavbarProps) {
   return (
     <nav
-      className={`fixed top-0 z-50 w-full bg-transparent shadow-none ${className}`}
+      className={`top-0 w-full bg-transparent shadow-none ${className}`}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between px-28">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 pl-45">
             <div className="flex items-center">
               <Image
+                className='z-50'
                 src={logo}
                 alt="Logo Casa Los Lobos Los Gatos"
                 width={140}
@@ -26,23 +27,23 @@ export default function Navbar({ className = '' }: NavbarProps) {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+          <div className="hidden md:block z-50">
+            <div className="flex items-baseline space-x-8">
               <a
                 href="#sobre"
-                className="text-lg font-medium text-white transition-colors hover:text-white/80"
+                className="text-[24px] text-white font-bold transition-colors hover:text-white/80"
               >
                 Sobre
               </a>
               <a
                 href="#como-atuamos"
-                className="text-lg font-medium text-white transition-colors hover:text-white/80"
+                className="text-[24px] text-white font-bold transition-colors hover:text-white/80"
               >
                 Como atuamos
               </a>
               <a
                 href="#como-ajudar"
-                className="text-lg font-medium text-white transition-colors hover:text-white/80"
+                className="text-[24px] text-white font-bold transition-colors hover:text-white/80"
               >
                 Como ajudar
               </a>
