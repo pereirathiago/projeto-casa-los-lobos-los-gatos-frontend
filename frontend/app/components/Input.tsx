@@ -9,24 +9,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className = '', ...props }, ref) => {
     return (
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           {label}
         </label>
         <input
           ref={ref}
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors placeholder:text-gray-500 ${
+          className={`w-full rounded-lg border px-4 py-3 transition-colors placeholder:text-gray-500 focus:ring-2 focus:outline-none ${
             error
               ? 'border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:ring-[var(--ong-purple)] focus:border-[var(--ong-purple)]'
+              : 'border-gray-300 focus:border-[var(--ong-purple)] focus:ring-[var(--ong-purple)]'
           } ${className}`}
           {...props}
         />
-        {error && (
-          <p className="mt-1 text-sm text-red-600">{error}</p>
-        )}
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';

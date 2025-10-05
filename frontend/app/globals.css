@@ -14,7 +14,7 @@ inline {
   --font-mono: var(--font-geist-mono);
   --color-ong-purple: var(--ong-purple);
   --color-ong-orange: var(--ong-orange);
-  
+
   /* Adicionando cores customizadas para uso no Tailwind */
   --color-ong-purple-light: #9d7ae3;
   --color-ong-purple-lighter: #b99de9;

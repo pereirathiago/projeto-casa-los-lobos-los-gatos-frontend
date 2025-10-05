@@ -58,14 +58,18 @@ export default function LoginForm() {
     try {
       // Fazer login
       const response = await apiService.login({ email, password });
-      
+
       // Salvar dados de autenticação
       authService.saveAuth(response);
-      
+
       // Redirecionar para dashboard
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login. Tente novamente.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Erro ao fazer login. Tente novamente.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -73,10 +77,10 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md">
-      <div className="bg-white rounded-2xl shadow-xl p-8">
+      <div className="rounded-2xl bg-white p-8 shadow-xl">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
+        <div className="mb-8 text-center">
+          <div className="mb-6 flex justify-center">
             <Image
               src={logo}
               alt="Logo Casa Los Lobos e Los Gatos"
@@ -85,18 +89,12 @@ export default function LoginForm() {
               priority
             />
           </div>
-          <p className="text-gray-600 text-lg">
-            Acesse sua conta
-          </p>
+          <p className="text-lg text-gray-600">Acesse sua conta</p>
         </div>
 
         {/* Alerta de erro */}
         {error && (
-          <Alert
-            type="error"
-            message={error}
-            onClose={() => setError('')}
-          />
+          <Alert type="error" message={error} onClose={() => setError('')} />
         )}
 
         {/* Formulário */}
@@ -127,18 +125,18 @@ export default function LoginForm() {
             disabled={isLoading}
           />
 
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <label className="flex items-center">
               <input
                 type="checkbox"
-                className="w-4 h-4 border-gray-300 rounded focus:ring-[var(--ong-purple)]"
+                className="h-4 w-4 rounded border-gray-300 focus:ring-[var(--ong-purple)]"
                 style={{ accentColor: 'var(--ong-purple)' }}
               />
               <span className="ml-2 text-sm text-gray-600">Lembrar-me</span>
             </label>
             <a
               href="#"
-              className="text-sm font-medium hover:underline text-[var(--ong-purple)]"
+              className="text-sm font-medium text-[var(--ong-purple)] hover:underline"
             >
               Esqueceu a senha?
             </a>
@@ -160,7 +158,7 @@ export default function LoginForm() {
             Ainda não tem uma conta?{' '}
             <a
               href="#"
-              className="font-medium hover:underline text-[var(--ong-purple)]"
+              className="font-medium text-[var(--ong-purple)] hover:underline"
             >
               Cadastre-se
             </a>

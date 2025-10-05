@@ -15,12 +15,16 @@ export default function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
-  
+  const baseStyles =
+    'px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+
   const variantStyles = {
-    primary: 'bg-[var(--ong-purple)] hover:opacity-90 text-white shadow-md hover:shadow-lg',
-    secondary: 'bg-[var(--ong-orange)] hover:opacity-90 text-white shadow-md hover:shadow-lg',
-    outline: 'border-2 border-[var(--ong-purple)] text-[var(--ong-purple)] hover:bg-purple-50',
+    primary:
+      'bg-[var(--ong-purple)] hover:opacity-90 text-white shadow-md hover:shadow-lg',
+    secondary:
+      'bg-[var(--ong-orange)] hover:opacity-90 text-white shadow-md hover:shadow-lg',
+    outline:
+      'border-2 border-[var(--ong-purple)] text-[var(--ong-purple)] hover:bg-purple-50',
   };
 
   const widthStyle = fullWidth ? 'w-full' : '';
@@ -34,7 +38,7 @@ export default function Button({
       {isLoading ? (
         <div className="flex items-center justify-center">
           <svg
-            className="animate-spin h-5 w-5 mr-2"
+            className="mr-2 h-5 w-5 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

@@ -17,7 +17,7 @@ export default function Home() {
         <Hero />
       </div>
 
-      <section id="sobre" className="bg-white py-16 mt-50">
+      <section id="sobre" className="mt-50 bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             <div>
@@ -121,7 +121,7 @@ export default function Home() {
                   alt="Cachorro para apadrinhar"
                   width={300}
                   height={300}
-                  className="absolute right-8 -bottom-1 h-auto w-[400px] object-contain -mb-10"
+                  className="absolute right-8 -bottom-1 -mb-10 h-auto w-[400px] object-contain"
                 />
               </div>
             </div>

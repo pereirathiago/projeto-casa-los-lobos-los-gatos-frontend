@@ -8,7 +8,7 @@ import { apiService } from '../services/api';
 import { authService } from '../services/auth';
 
 interface PadrinhoDashboardProps {
-  user: any;
+  user: { id: string; name: string; email: string; role: string } | null;
 }
 
 export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
@@ -32,7 +32,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Image
@@ -44,7 +44,9 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {user?.name}
+                </p>
                 <p className="text-xs text-gray-500">Padrinho</p>
               </div>
               <Button variant="outline" onClick={handleLogout}>
@@ -56,81 +58,94 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Welcome Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-2 text-[var(--ong-purple)]">
+        <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
+          <h2 className="mb-2 text-2xl font-bold text-[var(--ong-purple)]">
             Olá, {user?.name}! 💜
           </h2>
           <p className="text-gray-600">
-            Obrigado por ser um padrinho/madrinha! Acompanhe aqui seus afilhados e suas contribuições.
+            Obrigado por ser um padrinho/madrinha! Acompanhe aqui seus afilhados
+            e suas contribuições.
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between mb-4">
+        <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-lg bg-white p-6 shadow-md">
+            <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-700">Afilhados</h3>
               <span className="text-3xl">🐕</span>
             </div>
             <p className="text-3xl font-bold text-[var(--ong-purple)]">3</p>
-            <p className="text-sm text-gray-500 mt-1">Animais apadrinhados</p>
+            <p className="mt-1 text-sm text-gray-500">Animais apadrinhados</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">Contribuição Mensal</h3>
+          <div className="rounded-lg bg-white p-6 shadow-md">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-700">
+                Contribuição Mensal
+              </h3>
               <span className="text-3xl">💰</span>
             </div>
-            <p className="text-3xl font-bold text-[var(--ong-orange)]">R$ 150</p>
-            <p className="text-sm text-gray-500 mt-1">Valor total por mês</p>
+            <p className="text-3xl font-bold text-[var(--ong-orange)]">
+              R$ 150
+            </p>
+            <p className="mt-1 text-sm text-gray-500">Valor total por mês</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="rounded-lg bg-white p-6 shadow-md">
+            <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-700">Desde</h3>
               <span className="text-3xl">📅</span>
             </div>
-            <p className="text-3xl font-bold text-[var(--ong-purple)]">6 meses</p>
-            <p className="text-sm text-gray-500 mt-1">Como padrinho</p>
+            <p className="text-3xl font-bold text-[var(--ong-purple)]">
+              6 meses
+            </p>
+            <p className="mt-1 text-sm text-gray-500">Como padrinho</p>
           </div>
         </div>
 
         {/* My Pets */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-xl font-bold mb-4 text-[var(--ong-purple)]">
+        <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
+          <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
             Meus Afilhados
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-[var(--ong-purple)] transition-all">
-              <div className="text-5xl mb-3 text-center">🐕</div>
-              <h4 className="font-bold text-lg text-center mb-2">Rex</h4>
-              <p className="text-sm text-gray-600 text-center mb-2">Labrador, 3 anos</p>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]">
+              <div className="mb-3 text-center text-5xl">🐕</div>
+              <h4 className="mb-2 text-center text-lg font-bold">Rex</h4>
+              <p className="mb-2 text-center text-sm text-gray-600">
+                Labrador, 3 anos
+              </p>
               <div className="flex items-center justify-center">
-                <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                <span className="rounded-full bg-green-100 px-3 py-1 text-xs text-green-800">
                   Saudável
                 </span>
               </div>
             </div>
 
-            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-[var(--ong-purple)] transition-all">
-              <div className="text-5xl mb-3 text-center">🐱</div>
-              <h4 className="font-bold text-lg text-center mb-2">Luna</h4>
-              <p className="text-sm text-gray-600 text-center mb-2">Gata, 2 anos</p>
+            <div className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]">
+              <div className="mb-3 text-center text-5xl">🐱</div>
+              <h4 className="mb-2 text-center text-lg font-bold">Luna</h4>
+              <p className="mb-2 text-center text-sm text-gray-600">
+                Gata, 2 anos
+              </p>
               <div className="flex items-center justify-center">
-                <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                <span className="rounded-full bg-green-100 px-3 py-1 text-xs text-green-800">
                   Saudável
                 </span>
               </div>
             </div>
 
-            <div className="border-2 border-gray-200 rounded-lg p-4 hover:border-[var(--ong-purple)] transition-all">
-              <div className="text-5xl mb-3 text-center">🐕</div>
-              <h4 className="font-bold text-lg text-center mb-2">Max</h4>
-              <p className="text-sm text-gray-600 text-center mb-2">Vira-lata, 4 anos</p>
+            <div className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]">
+              <div className="mb-3 text-center text-5xl">🐕</div>
+              <h4 className="mb-2 text-center text-lg font-bold">Max</h4>
+              <p className="mb-2 text-center text-sm text-gray-600">
+                Vira-lata, 4 anos
+              </p>
               <div className="flex items-center justify-center">
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs text-yellow-800">
                   Tratamento
                 </span>
               </div>
@@ -139,54 +154,64 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-xl font-bold mb-4 text-[var(--ong-purple)]">
+        <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
+          <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
             Ações Rápidas
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)] transition-all">
-              <div className="text-3xl mb-2">💰</div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+              <div className="mb-2 text-3xl">💰</div>
               <p className="font-semibold text-gray-700">Fazer Doação Extra</p>
             </button>
-            <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)] transition-all">
-              <div className="text-3xl mb-2">📸</div>
+            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+              <div className="mb-2 text-3xl">📸</div>
               <p className="font-semibold text-gray-700">Ver Fotos</p>
             </button>
-            <button className="p-4 border-2 border-gray-200 rounded-lg hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)] transition-all">
-              <div className="text-3xl mb-2">📧</div>
+            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+              <div className="mb-2 text-3xl">📧</div>
               <p className="font-semibold text-gray-700">Enviar Mensagem</p>
             </button>
           </div>
         </div>
 
         {/* Recent Updates */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold mb-4 text-[var(--ong-purple)]">
+        <div className="rounded-lg bg-white p-6 shadow-md">
+          <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
             Atualizações Recentes
           </h3>
           <div className="space-y-4">
-            <div className="flex items-start p-3 border-l-4 border-[var(--ong-orange)] bg-orange-50">
-              <span className="text-2xl mr-3">📸</span>
+            <div className="flex items-start border-l-4 border-[var(--ong-orange)] bg-orange-50 p-3">
+              <span className="mr-3 text-2xl">📸</span>
               <div>
-                <p className="font-semibold text-gray-800">Novas fotos do Rex</p>
-                <p className="text-sm text-gray-600">Rex está se adaptando muito bem ao novo lar temporário!</p>
-                <p className="text-xs text-gray-500 mt-1">Há 1 dia</p>
+                <p className="font-semibold text-gray-800">
+                  Novas fotos do Rex
+                </p>
+                <p className="text-sm text-gray-600">
+                  Rex está se adaptando muito bem ao novo lar temporário!
+                </p>
+                <p className="mt-1 text-xs text-gray-500">Há 1 dia</p>
               </div>
             </div>
-            <div className="flex items-start p-3 border-l-4 border-[var(--ong-purple)] bg-purple-50">
-              <span className="text-2xl mr-3">💉</span>
+            <div className="flex items-start border-l-4 border-[var(--ong-purple)] bg-purple-50 p-3">
+              <span className="mr-3 text-2xl">💉</span>
               <div>
                 <p className="font-semibold text-gray-800">Max em tratamento</p>
-                <p className="text-sm text-gray-600">Max está recebendo tratamento veterinário. Tudo está indo bem!</p>
-                <p className="text-xs text-gray-500 mt-1">Há 3 dias</p>
+                <p className="text-sm text-gray-600">
+                  Max está recebendo tratamento veterinário. Tudo está indo bem!
+                </p>
+                <p className="mt-1 text-xs text-gray-500">Há 3 dias</p>
               </div>
             </div>
-            <div className="flex items-start p-3 border-l-4 border-[var(--ong-orange)] bg-orange-50">
-              <span className="text-2xl mr-3">💜</span>
+            <div className="flex items-start border-l-4 border-[var(--ong-orange)] bg-orange-50 p-3">
+              <span className="mr-3 text-2xl">💜</span>
               <div>
-                <p className="font-semibold text-gray-800">Obrigado pela contribuição!</p>
-                <p className="text-sm text-gray-600">Sua contribuição mensal foi recebida. Muito obrigado!</p>
-                <p className="text-xs text-gray-500 mt-1">Há 1 semana</p>
+                <p className="font-semibold text-gray-800">
+                  Obrigado pela contribuição!
+                </p>
+                <p className="text-sm text-gray-600">
+                  Sua contribuição mensal foi recebida. Muito obrigado!
+                </p>
+                <p className="mt-1 text-xs text-gray-500">Há 1 semana</p>
               </div>
             </div>
           </div>

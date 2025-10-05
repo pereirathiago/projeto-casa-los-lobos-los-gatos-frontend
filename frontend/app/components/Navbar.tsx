@@ -8,16 +8,14 @@ interface NavbarProps {
 
 export default function Navbar({ className = '' }: NavbarProps) {
   return (
-    <nav
-      className={`top-0 w-full bg-transparent shadow-none ${className}`}
-    >
+    <nav className={`top-0 w-full bg-transparent shadow-none ${className}`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between px-28">
           {/* Logo */}
           <div className="flex-shrink-0 pl-45">
             <div className="flex items-center">
               <Image
-                className='z-50'
+                className="z-50"
                 src={logo}
                 alt="Logo Casa Los Lobos Los Gatos"
                 width={140}
@@ -27,29 +25,29 @@ export default function Navbar({ className = '' }: NavbarProps) {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:block z-50">
+          <div className="z-50 hidden md:block">
             <div className="flex items-baseline space-x-8">
               <a
                 href="#sobre"
-                className="text-[24px] text-white font-bold transition-colors hover:text-white/80"
+                className="text-[24px] font-bold text-white transition-colors hover:text-white/80"
               >
                 Sobre
               </a>
               <a
                 href="#como-atuamos"
-                className="text-[24px] text-white font-bold transition-colors hover:text-white/80"
+                className="text-[24px] font-bold text-white transition-colors hover:text-white/80"
               >
                 Como atuamos
               </a>
               <a
                 href="#como-ajudar"
-                className="text-[24px] text-white font-bold transition-colors hover:text-white/80"
+                className="text-[24px] font-bold text-white transition-colors hover:text-white/80"
               >
                 Como ajudar
               </a>
               <a
                 href="/login"
-                className="px-6 py-2 rounded-lg text-[20px] font-bold text-white transition-all hover:opacity-90 bg-[var(--ong-purple)]"
+                className="rounded-lg bg-[var(--ong-purple)] px-6 py-2 text-[20px] font-bold text-white transition-all hover:opacity-90"
               >
                 Entrar
               </a>
