@@ -47,6 +47,12 @@ export default function Navbar({ className = '' }: NavbarProps) {
               >
                 Como ajudar
               </a>
+              <a
+                href="/login"
+                className="px-6 py-2 rounded-lg text-[20px] font-bold text-white transition-all hover:opacity-90 bg-[var(--ong-purple)]"
+              >
+                Entrar
+              </a>
             </div>
           </div>
 

@@ -3,23 +3,29 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --ong-purple: #8b5ddd;
-  --ong-orange: #ea8c55;
+  --ong-purple: #6645a0;
+  --ong-orange: #cd6b16;
 }
 
-@theme inline {
+inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-ong-purple: var(--ong-purple);
   --color-ong-orange: var(--ong-orange);
+  
+  /* Adicionando cores customizadas para uso no Tailwind */
+  --color-ong-purple-light: #9d7ae3;
+  --color-ong-purple-lighter: #b99de9;
+  --color-ong-orange-light: #f0a676;
+  --color-ong-purple-50: rgba(139, 93, 221, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #525252;
   }
 }
 

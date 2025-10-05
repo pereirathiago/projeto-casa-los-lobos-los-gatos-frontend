@@ -1,0 +1,186 @@
+'use client';
+
+import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import Alert from '../components/Alert';
+import { apiService } from '../services/api';
+import { authService } from '../services/auth';
+import logo from '../assets/icons/logo-ong.svg';
+
+export default function LoginForm() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
+
+  const validateForm = (): boolean => {
+    const errors = { email: '', password: '' };
+    let isValid = true;
+
+    // Validar email
+    if (!email) {
+      errors.email = 'E-mail é obrigatório';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'E-mail inválido';
+      isValid = false;
+    }
+
+    // Validar senha
+    if (!password) {
+      errors.password = 'Senha é obrigatória';
+      isValid = false;
+    } else if (password.length < 6) {
+      errors.password = 'Senha deve ter no mínimo 6 caracteres';
+      isValid = false;
+    }
+
+    setFieldErrors(errors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Validar formulário
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Fazer login
+      const response = await apiService.login({ email, password });
+      
+      // Salvar dados de autenticação
+      authService.saveAuth(response);
+      
+      // Redirecionar para dashboard
+      router.push('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao fazer login. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md">
+      <div className="bg-white rounded-2xl shadow-xl p-8">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-6">
+            <Image
+              src={logo}
+              alt="Logo Casa Los Lobos e Los Gatos"
+              width={200}
+              height={100}
+              priority
+            />
+          </div>
+          <p className="text-gray-600 text-lg">
+            Acesse sua conta
+          </p>
+        </div>
+
+        {/* Alerta de erro */}
+        {error && (
+          <Alert
+            type="error"
+            message={error}
+            onClose={() => setError('')}
+          />
+        )}
+
+        {/* Formulário */}
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="E-mail"
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setFieldErrors({ ...fieldErrors, email: '' });
+            }}
+            placeholder="seu@email.com"
+            error={fieldErrors.email}
+            disabled={isLoading}
+          />
+
+          <Input
+            label="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setFieldErrors({ ...fieldErrors, password: '' });
+            }}
+            placeholder="••••••••"
+            error={fieldErrors.password}
+            disabled={isLoading}
+          />
+
+          <div className="flex items-center justify-between mb-6">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                className="w-4 h-4 border-gray-300 rounded focus:ring-[var(--ong-purple)]"
+                style={{ accentColor: 'var(--ong-purple)' }}
+              />
+              <span className="ml-2 text-sm text-gray-600">Lembrar-me</span>
+            </label>
+            <a
+              href="#"
+              className="text-sm font-medium hover:underline text-[var(--ong-purple)]"
+            >
+              Esqueceu a senha?
+            </a>
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            isLoading={isLoading}
+          >
+            Entrar
+          </Button>
+        </form>
+
+        {/* Link para registro */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Ainda não tem uma conta?{' '}
+            <a
+              href="#"
+              className="font-medium hover:underline text-[var(--ong-purple)]"
+            >
+              Cadastre-se
+            </a>
+          </p>
+        </div>
+      </div>
+
+      {/* Informações adicionais */}
+      <div className="mt-6 text-center">
+        <p className="text-sm text-gray-500">
+          Ao fazer login, você concorda com nossos{' '}
+          <a href="#" className="underline hover:text-gray-700">
+            Termos de Uso
+          </a>
+          {' e '}
+          <a href="#" className="underline hover:text-gray-700">
+            Política de Privacidade
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
