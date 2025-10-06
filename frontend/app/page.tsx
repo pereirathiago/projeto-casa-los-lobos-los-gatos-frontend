@@ -18,7 +18,6 @@ export default function Home() {
       <section id="sobre" className="bg-white py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-
             <div className="relative flex justify-center lg:order-last">
               <div className="relative h-[250px] w-full max-w-md sm:h-[320px] md:h-[380px]">
                 <Image
@@ -32,7 +31,7 @@ export default function Home() {
             </div>
 
             <div>
-              <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-bold text-black">
+              <h2 className="mb-6 text-3xl font-bold text-black sm:text-4xl md:text-5xl">
                 QUEM SOMOS?
               </h2>
 
@@ -44,7 +43,6 @@ export default function Home() {
                 dos nossos animais.
               </p>
             </div>
-
           </div>
         </div>
       </section>
@@ -81,7 +79,6 @@ export default function Home() {
       <section id="como-ajudar" className="bg-white py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-
             <div className="relative flex justify-center">
               <div className="relative h-[280px] w-full max-w-md sm:h-[320px] md:h-[380px]">
                 <Image
@@ -99,7 +96,8 @@ export default function Home() {
                 COMO AJUDAR?
               </h2>
               <p className="mb-6 text-lg leading-relaxed text-black">
-                Você pode ser dindo ou dinda de um dos nossos animais! Funciona assim:
+                Você pode ser dindo ou dinda de um dos nossos animais! Funciona
+                assim:
               </p>
 
               <ul className="mb-6 space-y-4 text-lg text-black">
@@ -109,19 +107,25 @@ export default function Home() {
                 </li>
                 <li className="flex items-center">
                   <span className="mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
-                  <span>Contribua mensalmente com ração, medicamentos ou qualquer valor a partir de R$20,00.</span>
+                  <span>
+                    Contribua mensalmente com ração, medicamentos ou qualquer
+                    valor a partir de R$20,00.
+                  </span>
                 </li>
                 <li className="flex items-center">
                   <span className="mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
-                  <span>Todo mês, você recebe uma foto e novidades sobre o seu afilhado.</span>
+                  <span>
+                    Todo mês, você recebe uma foto e novidades sobre o seu
+                    afilhado.
+                  </span>
                 </li>
               </ul>
 
               <p className="text-lg leading-relaxed text-black">
-                É uma forma linda de fazer parte da vida deles, mesmo que não possa adotar.
+                É uma forma linda de fazer parte da vida deles, mesmo que não
+                possa adotar.
               </p>
             </div>
-
           </div>
         </div>
       </section>

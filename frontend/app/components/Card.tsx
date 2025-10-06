@@ -19,9 +19,10 @@ export default function Card({
       <div className="mb-6 flex justify-center">
         <Image src={icon} alt={iconAlt} width={80} height={80} />
       </div>
-      <h3 className="mb-4 text-lg sm:text-xl font-bold text-black">{title}</h3>
-      <p className="text-base sm:text-lg leading-relaxed text-black">{description}</p>
-
+      <h3 className="mb-4 text-lg font-bold text-black sm:text-xl">{title}</h3>
+      <p className="text-base leading-relaxed text-black sm:text-lg">
+        {description}
+      </p>
     </div>
   );
 }

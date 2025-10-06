@@ -16,7 +16,6 @@ const config: Config = {
         'breakpoint-hero': '1140px',
       },
     },
-    
   },
   plugins: [],
 };
