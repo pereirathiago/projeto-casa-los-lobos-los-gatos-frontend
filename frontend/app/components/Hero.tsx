@@ -5,7 +5,7 @@ import cachorroMobile from '../assets/images/cachorro1-mobile.png';
 export default function Hero() {
   return (
     <section className="relative flex min-h-[120vh] items-center bg-white max-[1120px]:min-h-screen max-[1000px]:min-h-[78vh] max-[795px]:-mb-60 max-[795px]:min-h-[90vh] max-[615px]:mt-12 max-[615px]:mb-20">
-      <div className="absolute top-20 right-0 h-full w-full origin-top-right scale-62 max-[615px]:scale-100 min-[795px]:h-[104vh] min-[795px]:scale-72 min-[1000px]:h-[138vh] min-[1000px]:w-[100vw] min-[1000px]:scale-65 min-[1120px]:h-full min-[1120px]:w-4/6 min-[1120px]:scale-90 min-[1120px]:bg-transparent md:opacity-100">
+      <div className="absolute top-0 right-0 h-full w-full origin-top-right scale-62 max-[615px]:top-20 max-[615px]:scale-100 min-[795px]:h-[104vh] min-[795px]:scale-72 min-[1000px]:h-[138vh] min-[1000px]:w-[100vw] min-[1000px]:scale-65 min-[1120px]:h-full min-[1120px]:w-4/6 min-[1120px]:scale-90 min-[1120px]:bg-transparent md:opacity-100">
         {/* Imagem Desktop - oculta em telas < 640px */}
         <Image
           src={cachorroMontado}
