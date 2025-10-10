@@ -11,14 +11,14 @@ import Cachorro3 from './assets/images/cachorro3-montado.png';
 
 export default function Home() {
   return (
-    <div className="bg-white">
+    <>
       <Navbar />
       <Hero />
 
-      <section id="sobre" className="bg-white py-16 md:py-24">
+      <section id="sobre" className="relative bg-white py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            <div className="relative flex justify-center lg:order-last">
+            <div className="relative order-2 flex justify-center lg:order-1">
               <div className="relative h-[250px] w-full max-w-md sm:h-[320px] md:h-[380px]">
                 <Image
                   src={Cachorro2}
@@ -30,7 +30,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div>
+            <div className="relative z-10 order-1 text-center lg:order-2">
               <h2 className="mb-6 text-3xl font-bold text-black sm:text-4xl md:text-5xl">
                 QUEM SOMOS?
               </h2>
@@ -66,12 +66,14 @@ export default function Home() {
               title="CUIDADOS"
               iconAlt="Cuidados veterinários"
             />
-            <Card
-              description="Conectar pessoas que querem ajudar com os animais que precisam."
-              icon={Heart_with_dog_paw}
-              title="CONEXÃO"
-              iconAlt="Conexão com famílias"
-            />
+            <div className="sm:col-span-2 lg:col-span-1">
+              <Card
+                description="Conectar pessoas que querem ajudar com os animais que precisam."
+                icon={Heart_with_dog_paw}
+                title="CONEXÃO"
+                iconAlt="Conexão com famílias"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -91,16 +93,16 @@ export default function Home() {
               </div>
             </div>
 
-            <div>
-              <h2 className="mb-6 text-3xl font-bold text-black md:mb-8 md:text-4xl">
+            <div className="text-center">
+              <h2 className="mb-6 text-center text-3xl font-bold text-black md:mb-8 md:text-4xl lg:text-left">
                 COMO AJUDAR?
               </h2>
-              <p className="mb-6 text-lg leading-relaxed text-black">
+              <p className="mb-6 text-center text-lg leading-relaxed text-black lg:text-left">
                 Você pode ser dindo ou dinda de um dos nossos animais! Funciona
                 assim:
               </p>
 
-              <ul className="mb-6 space-y-4 text-lg text-black">
+              <ul className="mx-auto mb-6 max-w-2xl space-y-4 pl-4 text-left text-lg text-black sm:pl-7 lg:max-w-none">
                 <li className="flex items-center">
                   <span className="mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
                   <span>Escolha um animal disponível para apadrinhar.</span>
@@ -121,7 +123,7 @@ export default function Home() {
                 </li>
               </ul>
 
-              <p className="text-lg leading-relaxed text-black">
+              <p className="text-center text-lg leading-relaxed text-black lg:text-left">
                 É uma forma linda de fazer parte da vida deles, mesmo que não
                 possa adotar.
               </p>
@@ -131,6 +133,6 @@ export default function Home() {
       </section>
 
       <Footer />
-    </div>
+    </>
   );
 }
