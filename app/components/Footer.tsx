@@ -15,8 +15,8 @@ export default function Footer({ className = '' }: FooterProps) {
               Casa Los Lobos e Los Gatos
             </h3>
             <p className="text-sm text-purple-200">
-              ONG dedicada ao resgate, cuidado e adoção de animais em situação
-              de vulnerabilidade.
+              ONG dedicada ao resgate e cuidado de animais em situação de
+              vulnerabilidade.
             </p>
           </div>
 
