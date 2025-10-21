@@ -16,6 +16,23 @@ export interface LoginResponse {
   };
 }
 
+export interface RegisterCredentials {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  message: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    created_at: string;
+  };
+}
+
 export interface ApiError {
   error: string;
 }
@@ -29,8 +46,21 @@ class ApiService {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      const error: ApiError = await response.json();
-      throw new Error(error.error || 'Erro ao processar requisição');
+      try {
+        const errorData = await response.json();
+        // Tenta pegar a mensagem de erro do backend
+        const errorMessage =
+          errorData.message ||
+          errorData.error ||
+          'Erro ao processar requisição';
+        throw new Error(errorMessage);
+      } catch (error) {
+        // Se não conseguir fazer parse do JSON, retorna erro genérico
+        if (error instanceof Error && error.message) {
+          throw error;
+        }
+        throw new Error('Erro ao processar requisição');
+      }
     }
     return response.json();
   }
@@ -45,6 +75,18 @@ class ApiService {
     });
 
     return this.handleResponse<LoginResponse>(response);
+  }
+
+  async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
+    const response = await fetch(`${this.baseURL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    return this.handleResponse<RegisterResponse>(response);
   }
 
   async logout(token: string): Promise<void> {

@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Input from '../components/Input';
-import Button from '../components/Button';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useState } from 'react';
+import logo from '../assets/icons/logo-ong.svg';
 import Alert from '../components/Alert';
+import Button from '../components/Button';
+import Input from '../components/Input';
 import { apiService } from '../services/api';
 import { authService } from '../services/auth';
-import logo from '../assets/icons/logo-ong.svg';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -156,12 +157,12 @@ export default function LoginForm() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Ainda não tem uma conta?{' '}
-            <a
-              href="#"
+            <Link
+              href="/register"
               className="font-medium text-[var(--ong-purple)] hover:underline"
             >
               Cadastre-se
-            </a>
+            </Link>
           </p>
         </div>
       </div>
