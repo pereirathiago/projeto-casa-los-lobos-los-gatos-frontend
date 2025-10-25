@@ -12,6 +12,9 @@ const config: Config = {
         'ong-purple': 'var(--ong-purple)',
         'ong-orange': 'var(--ong-orange)',
       },
+      screens: {
+        'breakpoint-hero': '1140px',
+      },
     },
   },
   plugins: [],
