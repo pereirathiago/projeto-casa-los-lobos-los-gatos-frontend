@@ -1,23 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import RegisterForm from '../components/RegisterForm';
 import Button from '../components/Button';
+import RegisterForm from '../components/RegisterForm';
 
 export default function RegisterPage() {
   return (
-    <div className="paw-pattern-bg flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-orange-50 px-4">
+    <div className="paw-pattern-bg flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-orange-50 px-4 py-20 sm:py-12">
       {/* Conteúdo */}
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         <RegisterForm />
       </div>
 
       {/* Link para voltar à home */}
-      <div className="absolute top-4 left-4">
+      <div className="absolute top-3 left-3 z-50 sm:top-4 sm:left-4">
         <Link href="/login" className="flex items-center">
-          <Button variant="primary" className="px-3!">
+          <Button variant="primary" className="px-3 py-2 sm:px-4 sm:py-3">
             <svg
-              className="h-5 w-5"
+              className="h-4 w-4 sm:h-5 sm:w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

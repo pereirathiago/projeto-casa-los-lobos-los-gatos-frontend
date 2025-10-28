@@ -21,16 +21,16 @@ export default function Alert({ type, message, onClose }: AlertProps) {
 
   return (
     <div
-      className={`mb-4 rounded-r-lg border-l-4 p-4 ${styles[type]} flex items-start justify-between`}
+      className={`mb-4 rounded-r-lg border-l-4 p-3 ${styles[type]} flex items-start justify-between sm:p-4`}
     >
       <div className="flex items-start">
-        <span className="mr-3 text-xl">{icons[type]}</span>
-        <p className="font-medium">{message}</p>
+        <span className="mr-2 text-lg sm:mr-3 sm:text-xl">{icons[type]}</span>
+        <p className="text-sm font-medium sm:text-base">{message}</p>
       </div>
       {onClose && (
         <button
           onClick={onClose}
-          className="ml-4 text-gray-500 transition-colors hover:text-gray-700"
+          className="ml-2 text-gray-500 transition-colors hover:text-gray-700 sm:ml-4"
         >
           ✕
         </button>

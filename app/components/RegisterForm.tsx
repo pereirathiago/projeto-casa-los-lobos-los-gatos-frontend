@@ -149,21 +149,26 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-md">
-      <div className="rounded-2xl bg-white p-8 shadow-xl">
+    <div className="mx-auto w-full max-w-md">
+      <div className="rounded-2xl bg-white p-6 shadow-xl sm:p-8">
         {/* Logo */}
-        <div className="mb-8 text-center">
-          <div className="mb-6 flex justify-center">
-            <Image
-              src={logo}
-              alt="Logo Casa Los Lobos e Los Gatos"
-              width={200}
-              height={100}
-              priority
-            />
+        <div className="mb-6 text-center sm:mb-8">
+          <div className="mb-4 flex justify-center sm:mb-6">
+            <Link href="/">
+              <Image
+                src={logo}
+                alt="Logo Casa Los Lobos e Los Gatos"
+                width={160}
+                height={80}
+                className="sm:h-[100px] sm:w-[200px]"
+                priority
+              />
+            </Link>
           </div>
-          <h1 className="mb-2 text-2xl font-bold text-gray-800">Criar Conta</h1>
-          <p className="text-gray-600">
+          <h1 className="mb-2 text-xl font-bold text-gray-800 sm:text-2xl">
+            Criar Conta
+          </h1>
+          <p className="text-sm text-gray-600 sm:text-base">
             Cadastre-se para se tornar um padrinho
           </p>
         </div>
@@ -275,7 +280,7 @@ export default function RegisterForm() {
 
         {/* Link para login */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-gray-600 sm:text-sm">
             Já tem uma conta?{' '}
             <Link
               href="/login"
@@ -288,8 +293,8 @@ export default function RegisterForm() {
       </div>
 
       {/* Informações adicionais */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-500">
+      <div className="mt-4 text-center sm:mt-6">
+        <p className="text-xs text-gray-500 sm:text-sm">
           Ao se cadastrar, você concorda com nossos{' '}
           <a href="#" className="underline hover:text-gray-700">
             Termos de Uso

@@ -16,7 +16,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+    'px-4 py-2.5 text-sm rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer sm:px-6 sm:py-3 sm:text-base';
 
   const variantStyles = {
     primary:
@@ -38,7 +38,7 @@ export default function Button({
       {isLoading ? (
         <div className="flex items-center justify-center">
           <svg
-            className="mr-2 h-5 w-5 animate-spin"
+            className="mr-2 h-4 w-4 animate-spin sm:h-5 sm:w-5"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ export default function Button({
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <span>Carregando...</span>
+          <span className="text-sm sm:text-base">Carregando...</span>
         </div>
       ) : (
         children
