@@ -1,13 +1,13 @@
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Card from './components/Card';
-import Footer from './components/Footer';
 import Image from 'next/image';
 import Animal_Shelter from './assets/icons/Animal_Shelter.svg';
-import Medical_Doctor from './assets/icons/Medical_Doctor.svg';
 import Heart_with_dog_paw from './assets/icons/Heart_with_dog_paw.svg';
+import Medical_Doctor from './assets/icons/Medical_Doctor.svg';
 import Cachorro2 from './assets/images/cachorro2-montado.png';
 import Cachorro3 from './assets/images/cachorro3-montado.png';
+import Card from './components/Card';
+import Footer from './components/Footer';
+import Hero from './components/Hero';
+import Navbar from './components/Navbar';
 
 export default function Home() {
   return (
@@ -15,11 +15,14 @@ export default function Home() {
       <Navbar />
       <Hero />
 
-      <section id="sobre" className="relative bg-white py-16 md:py-24">
+      <section
+        id="sobre"
+        className="relative bg-white py-12 sm:py-16 md:py-20 lg:py-24"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="grid grid-cols-1 items-center gap-8 sm:gap-10 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="relative order-2 flex justify-center lg:order-1">
-              <div className="relative h-[250px] w-full max-w-md sm:h-[320px] md:h-[380px]">
+              <div className="relative h-[220px] w-full max-w-md sm:h-[280px] md:h-[340px] lg:h-[380px]">
                 <Image
                   src={Cachorro2}
                   alt="Cachorro resgatado"
@@ -31,11 +34,11 @@ export default function Home() {
             </div>
 
             <div className="relative z-10 order-1 text-center lg:order-2">
-              <h2 className="mb-6 text-3xl font-bold text-black sm:text-4xl md:text-5xl">
+              <h2 className="mb-4 text-2xl font-bold text-black sm:mb-5 sm:text-3xl md:mb-6 md:text-4xl lg:text-5xl">
                 QUEM SOMOS?
               </h2>
 
-              <p className="text-lg leading-relaxed text-black">
+              <p className="text-base leading-relaxed text-black sm:text-lg md:text-xl">
                 Somos uma ONG dedicada a resgatar, cuidar e dar uma nova chance
                 a cães e gatos em situação de vulnerabilidade. Nosso trabalho
                 vai além do resgate: garantimos cuidados veterinários,
@@ -47,13 +50,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="como-atuamos" className="bg-gray-50 py-16 md:py-24">
+      <section
+        id="como-atuamos"
+        className="bg-gray-50 py-12 sm:py-16 md:py-20 lg:py-24"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-12 text-center text-3xl font-bold text-black md:mb-16 md:text-4xl">
+          <h2 className="mb-8 text-center text-2xl font-bold text-black sm:mb-10 sm:text-3xl md:mb-12 md:text-4xl lg:mb-16">
             COMO ATUAMOS?
           </h2>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 md:gap-10 lg:grid-cols-3 lg:gap-12">
             <Card
               description="Resgatar animais abandonados ou em risco."
               icon={Animal_Shelter}
@@ -78,11 +84,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="como-ajudar" className="bg-white py-16 md:py-24">
+      <section
+        id="como-ajudar"
+        className="bg-white py-12 sm:py-16 md:py-20 lg:py-24"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="grid grid-cols-1 items-center gap-8 sm:gap-10 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="relative flex justify-center">
-              <div className="relative h-[280px] w-full max-w-md sm:h-[320px] md:h-[380px]">
+              <div className="relative h-[240px] w-full max-w-md sm:h-[280px] md:h-[340px] lg:h-[380px]">
                 <Image
                   src={Cachorro3}
                   alt="Cachorro para apadrinhar"
@@ -94,28 +103,28 @@ export default function Home() {
             </div>
 
             <div className="text-center">
-              <h2 className="mb-6 text-center text-3xl font-bold text-black md:mb-8 md:text-4xl lg:text-left">
+              <h2 className="mb-4 text-center text-2xl font-bold text-black sm:mb-5 sm:text-3xl md:mb-6 md:text-4xl lg:text-left">
                 COMO AJUDAR?
               </h2>
-              <p className="mb-6 text-center text-lg leading-relaxed text-black lg:text-left">
+              <p className="mb-4 text-center text-base leading-relaxed text-black sm:mb-5 sm:text-lg md:mb-6 md:text-xl lg:text-left">
                 Você pode ser dindo ou dinda de um dos nossos animais! Funciona
                 assim:
               </p>
 
-              <ul className="mx-auto mb-6 max-w-2xl space-y-4 pl-4 text-left text-lg text-black sm:pl-7 lg:max-w-none">
-                <li className="flex items-center">
-                  <span className="mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
+              <ul className="mx-auto mb-4 max-w-2xl space-y-3 pl-4 text-left text-base text-black sm:mb-5 sm:space-y-3.5 sm:pl-6 sm:text-lg md:mb-6 md:text-xl lg:max-w-none lg:pl-7">
+                <li className="flex items-start">
+                  <span className="mt-1.5 mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
                   <span>Escolha um animal disponível para apadrinhar.</span>
                 </li>
-                <li className="flex items-center">
-                  <span className="mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
+                <li className="flex items-start">
+                  <span className="mt-1.5 mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
                   <span>
                     Contribua mensalmente com ração, medicamentos ou qualquer
                     valor a partir de R$20,00.
                   </span>
                 </li>
-                <li className="flex items-center">
-                  <span className="mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
+                <li className="flex items-start">
+                  <span className="mt-1.5 mr-3 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--ong-purple)]"></span>
                   <span>
                     Todo mês, você recebe uma foto e novidades sobre o seu
                     afilhado.
@@ -123,7 +132,7 @@ export default function Home() {
                 </li>
               </ul>
 
-              <p className="text-center text-lg leading-relaxed text-black lg:text-left">
+              <p className="text-center text-base leading-relaxed text-black sm:text-lg md:text-xl lg:text-left">
                 É uma forma linda de fazer parte da vida deles, mesmo que não
                 possa adotar.
               </p>

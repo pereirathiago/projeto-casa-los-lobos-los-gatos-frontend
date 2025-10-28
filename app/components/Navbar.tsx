@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
-import logo from '../assets/icons/logo-ong.svg';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import logo from '../assets/icons/logo-ong.svg';
 
 interface NavbarProps {
   className?: string;
@@ -11,6 +11,16 @@ interface NavbarProps {
 
 export default function Navbar({ className }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,7 +79,11 @@ export default function Navbar({ className }: NavbarProps) {
 
   return (
     <nav
-      className={`absolute top-0 z-50 w-full bg-transparent max-sm:bg-transparent sm:bg-[#CD6B16] lg:bg-transparent ${className}`}
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+        isScrolled
+          ? 'bg-[#CD6B16]/60 shadow-lg backdrop-blur-md'
+          : 'bg-transparent max-sm:bg-transparent sm:bg-[#CD6B16] lg:bg-transparent'
+      } ${className}`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:pr-4 lg:pl-8">
         <div className="flex h-20 items-center justify-between">
@@ -96,7 +110,7 @@ export default function Navbar({ className }: NavbarProps) {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="relative z-50 h-12 w-12 rounded-md bg-transparent p-2 text-black focus:outline-none sm:text-white"
+              className="relative z-50 h-12 w-12 rounded-md bg-transparent p-2 text-white focus:outline-none"
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
@@ -143,21 +157,22 @@ export default function Navbar({ className }: NavbarProps) {
           </div>
         </div>
 
-        {/* Side menu for xs screens (transparent background) */}
+        {/* Side menu for xs screens */}
         <div className="sm:hidden">
           <div
-            className={`fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${
+            className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
               isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
             }`}
             aria-hidden="true"
             onClick={() => setIsOpen(false)}
           ></div>
           <div
-            className={`fixed top-0 right-0 bottom-0 w-3/4 max-w-sm bg-[#CD6B16] p-6 transition-all duration-300 ease-in-out ${
+            className={`fixed top-0 right-0 bottom-0 z-50 w-3/4 max-w-sm p-6 shadow-2xl transition-all duration-300 ease-in-out ${
               isOpen
                 ? 'translate-x-0 opacity-100'
                 : 'translate-x-full opacity-0'
             }`}
+            style={{ backgroundColor: '#CD6B16' }}
           >
             <div className="mt-16 space-y-4">{navLinks.slice(0, 3)}</div>
           </div>
