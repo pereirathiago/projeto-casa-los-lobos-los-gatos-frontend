@@ -16,7 +16,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+    'px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
   const variantStyles = {
     primary:
@@ -31,7 +31,7 @@ export default function Button({
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${widthStyle} ${className}`}
+      className={`${className} ${baseStyles} ${variantStyles[variant]} ${widthStyle}`}
       disabled={disabled || isLoading}
       {...props}
     >

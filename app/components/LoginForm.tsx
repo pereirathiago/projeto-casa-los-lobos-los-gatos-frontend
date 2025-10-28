@@ -90,7 +90,10 @@ export default function LoginForm() {
               priority
             />
           </div>
-          <p className="text-lg text-gray-600">Acesse sua conta</p>
+          <h1 className="mb-2 text-2xl font-bold text-gray-800">Acesse sua conta</h1>
+          <p className="text-gray-600">
+            Para usar os recursos da plataforma
+          </p>
         </div>
 
         {/* Alerta de erro */}
