@@ -77,13 +77,15 @@ export default function Navbar({ className }: NavbarProps) {
     </Link>,
   ];
 
+  const navStateClasses = isOpen
+    ? 'bg-[#CD6B16] shadow-lg'
+    : isScrolled
+      ? 'bg-[#CD6B16]/60 shadow-lg backdrop-blur-md'
+      : 'bg-transparent max-sm:bg-transparent sm:bg-[#CD6B16] lg:bg-transparent';
+
   return (
     <nav
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
-          ? 'bg-[#CD6B16]/60 shadow-lg backdrop-blur-md'
-          : 'bg-transparent max-sm:bg-transparent sm:bg-[#CD6B16] lg:bg-transparent'
-      } ${className}`}
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${navStateClasses} ${className}`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:pr-4 lg:pl-8">
         <div className="flex h-20 items-center justify-between">
@@ -110,7 +112,9 @@ export default function Navbar({ className }: NavbarProps) {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="relative z-50 h-12 w-12 rounded-md bg-transparent p-2 text-white focus:outline-none"
+              className={`relative z-[70] h-12 w-12 rounded-md bg-transparent p-2 focus:outline-none ${
+                isScrolled || isOpen ? 'text-white' : 'text-black sm:text-white'
+              }`}
               aria-controls="mobile-menu"
               aria-expanded={isOpen}
             >
@@ -167,7 +171,7 @@ export default function Navbar({ className }: NavbarProps) {
             onClick={() => setIsOpen(false)}
           ></div>
           <div
-            className={`fixed top-0 right-0 bottom-0 z-50 w-3/4 max-w-sm p-6 shadow-2xl transition-all duration-300 ease-in-out ${
+            className={`fixed top-0 right-0 bottom-0 z-[60] w-3/4 max-w-sm p-6 shadow-2xl transition-all duration-300 ease-in-out ${
               isOpen
                 ? 'translate-x-0 opacity-100'
                 : 'translate-x-full opacity-0'
