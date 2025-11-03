@@ -1,11 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Button from './Button';
+import { useRouter } from 'next/navigation';
 import logo from '../assets/icons/logo-ong.svg';
 import { apiService } from '../services/api';
 import { authService } from '../services/auth';
+import Button from './Button';
 
 interface AdminDashboardProps {
   user: { id: string; name: string; email: string; role: string };
@@ -121,9 +121,12 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             Ações Rápidas
           </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+            <button
+              onClick={() => router.push('/animals/new')}
+              className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]"
+            >
               <div className="mb-2 text-3xl">🐕</div>
-              <p className="font-semibold text-gray-700">Gerenciar Animais</p>
+              <p className="font-semibold text-gray-700">Cadastrar Animal</p>
             </button>
             <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
               <div className="mb-2 text-3xl">👥</div>
