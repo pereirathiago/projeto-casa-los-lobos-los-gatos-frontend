@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
-import Input from './Input';
-import Button from './Button';
-import Alert from './Alert';
+import { FormEvent, useEffect, useState } from 'react';
 import { Admin, CreateAdminData, UpdateAdminData } from '../services/api';
+import Alert from './Alert';
+import Button from './Button';
+import Input from './Input';
 
 interface AdminFormProps {
   admin?: Admin | null;
