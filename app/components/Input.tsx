@@ -14,14 +14,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </label>
         <input
           ref={ref}
-          className={`w-full rounded-lg border px-4 py-3 transition-colors placeholder:text-gray-500 focus:ring-2 focus:outline-none ${
+          className={`w-full rounded-lg border px-3 py-2.5 text-sm transition-colors placeholder:text-gray-500 focus:ring-2 focus:outline-none sm:px-4 sm:py-3 sm:text-base ${
             error
               ? 'border-red-500 focus:ring-red-500'
               : 'border-gray-300 focus:border-[var(--ong-purple)] focus:ring-[var(--ong-purple)]'
           } ${className}`}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && (
+          <p className="mt-1 text-xs text-red-600 sm:text-sm">{error}</p>
+        )}
       </div>
     );
   },

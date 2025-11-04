@@ -33,6 +33,21 @@ export interface RegisterResponse {
   };
 }
 
+export interface AnimalResponse {
+  message: string;
+  animal: {
+    id: string;
+    name: string;
+    type: 'dog' | 'cat';
+    breed: string;
+    age: number;
+    description: string;
+    photo_url: string;
+    tags: Array<{ id: string; label: string; color: string }>;
+    created_at: string;
+  };
+}
+
 export interface ApiError {
   error: string;
 }
@@ -66,7 +81,7 @@ class ApiService {
   }
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await fetch(`${this.baseURL}/auth/login`, {
+    const response = await fetch(`${this.baseURL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -78,7 +93,7 @@ class ApiService {
   }
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
-    const response = await fetch(`${this.baseURL}/auth/register`, {
+    const response = await fetch(`${this.baseURL}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +105,7 @@ class ApiService {
   }
 
   async logout(token: string): Promise<void> {
-    const response = await fetch(`${this.baseURL}/auth/logout`, {
+    const response = await fetch(`${this.baseURL}/logout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,6 +116,21 @@ class ApiService {
     if (!response.ok) {
       throw new Error('Erro ao fazer logout');
     }
+  }
+
+  async createAnimal(
+    token: string,
+    formData: FormData,
+  ): Promise<AnimalResponse> {
+    const response = await fetch(`${this.baseURL}/animals`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    return this.handleResponse<AnimalResponse>(response);
   }
 }
 
