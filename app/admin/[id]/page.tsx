@@ -52,7 +52,7 @@ export default function EditAdminPage() {
     if (adminId) {
       loadAdmin(adminId);
     } else {
-      router.push('/admins');
+      router.push('/admin');
     }
   }, [router, adminId]);
 
@@ -62,7 +62,7 @@ export default function EditAdminPage() {
       const token = authService.getToken();
       if (!token) throw new Error('Token não encontrado');
 
-      const adminData = await apiService.getAdminById(token, id);
+      const adminData = await apiService.getAdminById(token, id.toString());
       setAdmin(adminData);
     } catch (error) {
       const errorMessage =
@@ -86,7 +86,7 @@ export default function EditAdminPage() {
       const token = authService.getToken();
       if (!token) throw new Error('Token não encontrado');
 
-      await apiService.updateAdmin(token, adminId, data);
+      await apiService.updateAdmin(token, adminId.toString(), data);
       setAlert({
         type: 'success',
         message: 'Administrador atualizado com sucesso!',
@@ -97,7 +97,7 @@ export default function EditAdminPage() {
 
       // Redirecionar após 2 segundos
       setTimeout(() => {
-        router.push('/admins');
+        router.push('/admin');
       }, 2000);
     } catch (error) {
       const errorMessage =
@@ -135,7 +135,7 @@ export default function EditAdminPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="text-lg text-gray-600">Administrador não encontrado</p>
-          <Button onClick={() => router.push('/admins')} className="mt-4">
+          <Button onClick={() => router.push('/admin')} className="mt-4">
             Voltar para lista
           </Button>
         </div>
@@ -177,7 +177,7 @@ export default function EditAdminPage() {
         {/* Page Header */}
         <div className="mb-6">
           <Link
-            href="/admins"
+            href="/admin"
             className="mb-4 inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
           >
             <svg
@@ -216,7 +216,7 @@ export default function EditAdminPage() {
           <AdminForm
             admin={admin}
             onSubmit={handleSubmit}
-            onCancel={() => router.push('/admins')}
+            onCancel={() => router.push('/admin')}
             isLoading={isSaving}
           />
         </div>

@@ -177,7 +177,7 @@ class ApiService {
     token: string,
     adminData: CreateAdminData,
   ): Promise<CreateAdminResponse> {
-    const response = await fetch(`${this.baseURL}/admins`, {
+    const response = await fetch(`${this.baseURL}/admin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -190,7 +190,7 @@ class ApiService {
   }
 
   async getAdmins(token: string): Promise<Admin[]> {
-    const response = await fetch(`${this.baseURL}/admins`, {
+    const response = await fetch(`${this.baseURL}/admin`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -199,8 +199,8 @@ class ApiService {
     return this.handleResponse<Admin[]>(response);
   }
 
-  async getAdminById(token: string, id: number): Promise<Admin> {
-    const response = await fetch(`${this.baseURL}/admins/${id}`, {
+  async getAdminById(token: string, id: string): Promise<Admin> {
+    const response = await fetch(`${this.baseURL}/admin/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -211,10 +211,10 @@ class ApiService {
 
   async updateAdmin(
     token: string,
-    id: number,
+    id: string,
     adminData: UpdateAdminData,
-  ): Promise<UpdateAdminResponse> {
-    const response = await fetch(`${this.baseURL}/admins/${id}`, {
+  ): Promise<Admin> {
+    const response = await fetch(`${this.baseURL}/admin/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -223,18 +223,20 @@ class ApiService {
       body: JSON.stringify(adminData),
     });
 
-    return this.handleResponse<UpdateAdminResponse>(response);
+    return this.handleResponse<Admin>(response);
   }
 
-  async deleteAdmin(token: string, id: number): Promise<DeleteAdminResponse> {
-    const response = await fetch(`${this.baseURL}/admins/${id}`, {
+  async deleteAdmin(token: string, id: string): Promise<void> {
+    const response = await fetch(`${this.baseURL}/admin/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    return this.handleResponse<DeleteAdminResponse>(response);
+    if (!response.ok) {
+      throw new Error('Erro ao deletar administrador');
+    }
   }
 }
 

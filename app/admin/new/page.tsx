@@ -64,7 +64,7 @@ export default function NewAdminPage() {
 
       // Redirecionar após 2 segundos
       setTimeout(() => {
-        router.push('/admins');
+        router.push('/admin');
       }, 2000);
     } catch (error) {
       const errorMessage =
@@ -129,7 +129,7 @@ export default function NewAdminPage() {
         {/* Page Header */}
         <div className="mb-6">
           <Link
-            href="/admins"
+            href="/admin"
             className="mb-4 inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
           >
             <svg
@@ -167,7 +167,7 @@ export default function NewAdminPage() {
         <div className="rounded-lg bg-white p-6 shadow-md sm:p-8">
           <AdminForm
             onSubmit={handleSubmit}
-            onCancel={() => router.push('/admins')}
+            onCancel={() => router.push('/admin')}
             isLoading={isSaving}
           />
         </div>

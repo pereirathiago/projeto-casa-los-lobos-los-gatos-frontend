@@ -73,7 +73,7 @@ export default function AdminsListPage() {
       const token = authService.getToken();
       if (!token) throw new Error('Token não encontrado');
 
-      await apiService.deleteAdmin(token, admin.id);
+      await apiService.deleteAdmin(token, admin.id.toString());
       setAlert({
         type: 'success',
         message: 'Administrador deletado com sucesso!',
@@ -169,7 +169,7 @@ export default function AdminsListPage() {
                 Gerencie os usuários administradores do sistema
               </p>
             </div>
-            <Button onClick={() => router.push('/admins/new')}>
+            <Button onClick={() => router.push('/admin/new')}>
               + Novo Administrador
             </Button>
           </div>
@@ -250,7 +250,7 @@ export default function AdminsListPage() {
                       </td>
                       <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                         <button
-                          onClick={() => router.push(`/admins/${admin.id}`)}
+                          onClick={() => router.push(`/admin/${admin.id}`)}
                           className="mr-3 text-[var(--ong-purple)] transition-colors hover:opacity-80"
                         >
                           Editar
