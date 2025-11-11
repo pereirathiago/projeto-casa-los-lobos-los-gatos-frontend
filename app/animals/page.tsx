@@ -52,7 +52,6 @@ export default function AnimalsListPage() {
     try {
       setIsLoading(true);
       const animalsList = await apiService.getAnimals(filters);
-      console.log('Animals loaded:', animalsList); // Debug: verificar dados
       setAnimals(animalsList);
     } catch (error) {
       const errorMessage =
@@ -95,9 +94,7 @@ export default function AnimalsListPage() {
 
   const getImageUrl = (photoUrl: string | null) => {
     if (!photoUrl) return '/placeholder-animal.jpg';
-    const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333'}${photoUrl}`;
-    console.log('Image URL:', url); // Debug: verificar URL gerada
-    return url;
+    return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333'}${photoUrl}`;
   };
 
   const getTypeLabel = (type: 'dog' | 'cat') => {
@@ -309,7 +306,14 @@ export default function AnimalsListPage() {
                       unoptimized
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-animal.jpg';
+                        // Evitar loop infinito - só muda se não for já o placeholder
+                        if (!target.src.includes('data:image')) {
+                          target.onerror = null; // Remove handler para evitar loop
+                          target.src =
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="45%25" text-anchor="middle" fill="%239ca3af" font-size="48"%3E' +
+                            (animal.type === 'dog' ? '🐕' : '🐱') +
+                            '%3C/text%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
+                        }
                       }}
                     />
                   ) : (

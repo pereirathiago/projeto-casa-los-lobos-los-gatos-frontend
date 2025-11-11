@@ -6,10 +6,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import logo from '../../assets/icons/logo-ong.svg';
 import Alert from '../../components/Alert';
+import AnimalForm from '../../components/AnimalForm';
 import Button from '../../components/Button';
 import { Animal, apiService } from '../../services/api';
 import { authService } from '../../services/auth';
-import AnimalForm from '../../components/AnimalForm';
 
 export default function EditAnimalPage() {
   const router = useRouter();

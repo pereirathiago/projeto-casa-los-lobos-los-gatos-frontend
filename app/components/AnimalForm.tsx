@@ -319,7 +319,10 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         // Criar novo animal
         console.log('➕ Criando novo animal...');
         const response = await apiService.createAnimal(token, formDataToSend);
-        console.log('✅ Animal criado:', response);
+        console.log('✅ Animal criado com sucesso!');
+        console.log('📦 Resposta completa:', JSON.stringify(response, null, 2));
+        console.log('🖼️ URL da foto:', response.animal?.photo_url);
+        console.log('🎨 Tags:', response.animal?.tags);
         setAlert({
           type: 'success',
           message: 'Animal cadastrado com sucesso!',
@@ -444,7 +447,12 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
                     unoptimized
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = '/placeholder-animal.jpg';
+                      // Evitar loop infinito
+                      if (!target.src.includes('data:image')) {
+                        target.onerror = null;
+                        target.src =
+                          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="45%25" text-anchor="middle" fill="%239ca3af" font-size="48"%3E🐕🐱%3C/text%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
+                      }
                     }}
                   />
                   <div className="absolute right-0 bottom-0 left-0 bg-black/60 px-2 py-1 text-center text-xs text-white">
