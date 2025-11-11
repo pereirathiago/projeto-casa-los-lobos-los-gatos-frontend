@@ -48,6 +48,44 @@ export interface AnimalResponse {
   };
 }
 
+export interface Admin {
+  id: number;
+  uuid: string;
+  name: string;
+  email: string;
+  role: 'admin';
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateAdminData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface UpdateAdminData {
+  name?: string;
+  email?: string;
+  password?: string;
+  active?: boolean;
+}
+
+export interface CreateAdminResponse {
+  message: string;
+  admin: Admin;
+}
+
+export interface UpdateAdminResponse {
+  message: string;
+  admin: Admin;
+}
+
+export interface DeleteAdminResponse {
+  message: string;
+}
+
 export interface ApiError {
   error: string;
 }
@@ -131,6 +169,74 @@ class ApiService {
     });
 
     return this.handleResponse<AnimalResponse>(response);
+  }
+
+  // ==================== ADMIN CRUD ====================
+
+  async createAdmin(
+    token: string,
+    adminData: CreateAdminData,
+  ): Promise<CreateAdminResponse> {
+    const response = await fetch(`${this.baseURL}/admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(adminData),
+    });
+
+    return this.handleResponse<CreateAdminResponse>(response);
+  }
+
+  async getAdmins(token: string): Promise<Admin[]> {
+    const response = await fetch(`${this.baseURL}/admin`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<Admin[]>(response);
+  }
+
+  async getAdminById(token: string, id: string): Promise<Admin> {
+    const response = await fetch(`${this.baseURL}/admin/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<Admin>(response);
+  }
+
+  async updateAdmin(
+    token: string,
+    id: string,
+    adminData: UpdateAdminData,
+  ): Promise<Admin> {
+    const response = await fetch(`${this.baseURL}/admin/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(adminData),
+    });
+
+    return this.handleResponse<Admin>(response);
+  }
+
+  async deleteAdmin(token: string, id: string): Promise<void> {
+    const response = await fetch(`${this.baseURL}/admin/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao deletar administrador');
+    }
   }
 }
 

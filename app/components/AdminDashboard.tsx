@@ -128,13 +128,16 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
               <div className="mb-2 text-3xl">🐕</div>
               <p className="font-semibold text-gray-700">Cadastrar Animal</p>
             </button>
-            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+            <button
+              onClick={() => router.push('/admin')}
+              className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]"
+            >
               <div className="mb-2 text-3xl">👥</div>
-              <p className="font-semibold text-gray-700">Gerenciar Padrinhos</p>
+              <p className="font-semibold text-gray-700">Gerenciar Admins</p>
             </button>
             <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
-              <div className="mb-2 text-3xl">💰</div>
-              <p className="font-semibold text-gray-700">Controlar Doações</p>
+              <div className="mb-2 text-3xl">�</div>
+              <p className="font-semibold text-gray-700">Gerenciar Padrinhos</p>
             </button>
             <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
               <div className="mb-2 text-3xl">📊</div>
