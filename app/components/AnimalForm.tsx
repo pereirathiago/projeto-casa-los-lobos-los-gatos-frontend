@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { apiService } from '../services/api';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { Animal, apiService } from '../services/api';
 import { authService } from '../services/auth';
 import Alert from './Alert';
 import Button from './Button';
@@ -25,6 +25,10 @@ interface AnimalFormData {
   tags: Tag[];
 }
 
+interface AnimalFormProps {
+  animal?: Animal;
+}
+
 const TAG_COLORS = [
   { name: 'Roxo', value: '#6645a0' },
   { name: 'Laranja', value: '#cd6b16' },
@@ -36,8 +40,10 @@ const TAG_COLORS = [
   { name: 'Cinza', value: '#6b7280' },
 ];
 
-export default function AnimalForm() {
+export default function AnimalForm({ animal }: AnimalFormProps) {
   const router = useRouter();
+  const isEditing = !!animal;
+
   const [formData, setFormData] = useState<AnimalFormData>({
     name: '',
     type: '',
@@ -47,6 +53,34 @@ export default function AnimalForm() {
     photos: [null, null, null],
     tags: [],
   });
+
+  const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
+
+  // Carregar dados do animal se estiver editando
+  useEffect(() => {
+    if (animal) {
+      setFormData({
+        name: animal.name,
+        type: animal.type,
+        breed: animal.breed,
+        age: animal.age.toString(),
+        description: animal.description,
+        photos: [null, null, null],
+        tags: animal.tags || [],
+      });
+
+      // Carregar fotos existentes
+      if (animal.photos && animal.photos.length > 0) {
+        const photoUrls = animal.photos
+          .sort((a, b) => a.order_index - b.order_index)
+          .map(
+            (photo) =>
+              `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333'}${photo.photo_url}`,
+          );
+        setExistingPhotos(photoUrls);
+      }
+    }
+  }, [animal]);
 
   const [newTag, setNewTag] = useState({
     label: '',
@@ -138,8 +172,11 @@ export default function AnimalForm() {
       return;
     }
 
+    // Gerar ID único usando timestamp + random para evitar conflitos
+    const uniqueId = `tag-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     const tag: Tag = {
-      id: Date.now().toString(),
+      id: uniqueId,
       label: newTag.label.trim(),
       color: newTag.color,
     };
@@ -192,10 +229,12 @@ export default function AnimalForm() {
       newErrors.description = 'Descrição deve ter pelo menos 20 caracteres';
     }
 
-    // Validar se pelo menos uma foto foi adicionada
-    const hasPhoto = formData.photos.some((photo) => photo !== null);
-    if (!hasPhoto) {
-      newErrors.photos = 'Adicione pelo menos uma foto do animal';
+    // Validar se pelo menos uma foto foi adicionada (apenas na criação)
+    if (!isEditing) {
+      const hasPhoto = formData.photos.some((photo) => photo !== null);
+      if (!hasPhoto) {
+        newErrors.photos = 'Adicione pelo menos uma foto do animal';
+      }
     }
 
     setErrors(newErrors);
@@ -230,43 +269,72 @@ export default function AnimalForm() {
       formDataToSend.append('age', formData.age);
       formDataToSend.append('description', formData.description);
 
-      // Adicionar todas as fotos
-      formData.photos.forEach((photo) => {
-        if (photo) {
-          formDataToSend.append(`photos`, photo);
-        }
-      });
+      // Adicionar fotos novas se houver (na edição, fotos são opcionais)
+      const hasNewPhotos = formData.photos.some((photo) => photo !== null);
+      const photosToSend = formData.photos.filter((photo) => photo !== null);
+
+      console.log('📸 Fotos a serem enviadas:', photosToSend.length);
+
+      if (hasNewPhotos || !isEditing) {
+        formData.photos.forEach((photo) => {
+          if (photo) {
+            console.log(
+              '📤 Adicionando foto:',
+              photo.name,
+              'Size:',
+              photo.size,
+              'Type:',
+              photo.type,
+            );
+            formDataToSend.append('photos', photo);
+          }
+        });
+      }
 
       formDataToSend.append('tags', JSON.stringify(formData.tags));
 
-      await apiService.createAnimal(token, formDataToSend);
-
-      setAlert({
-        type: 'success',
-        message: 'Animal cadastrado com sucesso!',
+      console.log('📋 FormData pronto para envio:', {
+        name: formData.name,
+        type: formData.type,
+        breed: formData.breed,
+        age: formData.age,
+        photosCount: photosToSend.length,
+        tagsCount: formData.tags.length,
       });
 
-      // Limpar formulário
-      setFormData({
-        name: '',
-        type: '',
-        breed: '',
-        age: '',
-        description: '',
-        photos: [null, null, null],
-        tags: [],
-      });
-      setPhotoPreviews([null, null, null]);
+      if (isEditing && animal) {
+        // Atualizar animal existente
+        console.log('🔄 Atualizando animal:', animal.uuid);
+        const response = await apiService.updateAnimal(
+          token,
+          animal.uuid,
+          formDataToSend,
+        );
+        console.log('✅ Animal atualizado:', response);
+        setAlert({
+          type: 'success',
+          message: 'Animal atualizado com sucesso!',
+        });
+      } else {
+        // Criar novo animal
+        console.log('➕ Criando novo animal...');
+        const response = await apiService.createAnimal(token, formDataToSend);
+        console.log('✅ Animal criado:', response);
+        setAlert({
+          type: 'success',
+          message: 'Animal cadastrado com sucesso!',
+        });
+      }
 
       // Redirecionar após 2 segundos
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push('/animals');
       }, 2000);
     } catch (error) {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Erro ao cadastrar animal. Tente novamente.';
+          : `Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} animal. Tente novamente.`;
       setAlert({
         type: 'error',
         message: errorMessage,
@@ -348,11 +416,45 @@ export default function AnimalForm() {
       {/* Fotos - Carrossel de 3 imagens */}
       <div className="mb-4">
         <label className="mb-2 block text-sm font-medium text-gray-700">
-          Fotos do Animal * (até 3 fotos)
+          Fotos do Animal {!isEditing && '* '}(até 3 fotos)
         </label>
         <p className="mb-3 text-xs text-gray-500 sm:text-sm">
-          Adicione até 3 fotos para mostrar o animal de diferentes ângulos
+          {isEditing
+            ? 'Adicione novas fotos para substituir as atuais (opcional). Se não adicionar, as fotos atuais serão mantidas.'
+            : 'Adicione até 3 fotos para mostrar o animal de diferentes ângulos'}
         </p>
+
+        {/* Fotos existentes (apenas na edição) */}
+        {isEditing && existingPhotos.length > 0 && (
+          <div className="mb-4">
+            <p className="mb-2 text-sm font-medium text-gray-700">
+              Fotos atuais:
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {existingPhotos.map((photoUrl, index) => (
+                <div
+                  key={index}
+                  className="relative h-48 w-full overflow-hidden rounded-lg border-2 border-gray-300"
+                >
+                  <Image
+                    src={photoUrl}
+                    alt={`Foto atual ${index + 1}`}
+                    fill
+                    className="bg-gray-100 object-contain"
+                    unoptimized
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/placeholder-animal.jpg';
+                    }}
+                  />
+                  <div className="absolute right-0 bottom-0 left-0 bg-black/60 px-2 py-1 text-center text-xs text-white">
+                    Foto atual {index + 1}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Grid de 3 cards de upload */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -377,7 +479,7 @@ export default function AnimalForm() {
                       ✕
                     </button>
                     <div className="mt-2 text-center text-xs font-medium text-[var(--ong-purple)]">
-                      Foto {index + 1}
+                      {isEditing ? 'Nova foto' : 'Foto'} {index + 1}
                     </div>
                   </div>
                 ) : (
@@ -400,7 +502,9 @@ export default function AnimalForm() {
                         />
                       </svg>
                       <p className="mb-2 text-xs text-gray-500 sm:text-sm">
-                        <span className="font-semibold">Foto {index + 1}</span>
+                        <span className="font-semibold">
+                          {isEditing ? 'Nova foto' : 'Foto'} {index + 1}
+                        </span>
                       </p>
                       <p className="text-xs text-gray-500">
                         PNG, JPG (max 5MB)
@@ -533,13 +637,13 @@ export default function AnimalForm() {
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.push('/dashboard')}
+          onClick={() => router.push(isEditing ? '/animals' : '/dashboard')}
           disabled={isLoading}
         >
           Cancelar
         </Button>
         <Button type="submit" isLoading={isLoading} disabled={isLoading}>
-          Cadastrar Animal
+          {isEditing ? 'Atualizar Animal' : 'Cadastrar Animal'}
         </Button>
       </div>
     </form>
