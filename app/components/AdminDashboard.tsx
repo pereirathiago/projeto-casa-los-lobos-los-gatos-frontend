@@ -122,11 +122,11 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
           </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <button
-              onClick={() => router.push('/animals/new')}
+              onClick={() => router.push('/animals')}
               className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]"
             >
               <div className="mb-2 text-3xl">🐕</div>
-              <p className="font-semibold text-gray-700">Cadastrar Animal</p>
+              <p className="font-semibold text-gray-700">Gerenciar Animais</p>
             </button>
             <button
               onClick={() => router.push('/admin')}

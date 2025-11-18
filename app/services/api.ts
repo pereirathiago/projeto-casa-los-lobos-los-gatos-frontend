@@ -33,19 +33,46 @@ export interface RegisterResponse {
   };
 }
 
+export interface AnimalPhoto {
+  id: number;
+  uuid: string;
+  animal_id: number;
+  photo_url: string;
+  order_index: number;
+  created_at: string;
+}
+
+export interface AnimalTag {
+  id: string;
+  label: string;
+  color: string;
+}
+
+export interface Animal {
+  id: number;
+  uuid: string;
+  name: string;
+  type: 'dog' | 'cat';
+  breed: string;
+  age: number;
+  description: string;
+  photo_url: string | null;
+  photos: AnimalPhoto[];
+  tags: AnimalTag[];
+  created_at: string;
+  updated_at: string;
+}
+
 export interface AnimalResponse {
   message: string;
-  animal: {
-    id: string;
-    name: string;
-    type: 'dog' | 'cat';
-    breed: string;
-    age: number;
-    description: string;
-    photo_url: string;
-    tags: Array<{ id: string; label: string; color: string }>;
-    created_at: string;
-  };
+  animal: Animal;
+}
+
+export interface AnimalFilters {
+  type?: 'dog' | 'cat';
+  breed?: string;
+  minAge?: number;
+  maxAge?: number;
 }
 
 export interface Admin {
@@ -156,6 +183,28 @@ class ApiService {
     }
   }
 
+  // ==================== ANIMALS CRUD ====================
+
+  async getAnimals(filters?: AnimalFilters): Promise<Animal[]> {
+    const params = new URLSearchParams();
+
+    if (filters?.type) params.append('type', filters.type);
+    if (filters?.breed) params.append('breed', filters.breed);
+    if (filters?.minAge) params.append('minAge', filters.minAge.toString());
+    if (filters?.maxAge) params.append('maxAge', filters.maxAge.toString());
+
+    const queryString = params.toString();
+    const url = `${this.baseURL}/animals${queryString ? '?' + queryString : ''}`;
+
+    const response = await fetch(url);
+    return this.handleResponse<Animal[]>(response);
+  }
+
+  async getAnimalByUuid(uuid: string): Promise<Animal> {
+    const response = await fetch(`${this.baseURL}/animals/${uuid}`);
+    return this.handleResponse<Animal>(response);
+  }
+
   async createAnimal(
     token: string,
     formData: FormData,
@@ -169,6 +218,36 @@ class ApiService {
     });
 
     return this.handleResponse<AnimalResponse>(response);
+  }
+
+  async updateAnimal(
+    token: string,
+    uuid: string,
+    formData: FormData,
+  ): Promise<AnimalResponse> {
+    const response = await fetch(`${this.baseURL}/animals/${uuid}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    return this.handleResponse<AnimalResponse>(response);
+  }
+
+  async deleteAnimal(
+    token: string,
+    uuid: string,
+  ): Promise<{ message: string }> {
+    const response = await fetch(`${this.baseURL}/animals/${uuid}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<{ message: string }>(response);
   }
 
   // ==================== ADMIN CRUD ====================

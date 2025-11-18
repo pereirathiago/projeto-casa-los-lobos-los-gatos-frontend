@@ -5,16 +5,16 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import logo from '../../assets/icons/logo-ong.svg';
-import AdminForm from '../../components/AdminForm';
 import Alert from '../../components/Alert';
+import AnimalForm from '../../components/AnimalForm';
 import Button from '../../components/Button';
-import { Admin, apiService, UpdateAdminData } from '../../services/api';
+import { Animal, apiService } from '../../services/api';
 import { authService } from '../../services/auth';
 
-export default function EditAdminPage() {
+export default function EditAnimalPage() {
   const router = useRouter();
   const params = useParams();
-  const adminId = params?.id ? parseInt(params.id as string) : null;
+  const animalUuid = params?.uuid as string;
 
   const [user, setUser] = useState<{
     id: string;
@@ -22,9 +22,8 @@ export default function EditAdminPage() {
     email: string;
     role: string;
   } | null>(null);
-  const [admin, setAdmin] = useState<Admin | null>(null);
+  const [animal, setAnimal] = useState<Animal | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const [alert, setAlert] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -48,69 +47,28 @@ export default function EditAdminPage() {
 
     setUser(userData);
 
-    // Carregar dados do admin
-    if (adminId) {
-      loadAdmin(adminId);
+    // Carregar dados do animal
+    if (animalUuid) {
+      loadAnimal(animalUuid);
     } else {
-      router.push('/admins');
+      router.push('/animals');
     }
-  }, [router, adminId]);
+  }, [router, animalUuid]);
 
-  const loadAdmin = async (id: number) => {
+  const loadAnimal = async (uuid: string) => {
     try {
       setIsLoading(true);
-      const token = authService.getToken();
-      if (!token) throw new Error('Token não encontrado');
-
-      const adminData = await apiService.getAdminById(token, id.toString());
-      setAdmin(adminData);
+      const animalData = await apiService.getAnimalByUuid(uuid);
+      setAnimal(animalData);
     } catch (error) {
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Erro ao carregar administrador';
+        error instanceof Error ? error.message : 'Erro ao carregar animal';
       setAlert({
         type: 'error',
         message: errorMessage,
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = async (data: UpdateAdminData) => {
-    if (!adminId) return;
-
-    try {
-      setIsSaving(true);
-      const token = authService.getToken();
-      if (!token) throw new Error('Token não encontrado');
-
-      await apiService.updateAdmin(token, adminId.toString(), data);
-      setAlert({
-        type: 'success',
-        message: 'Administrador atualizado com sucesso!',
-      });
-
-      // Recarregar dados do admin
-      await loadAdmin(adminId);
-
-      // Redirecionar após 2 segundos
-      setTimeout(() => {
-        router.push('/admins');
-      }, 2000);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Erro ao atualizar administrador';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
-      throw error;
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -130,12 +88,12 @@ export default function EditAdminPage() {
     );
   }
 
-  if (!admin) {
+  if (!animal) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <p className="text-lg text-gray-600">Administrador não encontrado</p>
-          <Button onClick={() => router.push('/admins')} className="mt-4">
+          <p className="text-lg text-gray-600">Animal não encontrado</p>
+          <Button onClick={() => router.push('/animals')} className="mt-4">
             Voltar para lista
           </Button>
         </div>
@@ -177,7 +135,7 @@ export default function EditAdminPage() {
         {/* Page Header */}
         <div className="mb-6">
           <Link
-            href="/admins"
+            href="/animals"
             className="mb-4 inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
           >
             <svg
@@ -193,13 +151,13 @@ export default function EditAdminPage() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Voltar para Administradores
+            Voltar para Animais
           </Link>
           <h1 className="text-3xl font-bold text-[var(--ong-purple)] sm:text-4xl">
-            Editar Administrador
+            Editar Animal
           </h1>
           <p className="mt-2 text-gray-600">
-            Atualize os dados do administrador {admin.name}
+            Atualize os dados do animal {animal.name}
           </p>
         </div>
 
@@ -213,12 +171,7 @@ export default function EditAdminPage() {
 
         {/* Form Card */}
         <div className="rounded-lg bg-white p-6 shadow-md sm:p-8">
-          <AdminForm
-            admin={admin}
-            onSubmit={handleSubmit}
-            onCancel={() => router.push('/admins')}
-            isLoading={isSaving}
-          />
+          <AnimalForm animal={animal} />
         </div>
       </main>
     </div>
