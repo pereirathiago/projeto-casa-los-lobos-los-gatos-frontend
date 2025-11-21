@@ -42,6 +42,7 @@ export default function EditProfilePage() {
     try {
       // Verificar autenticação
       if (!authService.isAuthenticated()) {
+        toast.error('Acesso negado. Por favor, faça login para continuar.');
         router.push('/login');
         return;
       }
@@ -158,10 +159,16 @@ export default function EditProfilePage() {
             name: updateData.name || adminData!.name,
             email: updateData.email || adminData!.email,
           };
-          authService.saveAuth({
-            token: token,
-            user: updatedUser,
-          });
+          // Manter a preferência de lembrar-me existente
+          const wasRemembered =
+            localStorage.getItem('ong_remember_me') === 'true';
+          authService.saveAuth(
+            {
+              token: token,
+              user: updatedUser,
+            },
+            wasRemembered,
+          );
         }
         router.push('/profile');
       }

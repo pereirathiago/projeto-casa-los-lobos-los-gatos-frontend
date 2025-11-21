@@ -15,6 +15,7 @@ export default function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
 
@@ -59,8 +60,8 @@ export default function LoginForm() {
       // Fazer login
       const response = await apiService.login({ email, password });
 
-      // Salvar dados de autenticação
-      authService.saveAuth(response);
+      // Salvar dados de autenticação com preferência de lembrar
+      authService.saveAuth(response, rememberMe);
 
       // Mostrar sucesso e redirecionar
       toast.success('Login realizado com sucesso!');
@@ -130,10 +131,13 @@ export default function LoginForm() {
           />
 
           <div className="mb-6 flex items-center justify-between">
-            <label className="flex items-center">
+            <label className="flex cursor-pointer items-center">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 focus:ring-[var(--ong-purple)]"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={isLoading}
+                className="h-4 w-4 rounded border-gray-300 focus:ring-[var(--ong-purple)] disabled:cursor-not-allowed disabled:opacity-50"
                 style={{ accentColor: 'var(--ong-purple)' }}
               />
               <span className="ml-2 text-xs text-gray-600 sm:text-sm">

@@ -28,6 +28,7 @@ export default function EditAnimalPage() {
   useEffect(() => {
     // Verificar autenticação
     if (!authService.isAuthenticated()) {
+      toast.error('Acesso negado. Por favor, faça login para continuar.');
       router.push('/login');
       return;
     }
@@ -37,6 +38,7 @@ export default function EditAnimalPage() {
 
     // Verificar se é admin
     if (userData?.role !== 'admin') {
+      toast.error('Acesso restrito a administradores.');
       router.push('/dashboard');
       return;
     }
