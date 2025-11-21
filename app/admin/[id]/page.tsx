@@ -31,6 +31,7 @@ export default function EditAdminPage() {
   useEffect(() => {
     // Verificar autenticação
     if (!authService.isAuthenticated()) {
+      toast.error('Acesso negado. Por favor, faça login para continuar.');
       router.push('/login');
       return;
     }

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
 import AnimalForm from '../../components/AnimalForm';
 import Button from '../../components/Button';
@@ -22,6 +23,7 @@ export default function NewAnimalPage() {
   useEffect(() => {
     // Verificar autenticação
     if (!authService.isAuthenticated()) {
+      toast.error('Acesso negado. Por favor, faça login para continuar.');
       router.push('/login');
       return;
     }
@@ -31,6 +33,7 @@ export default function NewAnimalPage() {
 
     // Verificar se é admin
     if (userData?.role !== 'admin') {
+      toast.error('Acesso restrito a administradores.');
       router.push('/dashboard');
       return;
     }

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import AdminDashboard from '../components/AdminDashboard';
 import PadrinhoDashboard from '../components/PadrinhoDashboard';
 import { authService } from '../services/auth';
@@ -20,6 +21,7 @@ export default function DashboardPage() {
   useEffect(() => {
     // Verificar autenticação
     if (!authService.isAuthenticated()) {
+      toast.error('Acesso negado. Por favor, faça login para continuar.');
       router.push('/login');
       return;
     }

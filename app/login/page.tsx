@@ -1,10 +1,32 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import Button from '../components/Button';
 import LoginForm from '../components/LoginForm';
+import { authService } from '../services/auth';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Verificar autenticação imediatamente
+    if (authService.isAuthenticated()) {
+      toast.info('Você já está conectado! Redirecionando...');
+      router.replace('/dashboard');
+    } else {
+      setIsChecking(false);
+    }
+  }, [router]);
+
+  // Não renderizar nada enquanto verifica ou está redirecionando
+  if (isChecking) {
+    return null;
+  }
+
   return (
     <div className="paw-pattern-bg flex min-h-screen items-center justify-center px-4 py-20 sm:py-12">
       {/* Conteúdo */}
