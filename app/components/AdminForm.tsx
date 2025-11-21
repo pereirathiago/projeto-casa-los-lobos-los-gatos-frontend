@@ -179,7 +179,7 @@ export default function AdminForm({
               checked={formData.active}
               onChange={handleInputChange}
               disabled={isLoading}
-              className="h-5 w-5 rounded border-gray-300 text-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)]"
+              className="h-5 w-5 rounded border-gray-300 text-[var(--ong-purple)] accent-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)]"
             />
             <span className="text-sm font-medium text-gray-700">
               Administrador ativo

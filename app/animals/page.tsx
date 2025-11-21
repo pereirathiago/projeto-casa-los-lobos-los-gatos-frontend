@@ -9,6 +9,7 @@ import Alert from '../components/Alert';
 import Button from '../components/Button';
 import { Animal, AnimalFilters, apiService } from '../services/api';
 import { authService } from '../services/auth';
+import { getFullImageUrl } from '../utils/imageUrl';
 
 export default function AnimalsListPage() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function AnimalsListPage() {
   } | null>(null);
   const [animalToDelete, setAnimalToDelete] = useState<Animal | null>(null);
   const [filters, setFilters] = useState<AnimalFilters>({});
+  const [tempFilters, setTempFilters] = useState<AnimalFilters>({});
 
   useEffect(() => {
     // Verificar autenticação
@@ -45,13 +47,12 @@ export default function AnimalsListPage() {
 
     setUser(userData);
     loadAnimals();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, filters]);
+  }, [router]);
 
-  const loadAnimals = async () => {
+  const loadAnimals = async (appliedFilters: AnimalFilters = {}) => {
     try {
       setIsLoading(true);
-      const animalsList = await apiService.getAnimals(filters);
+      const animalsList = await apiService.getAnimals(appliedFilters);
       setAnimals(animalsList);
     } catch (error) {
       const errorMessage =
@@ -92,9 +93,15 @@ export default function AnimalsListPage() {
     router.push('/login');
   };
 
-  const getImageUrl = (photoUrl: string | null) => {
-    if (!photoUrl) return '/placeholder-animal.jpg';
-    return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333'}${photoUrl}`;
+  const handleApplyFilters = () => {
+    setFilters(tempFilters);
+    loadAnimals(tempFilters);
+  };
+
+  const handleClearFilters = () => {
+    setTempFilters({});
+    setFilters({});
+    loadAnimals({});
   };
 
   const getTypeLabel = (type: 'dog' | 'cat') => {
@@ -196,10 +203,10 @@ export default function AnimalsListPage() {
                 Tipo
               </label>
               <select
-                value={filters.type || ''}
+                value={tempFilters.type || ''}
                 onChange={(e) =>
-                  setFilters({
-                    ...filters,
+                  setTempFilters({
+                    ...tempFilters,
                     type: e.target.value as 'dog' | 'cat' | undefined,
                   })
                 }
@@ -216,9 +223,9 @@ export default function AnimalsListPage() {
               </label>
               <input
                 type="text"
-                value={filters.breed || ''}
+                value={tempFilters.breed || ''}
                 onChange={(e) =>
-                  setFilters({ ...filters, breed: e.target.value })
+                  setTempFilters({ ...tempFilters, breed: e.target.value })
                 }
                 placeholder="Filtrar por raça"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-[var(--ong-purple)] focus:ring-1 focus:ring-[var(--ong-purple)] focus:outline-none"
@@ -230,10 +237,10 @@ export default function AnimalsListPage() {
               </label>
               <input
                 type="number"
-                value={filters.minAge || ''}
+                value={tempFilters.minAge || ''}
                 onChange={(e) =>
-                  setFilters({
-                    ...filters,
+                  setTempFilters({
+                    ...tempFilters,
                     minAge: e.target.value
                       ? parseInt(e.target.value)
                       : undefined,
@@ -250,10 +257,10 @@ export default function AnimalsListPage() {
               </label>
               <input
                 type="number"
-                value={filters.maxAge || ''}
+                value={tempFilters.maxAge || ''}
                 onChange={(e) =>
-                  setFilters({
-                    ...filters,
+                  setTempFilters({
+                    ...tempFilters,
                     maxAge: e.target.value
                       ? parseInt(e.target.value)
                       : undefined,
@@ -267,9 +274,19 @@ export default function AnimalsListPage() {
           </div>
           <div className="mt-4 flex gap-2">
             <Button
+              variant="primary"
+              onClick={handleApplyFilters}
+              disabled={isLoading}
+            >
+              Aplicar Filtros
+            </Button>
+            <Button
               variant="outline"
-              onClick={() => setFilters({})}
-              disabled={Object.keys(filters).length === 0}
+              onClick={handleClearFilters}
+              disabled={
+                Object.keys(tempFilters).length === 0 &&
+                Object.keys(filters).length === 0
+              }
             >
               Limpar Filtros
             </Button>
@@ -297,12 +314,12 @@ export default function AnimalsListPage() {
               >
                 {/* Imagem */}
                 <div className="relative h-48 bg-gray-200">
-                  {animal.photo_url ? (
+                  {animal.photos && animal.photos.length > 0 ? (
                     <Image
-                      src={getImageUrl(animal.photo_url)}
+                      src={getFullImageUrl(animal.photos[0].photo_url)}
                       alt={animal.name}
                       fill
-                      className="object-cover"
+                      className="bg-gray-100 object-center"
                       unoptimized
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -360,18 +377,20 @@ export default function AnimalsListPage() {
 
                   {/* Ações */}
                   <div className="flex gap-2">
-                    <button
+                    <Button
+                      variant="primary"
                       onClick={() => router.push(`/animals/${animal.uuid}`)}
-                      className="flex-1 rounded-md bg-[var(--ong-purple)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                      className="flex-1 !px-4 !py-2 text-sm"
                     >
                       Editar
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
                       onClick={() => setAnimalToDelete(animal)}
-                      className="rounded-md border-2 border-red-600 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-600 hover:text-white"
+                      className="!border-red-600 !px-4 !py-2 text-sm !text-red-600 hover:!bg-red-600 hover:!text-white"
                     >
                       Excluir
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

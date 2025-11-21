@@ -3,8 +3,9 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { Animal, apiService } from '../services/api';
+import { Animal, AnimalPhoto, apiService } from '../services/api';
 import { authService } from '../services/auth';
+import { getFullImageUrl } from '../utils/imageUrl';
 import Alert from './Alert';
 import Button from './Button';
 import Input from './Input';
@@ -21,7 +22,7 @@ interface AnimalFormData {
   breed: string;
   age: string;
   description: string;
-  photos: (File | null)[];
+  arquivos: (File | null)[];
   tags: Tag[];
 }
 
@@ -50,11 +51,13 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
     breed: '',
     age: '',
     description: '',
-    photos: [null, null, null],
+    arquivos: [null, null, null],
     tags: [],
   });
 
-  const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
+  const [existingPhotos, setExistingPhotos] = useState<AnimalPhoto[]>([]);
+  const [photosToDelete, setPhotosToDelete] = useState<string[]>([]); // UUIDs das fotos a deletar
+  const [photosToAdd, setPhotosToAdd] = useState<File[]>([]); // Arquivos novos a adicionar
 
   // Carregar dados do animal se estiver editando
   useEffect(() => {
@@ -65,19 +68,16 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         breed: animal.breed,
         age: animal.age.toString(),
         description: animal.description,
-        photos: [null, null, null],
+        arquivos: [null, null, null],
         tags: animal.tags || [],
       });
 
       // Carregar fotos existentes
       if (animal.photos && animal.photos.length > 0) {
-        const photoUrls = animal.photos
-          .sort((a, b) => a.order_index - b.order_index)
-          .map(
-            (photo) =>
-              `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333'}${photo.photo_url}`,
-          );
-        setExistingPhotos(photoUrls);
+        const sortedPhotos = animal.photos.sort(
+          (a, b) => a.order_index - b.order_index,
+        );
+        setExistingPhotos(sortedPhotos);
       }
     }
   }, [animal]);
@@ -134,10 +134,32 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         return;
       }
 
+      // No modo de edição, validar se não ultrapassará o limite de 3 fotos
+      if (isEditing) {
+        const totalPhotos =
+          existingPhotos.length -
+          photosToDelete.length +
+          photosToAdd.length +
+          1;
+        if (totalPhotos > 3) {
+          setErrors((prev) => ({
+            ...prev,
+            [`photo${index}`]:
+              'Máximo de 3 fotos permitidas. Remova uma foto existente primeiro.',
+          }));
+          return;
+        }
+      }
+
+      // No modo de edição, adicionar à lista de novas fotos
+      if (isEditing) {
+        setPhotosToAdd((prev) => [...prev, file]);
+      }
+
       // Atualizar array de fotos
-      const newPhotos = [...formData.photos];
+      const newPhotos = [...formData.arquivos];
       newPhotos[index] = file;
-      setFormData((prev) => ({ ...prev, photos: newPhotos }));
+      setFormData((prev) => ({ ...prev, arquivos: newPhotos }));
       setErrors((prev) => ({ ...prev, [`photo${index}`]: '' }));
 
       // Criar preview
@@ -152,9 +174,16 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
   };
 
   const handleRemovePhoto = (index: number) => {
-    const newPhotos = [...formData.photos];
+    const photoToRemove = formData.arquivos[index];
+
+    // Se estiver em modo de edição e a foto estava marcada para adicionar, remover da lista
+    if (isEditing && photoToRemove) {
+      setPhotosToAdd((prev) => prev.filter((photo) => photo !== photoToRemove));
+    }
+
+    const newPhotos = [...formData.arquivos];
     newPhotos[index] = null;
-    setFormData((prev) => ({ ...prev, photos: newPhotos }));
+    setFormData((prev) => ({ ...prev, arquivos: newPhotos }));
 
     const newPreviews = [...photoPreviews];
     newPreviews[index] = null;
@@ -165,6 +194,14 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
     if (input) {
       input.value = '';
     }
+  };
+
+  // Marcar foto existente para deleção
+  const handleDeleteExistingPhoto = (photoUuid: string) => {
+    setPhotosToDelete((prev) => [...prev, photoUuid]);
+    setExistingPhotos((prev) =>
+      prev.filter((photo) => photo.uuid !== photoUuid),
+    );
   };
 
   const handleAddTag = () => {
@@ -229,9 +266,17 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
       newErrors.description = 'Descrição deve ter pelo menos 20 caracteres';
     }
 
-    // Validar se pelo menos uma foto foi adicionada (apenas na criação)
-    if (!isEditing) {
-      const hasPhoto = formData.photos.some((photo) => photo !== null);
+    // Validar se pelo menos uma foto foi adicionada
+    if (isEditing) {
+      // No modo edição, verificar se vai ter pelo menos uma foto após salvar
+      // existingPhotos.length já está atualizado (fotos deletadas já foram removidas do array)
+      const totalPhotosAfterSave = existingPhotos.length + photosToAdd.length;
+      if (totalPhotosAfterSave === 0) {
+        newErrors.photos = 'O animal deve ter pelo menos uma foto';
+      }
+    } else {
+      // No modo criação, verificar se adicionou pelo menos uma foto
+      const hasPhoto = formData.arquivos.some((photo) => photo !== null);
       if (!hasPhoto) {
         newErrors.photos = 'Adicione pelo menos uma foto do animal';
       }
@@ -261,78 +306,79 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         throw new Error('Usuário não autenticado');
       }
 
-      // Criar FormData para enviar arquivo
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('type', formData.type);
-      formDataToSend.append('breed', formData.breed);
-      formDataToSend.append('age', formData.age);
-      formDataToSend.append('description', formData.description);
-
-      // Adicionar fotos novas se houver (na edição, fotos são opcionais)
-      const hasNewPhotos = formData.photos.some((photo) => photo !== null);
-      const photosToSend = formData.photos.filter((photo) => photo !== null);
-
-      console.log('📸 Fotos a serem enviadas:', photosToSend.length);
-
-      if (hasNewPhotos || !isEditing) {
-        formData.photos.forEach((photo) => {
-          if (photo) {
-            console.log(
-              '📤 Adicionando foto:',
-              photo.name,
-              'Size:',
-              photo.size,
-              'Type:',
-              photo.type,
-            );
-            formDataToSend.append('photos', photo);
-          }
-        });
-      }
-
-      formDataToSend.append('tags', JSON.stringify(formData.tags));
-
-      console.log('📋 FormData pronto para envio:', {
-        name: formData.name,
-        type: formData.type,
-        breed: formData.breed,
-        age: formData.age,
-        photosCount: photosToSend.length,
-        tagsCount: formData.tags.length,
-      });
-
       if (isEditing && animal) {
-        // Atualizar animal existente
+        // MODO EDIÇÃO: 3 etapas separadas
         console.log('🔄 Atualizando animal:', animal.uuid);
-        const response = await apiService.updateAnimal(
-          token,
-          animal.uuid,
-          formDataToSend,
-        );
-        console.log('✅ Animal atualizado:', response);
+
+        // Etapa 1: Deletar fotos marcadas
+        if (photosToDelete.length > 0) {
+          console.log('🗑️ Deletando fotos:', photosToDelete);
+          for (const photoUuid of photosToDelete) {
+            await apiService.deleteAnimalPhoto(token, animal.uuid, photoUuid);
+            console.log('✅ Foto deletada:', photoUuid);
+          }
+        }
+
+        // Etapa 2: Adicionar novas fotos
+        if (photosToAdd.length > 0) {
+          console.log('📸 Adicionando fotos:', photosToAdd.length);
+          for (const photo of photosToAdd) {
+            await apiService.addAnimalPhoto(token, animal.uuid, photo);
+            console.log('✅ Foto adicionada:', photo.name);
+          }
+        }
+
+        // Etapa 3: Atualizar informações do animal (JSON)
+        const updateData = {
+          name: formData.name,
+          type: formData.type as 'dog' | 'cat',
+          breed: formData.breed,
+          age: parseFloat(formData.age),
+          description: formData.description,
+          tags: formData.tags,
+        };
+        console.log('📝 Atualizando informações:', updateData);
+        await apiService.updateAnimal(token, animal.uuid, updateData);
+        console.log('✅ Animal atualizado com sucesso');
+
         setAlert({
           type: 'success',
           message: 'Animal atualizado com sucesso!',
         });
       } else {
-        // Criar novo animal
+        // MODO CRIAÇÃO: FormData com tudo junto (comportamento original)
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', formData.name);
+        formDataToSend.append('type', formData.type);
+        formDataToSend.append('breed', formData.breed);
+        formDataToSend.append('age', formData.age);
+        formDataToSend.append('description', formData.description);
+
+        const photosToSend = formData.arquivos.filter(
+          (photo) => photo !== null,
+        );
+        console.log('📸 Fotos a serem enviadas:', photosToSend.length);
+
+        formData.arquivos.forEach((photo) => {
+          if (photo) {
+            console.log('📤 Adicionando foto:', photo.name);
+            formDataToSend.append('arquivos', photo);
+          }
+        });
+
+        formDataToSend.append('tags', JSON.stringify(formData.tags));
+
         console.log('➕ Criando novo animal...');
         const response = await apiService.createAnimal(token, formDataToSend);
-        console.log('✅ Animal criado com sucesso!');
-        console.log('📦 Resposta completa:', JSON.stringify(response, null, 2));
-        console.log('🖼️ URL da foto:', response.animal?.photo_url);
-        console.log('🎨 Tags:', response.animal?.tags);
+        console.log('✅ Animal criado:', response.animal?.uuid);
+
         setAlert({
           type: 'success',
           message: 'Animal cadastrado com sucesso!',
         });
       }
 
-      // Redirecionar após 2 segundos
-      setTimeout(() => {
-        router.push('/animals');
-      }, 2000);
+      router.push('/animals');
     } catch (error) {
       const errorMessage =
         error instanceof Error
@@ -423,113 +469,106 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         </label>
         <p className="mb-3 text-xs text-gray-500 sm:text-sm">
           {isEditing
-            ? 'Adicione novas fotos para substituir as atuais (opcional). Se não adicionar, as fotos atuais serão mantidas.'
+            ? 'Você pode adicionar, remover ou substituir fotos. Clique no X vermelho para remover uma foto.'
             : 'Adicione até 3 fotos para mostrar o animal de diferentes ângulos'}
         </p>
 
-        {/* Fotos existentes (apenas na edição) */}
-        {isEditing && existingPhotos.length > 0 && (
-          <div className="mb-4">
-            <p className="mb-2 text-sm font-medium text-gray-700">
-              Fotos atuais:
-            </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {existingPhotos.map((photoUrl, index) => (
-                <div
-                  key={index}
-                  className="relative h-48 w-full overflow-hidden rounded-lg border-2 border-gray-300"
-                >
-                  <Image
-                    src={photoUrl}
-                    alt={`Foto atual ${index + 1}`}
-                    fill
-                    className="bg-gray-100 object-contain"
-                    unoptimized
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      // Evitar loop infinito
-                      if (!target.src.includes('data:image')) {
-                        target.onerror = null;
-                        target.src =
-                          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="45%25" text-anchor="middle" fill="%239ca3af" font-size="48"%3E🐕🐱%3C/text%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
-                      }
-                    }}
-                  />
-                  <div className="absolute right-0 bottom-0 left-0 bg-black/60 px-2 py-1 text-center text-xs text-white">
-                    Foto atual {index + 1}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Grid de 3 cards de upload */}
+        {/* Grid de 3 cards de upload/visualização */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {[0, 1, 2].map((index) => (
-            <div key={index} className="flex flex-col">
-              <div className="relative">
-                {photoPreviews[index] ? (
-                  <div className="group relative">
-                    <div className="relative h-48 w-full overflow-hidden rounded-lg border-2 border-[var(--ong-purple)]">
-                      <Image
-                        src={photoPreviews[index]!}
-                        alt={`Preview ${index + 1}`}
-                        fill
-                        className="bg-gray-100 object-contain"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePhoto(index)}
-                      className="absolute top-2 right-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
-                    >
-                      ✕
-                    </button>
-                    <div className="mt-2 text-center text-xs font-medium text-[var(--ong-purple)]">
-                      {isEditing ? 'Nova foto' : 'Foto'} {index + 1}
-                    </div>
-                  </div>
-                ) : (
-                  <label
-                    htmlFor={`photo-${index}`}
-                    className="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-[var(--ong-purple)] hover:bg-purple-50"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg
-                        className="mb-3 h-10 w-10 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          {[0, 1, 2].map((index) => {
+            // Verificar se há foto existente neste índice
+            const existingPhoto = isEditing && existingPhotos[index];
+            const hasPreview = photoPreviews[index];
+            const hasExistingPhoto =
+              existingPhoto && !photosToDelete.includes(existingPhoto.uuid);
+
+            // Decidir qual imagem mostrar (preview de nova foto tem prioridade)
+            const imageUrl = hasPreview
+              ? photoPreviews[index]!
+              : hasExistingPhoto
+                ? getFullImageUrl(existingPhoto.photo_url)
+                : null;
+
+            return (
+              <div key={index} className="flex flex-col">
+                <div className="relative">
+                  {imageUrl ? (
+                    <div className="group relative">
+                      <div className="relative h-48 w-full overflow-hidden rounded-lg border-2 border-[var(--ong-purple)]">
+                        <Image
+                          src={imageUrl}
+                          alt={`${hasPreview ? 'Preview' : 'Foto'} ${index + 1}`}
+                          fill
+                          className="bg-gray-100 object-contain"
+                          unoptimized
                         />
-                      </svg>
-                      <p className="mb-2 text-xs text-gray-500 sm:text-sm">
-                        <span className="font-semibold">
-                          {isEditing ? 'Nova foto' : 'Foto'} {index + 1}
-                        </span>
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        PNG, JPG (max 5MB)
-                      </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (hasExistingPhoto && !hasPreview) {
+                            // Deletar foto existente
+                            handleDeleteExistingPhoto(existingPhoto.uuid);
+                          } else {
+                            // Remover preview de nova foto
+                            handleRemovePhoto(index);
+                          }
+                        }}
+                        className="absolute top-2 right-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
+                        title="Remover foto"
+                      >
+                        ✕
+                      </button>
+                      <div className="mt-2 text-center text-xs font-medium text-[var(--ong-purple)]">
+                        {hasPreview
+                          ? isEditing
+                            ? 'Nova foto'
+                            : 'Foto'
+                          : 'Foto atual'}{' '}
+                        {index + 1}
+                      </div>
                     </div>
-                    <input
-                      id={`photo-${index}`}
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handlePhotoChange(e, index)}
-                      className="hidden"
-                    />
-                  </label>
-                )}
+                  ) : (
+                    <label
+                      htmlFor={`photo-${index}`}
+                      className="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-[var(--ong-purple)] hover:bg-purple-50"
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg
+                          className="mb-3 h-10 w-10 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          />
+                        </svg>
+                        <p className="mb-2 text-xs text-gray-500 sm:text-sm">
+                          <span className="font-semibold">
+                            {isEditing ? 'Adicionar foto' : 'Foto'} {index + 1}
+                          </span>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          PNG, JPG (max 5MB)
+                        </p>
+                      </div>
+                      <input
+                        id={`photo-${index}`}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handlePhotoChange(e, index)}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {errors.photos && (
@@ -630,7 +669,7 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
                 <button
                   type="button"
                   onClick={() => handleRemoveTag(tag.id)}
-                  className="flex h-5 w-5 items-center justify-center rounded-full bg-white/30 text-white transition-colors hover:bg-white/50"
+                  className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-white/30 text-white transition-colors hover:bg-white/50"
                 >
                   ✕
                 </button>
