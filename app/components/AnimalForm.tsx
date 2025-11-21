@@ -3,9 +3,9 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Animal, AnimalPhoto, apiService } from '../services/api';
 import { authService } from '../services/auth';
-import { toast } from 'sonner';
 import { getFullImageUrl } from '../utils/imageUrl';
 import Button from './Button';
 import Input from './Input';
