@@ -121,28 +121,36 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             Ações Rápidas
           </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <button
+            <Button
+              variant="outline"
               onClick={() => router.push('/animals')}
-              className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]"
+              className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
             >
               <div className="mb-2 text-3xl">🐕</div>
               <p className="font-semibold text-gray-700">Gerenciar Animais</p>
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => router.push('/admin')}
-              className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]"
+              className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
             >
               <div className="mb-2 text-3xl">👥</div>
               <p className="font-semibold text-gray-700">Gerenciar Admins</p>
-            </button>
-            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            >
               <div className="mb-2 text-3xl">�</div>
               <p className="font-semibold text-gray-700">Gerenciar Padrinhos</p>
-            </button>
-            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            >
               <div className="mb-2 text-3xl">📊</div>
               <p className="font-semibold text-gray-700">Relatórios</p>
-            </button>
+            </Button>
           </div>
         </div>
 

@@ -112,7 +112,7 @@ export default function Navbar({ className }: NavbarProps) {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className={`relative z-[70] h-12 w-12 rounded-md bg-transparent p-2 focus:outline-none ${
+              className={`relative z-[70] h-12 w-12 cursor-pointer rounded-md bg-transparent p-2 focus:outline-none ${
                 isScrolled || isOpen ? 'text-white' : 'text-black sm:text-white'
               }`}
               aria-controls="mobile-menu"

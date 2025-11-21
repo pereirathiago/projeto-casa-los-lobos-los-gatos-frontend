@@ -249,18 +249,20 @@ export default function AdminsListPage() {
                         {new Date(admin.created_at).toLocaleDateString('pt-BR')}
                       </td>
                       <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
-                        <button
+                        <Button
+                          variant="outline"
                           onClick={() => router.push(`/admin/${admin.id}`)}
-                          className="mr-3 text-[var(--ong-purple)] transition-colors hover:opacity-80"
+                          className="mr-3 !px-3 !py-1.5 text-sm"
                         >
                           Editar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="outline"
                           onClick={() => setAdminToDelete(admin)}
-                          className="text-red-600 transition-colors hover:text-red-900"
+                          className="!border-red-600 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50"
                         >
                           Deletar
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))

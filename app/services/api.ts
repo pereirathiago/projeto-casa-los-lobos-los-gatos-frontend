@@ -223,17 +223,67 @@ class ApiService {
   async updateAnimal(
     token: string,
     uuid: string,
-    formData: FormData,
+    data: {
+      name?: string;
+      type?: 'dog' | 'cat';
+      breed?: string;
+      age?: number;
+      description?: string;
+      tags?: Array<{ id: string; label: string; color: string }>;
+    },
   ): Promise<AnimalResponse> {
     const response = await fetch(`${this.baseURL}/animals/${uuid}`, {
       method: 'PUT',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: formData,
+      body: JSON.stringify(data),
     });
 
     return this.handleResponse<AnimalResponse>(response);
+  }
+
+  async addAnimalPhoto(
+    token: string,
+    animalUuid: string,
+    photoFile: File,
+  ): Promise<{ message: string; photo: AnimalPhoto }> {
+    const formData = new FormData();
+    formData.append('arquivo', photoFile);
+
+    const response = await fetch(
+      `${this.baseURL}/animals/${animalUuid}/photos`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      },
+    );
+
+    return this.handleResponse<{ message: string; photo: AnimalPhoto }>(
+      response,
+    );
+  }
+
+  async deleteAnimalPhoto(
+    token: string,
+    animalUuid: string,
+    photoUuid: string,
+  ): Promise<{ message: string }> {
+    const response = await fetch(
+      `${this.baseURL}/animals/${animalUuid}/photos/${photoUuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return this.handleResponse<{ message: string }>(response);
   }
 
   async deleteAnimal(

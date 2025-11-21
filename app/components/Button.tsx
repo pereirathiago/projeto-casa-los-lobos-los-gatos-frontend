@@ -16,7 +16,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'px-4 py-2.5 text-sm rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer sm:px-6 sm:py-3 sm:text-base';
+    'px-4 py-2.5 text-sm rounded-lg font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed sm:px-6 sm:py-3 sm:text-base';
 
   const variantStyles = {
     primary:
@@ -24,7 +24,7 @@ export default function Button({
     secondary:
       'bg-[var(--ong-orange)] hover:opacity-90 text-white shadow-md hover:shadow-lg',
     outline:
-      'border-2 border-[var(--ong-purple)] text-[var(--ong-purple)] hover:bg-purple-50',
+      'border-2 border-[var(--ong-purple)] text-[var(--ong-purple)] hover:bg-purple-50 hover:font-bold hover:outline-1',
   };
 
   const widthStyle = fullWidth ? 'w-full' : '';

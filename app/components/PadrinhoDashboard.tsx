@@ -1,11 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Button from './Button';
+import { useRouter } from 'next/navigation';
 import logo from '../assets/icons/logo-ong.svg';
 import { apiService } from '../services/api';
 import { authService } from '../services/auth';
+import Button from './Button';
 
 interface PadrinhoDashboardProps {
   user: { id: string; name: string; email: string; role: string } | null;
@@ -159,18 +159,27 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
             Ações Rápidas
           </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+            <Button
+              variant="outline"
+              className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            >
               <div className="mb-2 text-3xl">💰</div>
               <p className="font-semibold text-gray-700">Fazer Doação Extra</p>
-            </button>
-            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            >
               <div className="mb-2 text-3xl">📸</div>
               <p className="font-semibold text-gray-700">Ver Fotos</p>
-            </button>
-            <button className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)] hover:bg-[var(--ong-purple-50)]">
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            >
               <div className="mb-2 text-3xl">📧</div>
               <p className="font-semibold text-gray-700">Enviar Mensagem</p>
-            </button>
+            </Button>
           </div>
         </div>
 
