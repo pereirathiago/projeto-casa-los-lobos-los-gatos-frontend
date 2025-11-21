@@ -3,10 +3,10 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Animal, AnimalPhoto, apiService } from '../services/api';
 import { authService } from '../services/auth';
 import { getFullImageUrl } from '../utils/imageUrl';
-import Alert from './Alert';
 import Button from './Button';
 import Input from './Input';
 
@@ -93,10 +93,6 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
     null,
   ]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (
@@ -288,13 +284,9 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAlert(null);
 
     if (!validateForm()) {
-      setAlert({
-        type: 'error',
-        message: 'Por favor, corrija os erros antes de continuar',
-      });
+      toast.error('Por favor, corrija os erros antes de continuar');
       return;
     }
 
@@ -341,10 +333,7 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         await apiService.updateAnimal(token, animal.uuid, updateData);
         console.log('✅ Animal atualizado com sucesso');
 
-        setAlert({
-          type: 'success',
-          message: 'Animal atualizado com sucesso!',
-        });
+        toast.success('Animal atualizado com sucesso!');
       } else {
         // MODO CRIAÇÃO: FormData com tudo junto (comportamento original)
         const formDataToSend = new FormData();
@@ -372,10 +361,7 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         const response = await apiService.createAnimal(token, formDataToSend);
         console.log('✅ Animal criado:', response.animal?.uuid);
 
-        setAlert({
-          type: 'success',
-          message: 'Animal cadastrado com sucesso!',
-        });
+        toast.success('Animal cadastrado com sucesso!');
       }
 
       router.push('/animals');
@@ -384,10 +370,7 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
         error instanceof Error
           ? error.message
           : `Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} animal. Tente novamente.`;
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -395,14 +378,6 @@ export default function AnimalForm({ animal }: AnimalFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
-
       {/* Nome */}
       <Input
         label="Nome do Animal *"

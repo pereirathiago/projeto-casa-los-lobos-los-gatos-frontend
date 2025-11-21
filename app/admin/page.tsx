@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../assets/icons/logo-ong.svg';
-import Alert from '../components/Alert';
 import Button from '../components/Button';
 import { Admin, apiService } from '../services/api';
 import { authService } from '../services/auth';
@@ -20,10 +20,6 @@ export default function AdminsListPage() {
   } | null>(null);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [adminToDelete, setAdminToDelete] = useState<Admin | null>(null);
 
   useEffect(() => {
@@ -59,10 +55,7 @@ export default function AdminsListPage() {
         error instanceof Error
           ? error.message
           : 'Erro ao carregar administradores';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -74,10 +67,7 @@ export default function AdminsListPage() {
       if (!token) throw new Error('Token não encontrado');
 
       await apiService.deleteAdmin(token, admin.id.toString());
-      setAlert({
-        type: 'success',
-        message: 'Administrador deletado com sucesso!',
-      });
+      toast.success('Administrador deletado com sucesso!');
       setAdminToDelete(null);
       loadAdmins();
     } catch (error) {
@@ -85,10 +75,7 @@ export default function AdminsListPage() {
         error instanceof Error
           ? error.message
           : 'Erro ao deletar administrador';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     }
   };
 
@@ -174,14 +161,6 @@ export default function AdminsListPage() {
             </Button>
           </div>
         </div>
-
-        {alert && (
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() => setAlert(null)}
-          />
-        )}
 
         {/* Admins Table */}
         <div className="overflow-hidden rounded-lg bg-white shadow-md">

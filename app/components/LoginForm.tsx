@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../assets/icons/logo-ong.svg';
-import Alert from '../components/Alert';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { apiService } from '../services/api';
@@ -16,7 +16,6 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
 
   const validateForm = (): boolean => {
@@ -47,10 +46,10 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
 
     // Validar formulário
     if (!validateForm()) {
+      toast.error('Por favor, corrija os erros antes de continuar');
       return;
     }
 
@@ -63,10 +62,11 @@ export default function LoginForm() {
       // Salvar dados de autenticação
       authService.saveAuth(response);
 
-      // Redirecionar para dashboard
+      // Mostrar sucesso e redirecionar
+      toast.success('Login realizado com sucesso!');
       router.push('/dashboard');
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error
           ? err.message
           : 'Erro ao fazer login. Tente novamente.',
@@ -100,11 +100,6 @@ export default function LoginForm() {
             Para usar os recursos da plataforma
           </p>
         </div>
-
-        {/* Alerta de erro */}
-        {error && (
-          <Alert type="error" message={error} onClose={() => setError('')} />
-        )}
 
         {/* Formulário */}
         <form onSubmit={handleSubmit}>

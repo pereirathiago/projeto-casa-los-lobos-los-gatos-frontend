@@ -1,8 +1,8 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Admin, CreateAdminData, UpdateAdminData } from '../services/api';
-import Alert from './Alert';
 import Button from './Button';
 import Input from './Input';
 
@@ -27,10 +27,6 @@ export default function AdminForm({
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
 
   useEffect(() => {
     if (admin) {
@@ -76,13 +72,9 @@ export default function AdminForm({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAlert(null);
 
     if (!validateForm()) {
-      setAlert({
-        type: 'error',
-        message: 'Por favor, corrija os erros antes de continuar',
-      });
+      toast.error('Por favor, corrija os erros antes de continuar');
       return;
     }
 
@@ -109,10 +101,7 @@ export default function AdminForm({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro ao salvar administrador';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     }
   };
 
@@ -130,14 +119,6 @@ export default function AdminForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
-
       <Input
         label="Nome *"
         name="name"

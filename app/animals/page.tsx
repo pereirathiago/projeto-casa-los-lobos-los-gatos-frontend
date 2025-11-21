@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../assets/icons/logo-ong.svg';
-import Alert from '../components/Alert';
 import Button from '../components/Button';
 import { Animal, AnimalFilters, apiService } from '../services/api';
 import { authService } from '../services/auth';
@@ -21,10 +21,6 @@ export default function AnimalsListPage() {
   } | null>(null);
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [animalToDelete, setAnimalToDelete] = useState<Animal | null>(null);
   const [filters, setFilters] = useState<AnimalFilters>({});
   const [tempFilters, setTempFilters] = useState<AnimalFilters>({});
@@ -57,10 +53,7 @@ export default function AnimalsListPage() {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro ao carregar animais';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -72,19 +65,13 @@ export default function AnimalsListPage() {
       if (!token) throw new Error('Token não encontrado');
 
       await apiService.deleteAnimal(token, animal.uuid);
-      setAlert({
-        type: 'success',
-        message: 'Animal deletado com sucesso!',
-      });
+      toast.success('Animal deletado com sucesso!');
       setAnimalToDelete(null);
       loadAnimals();
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro ao deletar animal';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     }
   };
 
@@ -185,14 +172,6 @@ export default function AnimalsListPage() {
             </Button>
           </div>
         </div>
-
-        {alert && (
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() => setAlert(null)}
-          />
-        )}
 
         {/* Filtros */}
         <div className="mb-6 rounded-lg bg-white p-4 shadow-md">
