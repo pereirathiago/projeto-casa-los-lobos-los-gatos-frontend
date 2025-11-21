@@ -21,10 +21,12 @@ export default function EditAdminPage() {
     name: string;
     email: string;
     role: string;
+    is_master?: boolean;
   } | null>(null);
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditingSelf, setIsEditingSelf] = useState(false);
 
   useEffect(() => {
     // Verificar autenticação
@@ -43,6 +45,21 @@ export default function EditAdminPage() {
     }
 
     setUser(userData);
+
+    // Verificar se está editando a si mesmo
+    if (adminId && userData?.id === adminId.toString()) {
+      setIsEditingSelf(true);
+    }
+
+    // Verificar permissões: master pode editar qualquer um, admin comum só pode editar a si mesmo
+    if (
+      !authService.isMasterAdmin() &&
+      adminId &&
+      userData?.id !== adminId.toString()
+    ) {
+      router.push('/dashboard');
+      return;
+    }
 
     // Carregar dados do admin
     if (adminId) {
@@ -157,7 +174,7 @@ export default function EditAdminPage() {
         {/* Page Header */}
         <div className="mb-6">
           <Link
-            href="/admin"
+            href={user?.is_master ? '/admin' : '/dashboard'}
             className="mb-4 inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
           >
             <svg
@@ -173,13 +190,17 @@ export default function EditAdminPage() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Voltar para Administradores
+            {user?.is_master
+              ? 'Voltar para Administradores'
+              : 'Voltar ao Dashboard'}
           </Link>
           <h1 className="text-3xl font-bold text-[var(--ong-purple)] sm:text-4xl">
-            Editar Administrador
+            {isEditingSelf ? 'Meu Perfil' : 'Editar Administrador'}
           </h1>
           <p className="mt-2 text-gray-600">
-            Atualize os dados do administrador {admin.name}
+            {isEditingSelf
+              ? 'Atualize seus dados de perfil'
+              : `Atualize os dados do administrador ${admin.name}`}
           </p>
         </div>
 
@@ -188,8 +209,12 @@ export default function EditAdminPage() {
           <AdminForm
             admin={admin}
             onSubmit={handleSubmit}
-            onCancel={() => router.push('/admin')}
+            onCancel={() =>
+              router.push(user?.is_master ? '/admin' : '/dashboard')
+            }
             isLoading={isSaving}
+            isEditingSelf={isEditingSelf}
+            isMasterAdmin={user?.is_master || false}
           />
         </div>
       </main>

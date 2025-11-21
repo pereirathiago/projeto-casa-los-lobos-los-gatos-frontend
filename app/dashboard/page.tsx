@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authService } from '../services/auth';
+import { useEffect, useState } from 'react';
 import AdminDashboard from '../components/AdminDashboard';
 import PadrinhoDashboard from '../components/PadrinhoDashboard';
+import { authService } from '../services/auth';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -13,6 +13,7 @@ export default function DashboardPage() {
     name: string;
     email: string;
     role: string;
+    is_master?: boolean;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

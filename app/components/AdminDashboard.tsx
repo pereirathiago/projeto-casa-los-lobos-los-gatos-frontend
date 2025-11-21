@@ -8,7 +8,13 @@ import { authService } from '../services/auth';
 import Button from './Button';
 
 interface AdminDashboardProps {
-  user: { id: string; name: string; email: string; role: string };
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    is_master?: boolean;
+  };
 }
 
 export default function AdminDashboard({ user }: AdminDashboardProps) {
@@ -131,12 +137,22 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             </Button>
             <Button
               variant="outline"
-              onClick={() => router.push('/admin')}
+              onClick={() => router.push('/profile')}
               className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
             >
-              <div className="mb-2 text-3xl">👥</div>
-              <p className="font-semibold text-gray-700">Gerenciar Admins</p>
+              <div className="mb-2 text-3xl">👤</div>
+              <p className="font-semibold text-gray-700">Ver Perfil</p>
             </Button>
+            {user?.is_master && (
+              <Button
+                variant="outline"
+                onClick={() => router.push('/admin')}
+                className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+              >
+                <div className="mb-2 text-3xl">👥</div>
+                <p className="font-semibold text-gray-700">Gerenciar Admins</p>
+              </Button>
+            )}
             <Button
               variant="outline"
               className="h-auto flex-col !border-2 !border-gray-200 !p-4 hover:!border-[var(--ong-purple)] hover:!bg-purple-50"

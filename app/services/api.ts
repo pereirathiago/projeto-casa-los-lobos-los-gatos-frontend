@@ -13,6 +13,7 @@ export interface LoginResponse {
     name: string;
     email: string;
     role: 'admin' | 'sponsor';
+    is_master?: boolean;
   };
 }
 
@@ -81,6 +82,7 @@ export interface Admin {
   name: string;
   email: string;
   role: 'admin';
+  is_master: boolean;
   active: boolean;
   created_at: string;
   updated_at: string;
@@ -366,6 +368,34 @@ class ApiService {
     if (!response.ok) {
       throw new Error('Erro ao deletar administrador');
     }
+  }
+
+  // ==================== MY PROFILE (Admin) ====================
+
+  async getMyProfile(token: string): Promise<Admin> {
+    const response = await fetch(`${this.baseURL}/admin/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<Admin>(response);
+  }
+
+  async updateMyProfile(
+    token: string,
+    adminData: UpdateAdminData,
+  ): Promise<UpdateAdminResponse> {
+    const response = await fetch(`${this.baseURL}/admin/me`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(adminData),
+    });
+
+    return this.handleResponse<UpdateAdminResponse>(response);
   }
 }
 
