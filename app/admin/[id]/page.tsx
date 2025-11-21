@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
 import AdminForm from '../../components/AdminForm';
-import Alert from '../../components/Alert';
 import Button from '../../components/Button';
 import { Admin, apiService, UpdateAdminData } from '../../services/api';
 import { authService } from '../../services/auth';
@@ -25,10 +25,6 @@ export default function EditAdminPage() {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
 
   useEffect(() => {
     // Verificar autenticação
@@ -69,10 +65,7 @@ export default function EditAdminPage() {
         error instanceof Error
           ? error.message
           : 'Erro ao carregar administrador';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -87,27 +80,14 @@ export default function EditAdminPage() {
       if (!token) throw new Error('Token não encontrado');
 
       await apiService.updateAdmin(token, adminId.toString(), data);
-      setAlert({
-        type: 'success',
-        message: 'Administrador atualizado com sucesso!',
-      });
-
-      // Recarregar dados do admin
-      await loadAdmin(adminId);
-
-      // Redirecionar após 2 segundos
-      setTimeout(() => {
-        router.push('/admin');
-      }, 2000);
+      toast.success('Administrador atualizado com sucesso!');
+      router.push('/admin');
     } catch (error) {
       const errorMessage =
         error instanceof Error
           ? error.message
           : 'Erro ao atualizar administrador';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
       throw error;
     } finally {
       setIsSaving(false);
@@ -202,14 +182,6 @@ export default function EditAdminPage() {
             Atualize os dados do administrador {admin.name}
           </p>
         </div>
-
-        {alert && (
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() => setAlert(null)}
-          />
-        )}
 
         {/* Form Card */}
         <div className="rounded-lg bg-white p-6 shadow-md sm:p-8">

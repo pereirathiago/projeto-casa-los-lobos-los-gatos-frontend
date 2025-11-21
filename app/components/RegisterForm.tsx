@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../assets/icons/logo-ong.svg';
-import Alert from '../components/Alert';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { apiService } from '../services/api';
@@ -17,8 +17,6 @@ export default function RegisterForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [fieldErrors, setFieldErrors] = useState({
     name: '',
     email: '',
@@ -104,11 +102,10 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     // Validar formulário
     if (!validateForm()) {
+      toast.error('Por favor, corrija os erros antes de continuar');
       return;
     }
 
@@ -123,9 +120,7 @@ export default function RegisterForm() {
       });
 
       // Mostrar mensagem de sucesso
-      setSuccess(
-        'Cadastro realizado com sucesso! Redirecionando para login...',
-      );
+      toast.success('Cadastro realizado com sucesso! Redirecionando...');
 
       // Limpar formulário
       setName('');
@@ -133,12 +128,10 @@ export default function RegisterForm() {
       setPassword('');
       setConfirmPassword('');
 
-      // Redirecionar para login após 2 segundos
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+      // Redirecionar para login
+      router.push('/login');
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error
           ? err.message
           : 'Erro ao realizar cadastro. Tente novamente.',
@@ -172,19 +165,6 @@ export default function RegisterForm() {
             Cadastre-se para se tornar um padrinho
           </p>
         </div>
-
-        {/* Alertas */}
-        {error && (
-          <Alert type="error" message={error} onClose={() => setError('')} />
-        )}
-
-        {success && (
-          <Alert
-            type="success"
-            message={success}
-            onClose={() => setSuccess('')}
-          />
-        )}
 
         {/* Formulário */}
         <form onSubmit={handleSubmit}>

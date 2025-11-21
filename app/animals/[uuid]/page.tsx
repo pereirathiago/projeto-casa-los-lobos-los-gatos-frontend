@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
-import Alert from '../../components/Alert';
 import AnimalForm from '../../components/AnimalForm';
 import Button from '../../components/Button';
 import { Animal, apiService } from '../../services/api';
@@ -24,10 +24,6 @@ export default function EditAnimalPage() {
   } | null>(null);
   const [animal, setAnimal] = useState<Animal | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
 
   useEffect(() => {
     // Verificar autenticação
@@ -63,10 +59,7 @@ export default function EditAnimalPage() {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro ao carregar animal';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -160,14 +153,6 @@ export default function EditAnimalPage() {
             Atualize os dados do animal {animal.name}
           </p>
         </div>
-
-        {alert && (
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() => setAlert(null)}
-          />
-        )}
 
         {/* Form Card */}
         <div className="rounded-lg bg-white p-6 shadow-md sm:p-8">

@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
 import AdminForm from '../../components/AdminForm';
-import Alert from '../../components/Alert';
 import Button from '../../components/Button';
 import {
   apiService,
@@ -25,10 +25,6 @@ export default function NewAdminPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [alert, setAlert] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
 
   useEffect(() => {
     // Verificar autenticação
@@ -57,22 +53,12 @@ export default function NewAdminPage() {
       if (!token) throw new Error('Token não encontrado');
 
       await apiService.createAdmin(token, data as CreateAdminData);
-      setAlert({
-        type: 'success',
-        message: 'Administrador criado com sucesso!',
-      });
-
-      // Redirecionar após 2 segundos
-      setTimeout(() => {
-        router.push('/admin');
-      }, 2000);
+      toast.success('Administrador criado com sucesso!');
+      router.push('/admin');
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro ao criar administrador';
-      setAlert({
-        type: 'error',
-        message: errorMessage,
-      });
+      toast.error(errorMessage);
       throw error;
     } finally {
       setIsSaving(false);
@@ -154,14 +140,6 @@ export default function NewAdminPage() {
             Preencha os dados para criar um novo administrador do sistema
           </p>
         </div>
-
-        {alert && (
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() => setAlert(null)}
-          />
-        )}
 
         {/* Form Card */}
         <div className="rounded-lg bg-white p-6 shadow-md sm:p-8">
