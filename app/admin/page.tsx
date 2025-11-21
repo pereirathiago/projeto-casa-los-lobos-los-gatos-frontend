@@ -32,8 +32,8 @@ export default function AdminsListPage() {
     // Carregar dados do usuário
     const userData = authService.getUser();
 
-    // Verificar se é admin
-    if (userData?.role !== 'admin') {
+    // Verificar se é master admin
+    if (!authService.isMasterAdmin()) {
       router.push('/dashboard');
       return;
     }
@@ -204,8 +204,20 @@ export default function AdminsListPage() {
                   admins.map((admin) => (
                     <tr key={admin.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {admin.name}
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm font-medium text-gray-900">
+                            {admin.name}
+                          </div>
+                          {admin.is_master && (
+                            <span className="inline-flex rounded-full bg-[var(--ong-purple)] px-2 py-0.5 text-xs font-semibold text-white">
+                              Master
+                            </span>
+                          )}
+                          {admin.id.toString() === user?.id && (
+                            <span className="inline-flex rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800">
+                              Você
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -238,7 +250,13 @@ export default function AdminsListPage() {
                         <Button
                           variant="outline"
                           onClick={() => setAdminToDelete(admin)}
-                          className="!border-red-600 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50"
+                          disabled={admin.is_master}
+                          className="!border-red-600 !px-3 !py-1.5 text-sm !text-red-600 hover:!bg-red-50 disabled:!cursor-not-allowed disabled:!opacity-50 disabled:hover:!bg-white"
+                          title={
+                            admin.is_master
+                              ? 'Master admin não pode ser deletado'
+                              : 'Deletar administrador'
+                          }
                         >
                           Deletar
                         </Button>
@@ -256,25 +274,50 @@ export default function AdminsListPage() {
       {adminToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h3 className="mb-4 text-lg font-bold text-gray-900">
-              Confirmar Exclusão
-            </h3>
-            <p className="mb-6 text-gray-600">
-              Tem certeza que deseja deletar o administrador{' '}
-              <strong>{adminToDelete.name}</strong>? Esta ação não pode ser
-              desfeita.
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setAdminToDelete(null)}>
-                Cancelar
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => handleDelete(adminToDelete)}
-              >
-                Confirmar Exclusão
-              </Button>
-            </div>
+            {adminToDelete.is_master ? (
+              <>
+                <h3 className="mb-4 text-lg font-bold text-red-600">
+                  Ação Não Permitida
+                </h3>
+                <p className="mb-6 text-gray-600">
+                  Master admin <strong>{adminToDelete.name}</strong> não pode
+                  ser deletado. Esta é uma conta protegida do sistema.
+                </p>
+                <div className="flex justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setAdminToDelete(null)}
+                  >
+                    Fechar
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="mb-4 text-lg font-bold text-gray-900">
+                  Confirmar Exclusão
+                </h3>
+                <p className="mb-6 text-gray-600">
+                  Tem certeza que deseja deletar o administrador{' '}
+                  <strong>{adminToDelete.name}</strong>? Esta ação não pode ser
+                  desfeita.
+                </p>
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setAdminToDelete(null)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleDelete(adminToDelete)}
+                  >
+                    Confirmar Exclusão
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

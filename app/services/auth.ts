@@ -53,6 +53,12 @@ class AuthService {
     const user = this.getUser();
     return user?.role === 'sponsor';
   }
+
+  // Verificar se é master admin
+  isMasterAdmin(): boolean {
+    const user = this.getUser();
+    return user?.role === 'admin' && user?.is_master === true;
+  }
 }
 
 export const authService = new AuthService();

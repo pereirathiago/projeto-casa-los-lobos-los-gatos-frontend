@@ -13,6 +13,7 @@ export default function DashboardPage() {
     name: string;
     email: string;
     role: string;
+    is_master?: boolean;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

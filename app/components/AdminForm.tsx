@@ -11,6 +11,8 @@ interface AdminFormProps {
   onSubmit: (data: CreateAdminData | UpdateAdminData) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
+  isEditingSelf?: boolean;
+  isMasterAdmin?: boolean;
 }
 
 export default function AdminForm({
@@ -18,6 +20,8 @@ export default function AdminForm({
   onSubmit,
   onCancel,
   isLoading,
+  isEditingSelf = false,
+  isMasterAdmin = false,
 }: AdminFormProps) {
   const [formData, setFormData] = useState({
     name: admin?.name || '',
@@ -159,15 +163,17 @@ export default function AdminForm({
               name="active"
               checked={formData.active}
               onChange={handleInputChange}
-              disabled={isLoading}
-              className="h-5 w-5 rounded border-gray-300 text-[var(--ong-purple)] accent-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)]"
+              disabled={isLoading || (isEditingSelf && isMasterAdmin)}
+              className="h-5 w-5 rounded border-gray-300 text-[var(--ong-purple)] accent-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)] disabled:cursor-not-allowed disabled:opacity-50"
             />
             <span className="text-sm font-medium text-gray-700">
               Administrador ativo
             </span>
           </label>
           <p className="mt-1 text-xs text-gray-500">
-            Desmarque para desativar o acesso deste administrador
+            {isEditingSelf && isMasterAdmin
+              ? 'Master admin não pode desativar o próprio acesso'
+              : 'Desmarque para desativar o acesso deste administrador'}
           </p>
         </div>
       )}

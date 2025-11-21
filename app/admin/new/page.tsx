@@ -36,8 +36,8 @@ export default function NewAdminPage() {
     // Carregar dados do usuário
     const userData = authService.getUser();
 
-    // Verificar se é admin
-    if (userData?.role !== 'admin') {
+    // Verificar se é master admin
+    if (!authService.isMasterAdmin()) {
       router.push('/dashboard');
       return;
     }
