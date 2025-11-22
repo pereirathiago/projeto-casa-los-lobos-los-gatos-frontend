@@ -212,7 +212,27 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
           <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
             Ações Rápidas
           </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/sponsor/profile')}
+              className="h-auto flex-col items-center justify-center !border-2 !border-gray-200 !p-4 text-center hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            >
+              <svg
+                className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-purple)]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <p className="font-semibold text-gray-700">Meu Perfil</p>
+            </Button>
             <Button
               variant="outline"
               className="h-auto flex-col items-center justify-center !border-2 !border-gray-200 !p-4 text-center hover:!border-[var(--ong-purple)] hover:!bg-purple-50"

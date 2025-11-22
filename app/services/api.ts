@@ -115,6 +115,20 @@ export interface DeleteAdminResponse {
   message: string;
 }
 
+export interface Sponsor {
+  uuid: string;
+  name: string;
+  email: string;
+  active: boolean;
+  deleted: boolean;
+}
+
+export interface UpdateSponsorData {
+  name?: string;
+  email?: string;
+  password?: string;
+}
+
 export interface ApiError {
   error: string;
 }
@@ -396,6 +410,57 @@ class ApiService {
     });
 
     return this.handleResponse<UpdateAdminResponse>(response);
+  }
+
+  // ==================== SPONSOR PROFILE ====================
+
+  async getMySponsorProfile(token: string): Promise<Sponsor> {
+    const response = await fetch(`${this.baseURL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<Sponsor>(response);
+  }
+
+  async updateMySponsorProfile(
+    token: string,
+    data: UpdateSponsorData,
+  ): Promise<Sponsor> {
+    const response = await fetch(`${this.baseURL}/users/me`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    return this.handleResponse<Sponsor>(response);
+  }
+
+  async deleteMySponsorProfile(token: string): Promise<void> {
+    const response = await fetch(`${this.baseURL}/users/me`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao deletar conta');
+    }
+  }
+
+  async getAllSponsors(token: string): Promise<Sponsor[]> {
+    const response = await fetch(`${this.baseURL}/admin/sponsors`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<Sponsor[]>(response);
   }
 }
 

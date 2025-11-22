@@ -303,6 +303,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             )}
             <Button
               variant="outline"
+              onClick={() => router.push('/sponsors')}
               className="h-auto flex-col items-center justify-center !border-2 !border-gray-200 !p-4 text-center hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
             >
               <svg
