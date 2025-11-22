@@ -26,31 +26,35 @@ export default function EditAnimalPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar autenticação
-    if (!authService.isAuthenticated()) {
-      toast.error('Acesso negado. Por favor, faça login para continuar.');
-      router.push('/login');
-      return;
+    async function init() {
+      // Verificar autenticação
+      if (!authService.isAuthenticated()) {
+        toast.error('Acesso negado. Por favor, faça login para continuar.');
+        router.push('/login');
+        return;
+      }
+
+      // Buscar dados atualizados do usuário
+      const userData = await authService.refreshAdminUser(apiService);
+
+      // Verificar se é admin
+      if (userData?.role !== 'admin') {
+        toast.error('Acesso restrito a administradores.');
+        router.push('/dashboard');
+        return;
+      }
+
+      setUser(userData);
+
+      // Carregar dados do animal
+      if (animalUuid) {
+        loadAnimal(animalUuid);
+      } else {
+        router.push('/animals');
+      }
     }
 
-    // Carregar dados do usuário
-    const userData = authService.getUser();
-
-    // Verificar se é admin
-    if (userData?.role !== 'admin') {
-      toast.error('Acesso restrito a administradores.');
-      router.push('/dashboard');
-      return;
-    }
-
-    setUser(userData);
-
-    // Carregar dados do animal
-    if (animalUuid) {
-      loadAnimal(animalUuid);
-    } else {
-      router.push('/animals');
-    }
+    init();
   }, [router, animalUuid]);
 
   const loadAnimal = async (uuid: string) => {

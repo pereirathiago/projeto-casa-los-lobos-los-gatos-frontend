@@ -26,24 +26,28 @@ export default function AnimalsListPage() {
   const [tempFilters, setTempFilters] = useState<AnimalFilters>({});
 
   useEffect(() => {
-    // Verificar autenticação
-    if (!authService.isAuthenticated()) {
-      toast.error('Acesso negado. Por favor, faça login para continuar.');
-      router.push('/login');
-      return;
+    async function init() {
+      // Verificar autenticação
+      if (!authService.isAuthenticated()) {
+        toast.error('Acesso negado. Por favor, faça login para continuar.');
+        router.push('/login');
+        return;
+      }
+
+      // Buscar dados atualizados do usuário
+      const userData = await authService.refreshAdminUser(apiService);
+
+      // Verificar se é admin
+      if (userData?.role !== 'admin') {
+        router.push('/dashboard');
+        return;
+      }
+
+      setUser(userData);
+      loadAnimals();
     }
 
-    // Carregar dados do usuário
-    const userData = authService.getUser();
-
-    // Verificar se é admin
-    if (userData?.role !== 'admin') {
-      router.push('/dashboard');
-      return;
-    }
-
-    setUser(userData);
-    loadAnimals();
+    init();
   }, [router]);
 
   const loadAnimals = async (appliedFilters: AnimalFilters = {}) => {
@@ -307,15 +311,25 @@ export default function AnimalsListPage() {
                         if (!target.src.includes('data:image')) {
                           target.onerror = null; // Remove handler para evitar loop
                           target.src =
-                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="45%25" text-anchor="middle" fill="%239ca3af" font-size="48"%3E' +
-                            (animal.type === 'dog' ? '🐕' : '🐱') +
-                            '%3C/text%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
                         }
                       }}
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-6xl">
-                      {animal.type === 'dog' ? '🐕' : '🐱'}
+                    <div className="flex h-full items-center justify-center">
+                      <svg
+                        className="h-24 w-24 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
                     </div>
                   )}
                 </div>

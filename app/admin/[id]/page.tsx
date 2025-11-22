@@ -29,45 +29,49 @@ export default function EditAdminPage() {
   const [isEditingSelf, setIsEditingSelf] = useState(false);
 
   useEffect(() => {
-    // Verificar autenticação
-    if (!authService.isAuthenticated()) {
-      toast.error('Acesso negado. Por favor, faça login para continuar.');
-      router.push('/login');
-      return;
+    async function init() {
+      // Verificar autenticação
+      if (!authService.isAuthenticated()) {
+        toast.error('Acesso negado. Por favor, faça login para continuar.');
+        router.push('/login');
+        return;
+      }
+
+      // Buscar dados atualizados do usuário
+      const userData = await authService.refreshAdminUser(apiService);
+
+      // Verificar se é admin
+      if (userData?.role !== 'admin') {
+        router.push('/dashboard');
+        return;
+      }
+
+      setUser(userData);
+
+      // Verificar se está editando a si mesmo
+      if (adminId && userData?.id === adminId.toString()) {
+        setIsEditingSelf(true);
+      }
+
+      // Verificar permissões: master pode editar qualquer um, admin comum só pode editar a si mesmo
+      if (
+        !authService.isMasterAdmin() &&
+        adminId &&
+        userData?.id !== adminId.toString()
+      ) {
+        router.push('/dashboard');
+        return;
+      }
+
+      // Carregar dados do admin
+      if (adminId) {
+        loadAdmin(adminId);
+      } else {
+        router.push('/admin');
+      }
     }
 
-    // Carregar dados do usuário
-    const userData = authService.getUser();
-
-    // Verificar se é admin
-    if (userData?.role !== 'admin') {
-      router.push('/dashboard');
-      return;
-    }
-
-    setUser(userData);
-
-    // Verificar se está editando a si mesmo
-    if (adminId && userData?.id === adminId.toString()) {
-      setIsEditingSelf(true);
-    }
-
-    // Verificar permissões: master pode editar qualquer um, admin comum só pode editar a si mesmo
-    if (
-      !authService.isMasterAdmin() &&
-      adminId &&
-      userData?.id !== adminId.toString()
-    ) {
-      router.push('/dashboard');
-      return;
-    }
-
-    // Carregar dados do admin
-    if (adminId) {
-      loadAdmin(adminId);
-    } else {
-      router.push('/admin');
-    }
+    init();
   }, [router, adminId]);
 
   const loadAdmin = async (id: number) => {

@@ -23,24 +23,27 @@ export default function AdminsListPage() {
   const [adminToDelete, setAdminToDelete] = useState<Admin | null>(null);
 
   useEffect(() => {
-    // Verificar autenticação
-    if (!authService.isAuthenticated()) {
-      toast.error('Acesso negado. Por favor, faça login para continuar.');
-      router.push('/login');
-      return;
+    async function init() {
+      // Verificar autenticação
+      if (!authService.isAuthenticated()) {
+        toast.error('Acesso negado. Por favor, faça login para continuar.');
+        router.push('/login');
+        return;
+      }
+
+      // Verificar se é master admin
+      if (!authService.isMasterAdmin()) {
+        router.push('/dashboard');
+        return;
+      }
+
+      // Buscar dados atualizados do usuário
+      const userData = await authService.refreshAdminUser(apiService);
+      setUser(userData);
+      loadAdmins();
     }
 
-    // Carregar dados do usuário
-    const userData = authService.getUser();
-
-    // Verificar se é master admin
-    if (!authService.isMasterAdmin()) {
-      router.push('/dashboard');
-      return;
-    }
-
-    setUser(userData);
-    loadAdmins();
+    init();
   }, [router]);
 
   const loadAdmins = async () => {

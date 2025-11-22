@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
 import AnimalForm from '../../components/AnimalForm';
 import Button from '../../components/Button';
+import { apiService } from '../../services/api';
 import { authService } from '../../services/auth';
 
 export default function NewAnimalPage() {
@@ -21,25 +22,29 @@ export default function NewAnimalPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar autenticação
-    if (!authService.isAuthenticated()) {
-      toast.error('Acesso negado. Por favor, faça login para continuar.');
-      router.push('/login');
-      return;
+    async function init() {
+      // Verificar autenticação
+      if (!authService.isAuthenticated()) {
+        toast.error('Acesso negado. Por favor, faça login para continuar.');
+        router.push('/login');
+        return;
+      }
+
+      // Buscar dados atualizados do usuário
+      const userData = await authService.refreshAdminUser(apiService);
+
+      // Verificar se é admin
+      if (userData?.role !== 'admin') {
+        toast.error('Acesso restrito a administradores.');
+        router.push('/dashboard');
+        return;
+      }
+
+      setUser(userData);
+      setIsLoading(false);
     }
 
-    // Carregar dados do usuário
-    const userData = authService.getUser();
-
-    // Verificar se é admin
-    if (userData?.role !== 'admin') {
-      toast.error('Acesso restrito a administradores.');
-      router.push('/dashboard');
-      return;
-    }
-
-    setUser(userData);
-    setIsLoading(false);
+    init();
   }, [router]);
 
   const handleLogout = async () => {
