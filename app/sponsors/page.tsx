@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -8,7 +9,6 @@ import logo from '../assets/icons/logo-ong.svg';
 import Button from '../components/Button';
 import { apiService, Sponsor } from '../services/api';
 import { authService } from '../services/auth';
-import Link from 'next/link';
 
 export default function SponsorsListPage() {
   const router = useRouter();
