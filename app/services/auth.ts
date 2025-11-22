@@ -86,6 +86,47 @@ class AuthService {
     const user = this.getUser();
     return user?.role === 'admin' && user?.is_master === true;
   }
+
+  // Buscar e atualizar dados do usuário admin do backend
+  async refreshAdminUser(apiService: {
+    getMyProfile: (token: string) => Promise<{
+      uuid: string;
+      name: string;
+      email: string;
+      role: string;
+      is_master: boolean;
+    }>;
+  }): Promise<LoginResponse['user'] | null> {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const token = this.getToken();
+      const user = this.getUser();
+
+      if (!token || !user || user.role !== 'admin') {
+        return user;
+      }
+
+      // Buscar dados atualizados do backend
+      const profile = await apiService.getMyProfile(token);
+      const updatedUser: LoginResponse['user'] = {
+        id: profile.uuid,
+        name: profile.name,
+        email: profile.email,
+        role: profile.role as 'admin' | 'sponsor',
+        is_master: profile.is_master,
+      };
+
+      // Atualizar storage
+      const rememberMe = localStorage.getItem(REMEMBER_ME_KEY) === 'true';
+      this.saveAuth({ token, user: updatedUser }, rememberMe);
+
+      return updatedUser;
+    } catch (error) {
+      console.error('Erro ao atualizar dados do usuário:', error);
+      return this.getUser();
+    }
+  }
 }
 
 export const authService = new AuthService();

@@ -37,7 +37,9 @@ export default function ProfilePage() {
       }
 
       const token = authService.getToken();
-      const userData = authService.getUser();
+
+      // Buscar dados atualizados do usuário
+      const userData = await authService.refreshAdminUser(apiService);
 
       if (!token || !userData || userData.role !== 'admin') {
         router.push('/dashboard');
@@ -166,19 +168,81 @@ export default function ProfilePage() {
                   {adminData.name}
                 </h2>
                 <div className="mt-2 flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm">
-                    {adminData.is_master
-                      ? '👑 Master Admin'
-                      : '🔧 Administrador'}
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm">
+                    {adminData.is_master ? (
+                      <>
+                        <svg
+                          className="h-4 w-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        Master Admin
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        Administrador
+                      </>
+                    )}
                   </span>
                   <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold backdrop-blur-sm ${
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-semibold backdrop-blur-sm ${
                       adminData.active
                         ? 'bg-green-500/20 text-green-100'
                         : 'bg-red-500/20 text-red-100'
                     }`}
                   >
-                    {adminData.active ? '✓ Ativo' : '✗ Inativo'}
+                    {adminData.active ? (
+                      <>
+                        <svg
+                          className="h-4 w-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Ativo
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="h-4 w-4"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Inativo
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
@@ -429,8 +493,24 @@ export default function ProfilePage() {
           {/* Footer com ações */}
           <div className="border-t border-gray-200 bg-gray-50 px-6 py-4 sm:px-8">
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              <Button onClick={() => router.push('/profile/edit')}>
-                ✏️ Editar Perfil
+              <Button
+                onClick={() => router.push('/profile/edit')}
+                className="inline-flex items-center gap-2"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                Editar Perfil
               </Button>
             </div>
           </div>
