@@ -6,6 +6,7 @@ import logo from '../assets/icons/logo-ong.svg';
 import { apiService } from '../services/api';
 import { authService } from '../services/auth';
 import Button from './Button';
+import CardButton from './CardButton';
 
 interface PadrinhoDashboardProps {
   user: { id: string; name: string; email: string; role: string } | null;
@@ -212,10 +213,28 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
           <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
             Ações Rápidas
           </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <Button
-              variant="outline"
-              className="h-auto flex-col items-center justify-center !border-2 !border-gray-200 !p-4 text-center hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <CardButton
+              title="Meu perfil"
+              onClick={() => router.push('/sponsor/profile')}
+            >
+              <svg
+                className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-purple)]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </CardButton>
+            <CardButton
+              title="Fazer Doação Extra"
+              onClick={() => router.push('/sponsor/donate')}
             >
               <svg
                 className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-orange)]"
@@ -230,11 +249,10 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <p className="font-semibold text-gray-700">Fazer Doação Extra</p>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-auto flex-col items-center justify-center !border-2 !border-gray-200 !p-4 text-center hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            </CardButton>
+            <CardButton
+              title="Ver Fotos"
+              onClick={() => router.push('/sponsor/photos')}
             >
               <svg
                 className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-purple)]"
@@ -249,11 +267,10 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <p className="font-semibold text-gray-700">Ver Fotos</p>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-auto flex-col items-center justify-center !border-2 !border-gray-200 !p-4 text-center hover:!border-[var(--ong-purple)] hover:!bg-purple-50"
+            </CardButton>
+            <CardButton
+              title="Enviar Mensagem"
+              onClick={() => router.push('/sponsor/message')}
             >
               <svg
                 className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-purple)]"
@@ -268,8 +285,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                 />
               </svg>
-              <p className="font-semibold text-gray-700">Enviar Mensagem</p>
-            </Button>
+            </CardButton>
           </div>
         </div>
 

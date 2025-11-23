@@ -127,6 +127,46 @@ class AuthService {
       return this.getUser();
     }
   }
+
+  // Buscar e atualizar dados do sponsor do backend
+  async refreshSponsorUser(apiService: {
+    getMySponsorProfile: (token: string) => Promise<{
+      uuid: string;
+      name: string;
+      email: string;
+      active: boolean;
+      deleted: boolean;
+    }>;
+  }): Promise<LoginResponse['user'] | null> {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const token = this.getToken();
+      const user = this.getUser();
+
+      if (!token || !user || user.role !== 'sponsor') {
+        return user;
+      }
+
+      // Buscar dados atualizados do backend
+      const profile = await apiService.getMySponsorProfile(token);
+      const updatedUser: LoginResponse['user'] = {
+        id: profile.uuid,
+        name: profile.name,
+        email: profile.email,
+        role: 'sponsor',
+      };
+
+      // Atualizar storage
+      const rememberMe = localStorage.getItem(REMEMBER_ME_KEY) === 'true';
+      this.saveAuth({ token, user: updatedUser }, rememberMe);
+
+      return updatedUser;
+    } catch (error) {
+      console.error('Erro ao atualizar dados do sponsor:', error);
+      return this.getUser();
+    }
+  }
 }
 
 export const authService = new AuthService();
