@@ -199,23 +199,27 @@ export default function AnimalDetailPage() {
                 {/* Foto Principal */}
                 <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-200 shadow-xl">
                   {displayPhotos.length > 0 ? (
-                    <Image
-                      src={getFullImageUrl(
-                        displayPhotos[selectedPhotoIndex].photo_url,
-                      )}
-                      alt={`${animal.name} - Foto ${selectedPhotoIndex + 1}`}
-                      fill
-                      className="object-cover"
-                      unoptimized
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        if (!target.src.includes('data:image')) {
-                          target.onerror = null;
-                          target.src =
-                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
-                        }
-                      }}
-                    />
+                    <div className="w-full">
+                      <Image
+                        src={getFullImageUrl(
+                          displayPhotos[selectedPhotoIndex].photo_url,
+                        )}
+                        alt={`${animal.name} - Foto ${selectedPhotoIndex + 1}`}
+                        className="h-full w-full object-cover"
+                        width={0}
+                        height={0}
+                        sizes="100vh"
+                        fill
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          if (!target.src.includes('data:image')) {
+                            target.onerror = null;
+                            target.src =
+                              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
+                          }
+                        }}
+                      />
+                    </div>
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <svg

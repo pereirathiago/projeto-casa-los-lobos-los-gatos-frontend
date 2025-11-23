@@ -60,7 +60,11 @@ export default function EditAnimalPage() {
   const loadAnimal = async (uuid: string) => {
     try {
       setIsLoading(true);
-      const animalData = await apiService.getAnimalByUuid(uuid);
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('É necessário estar autenticado');
+      }
+      const animalData = await apiService.getAnimalByUuid(token, uuid);
       setAnimal(animalData);
     } catch (error) {
       const errorMessage =

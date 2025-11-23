@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
-const PUBLIC_API_TOKEN = process.env.PUBLIC_API_TOKEN;
+const API_TOKEN = process.env.API_TOKEN;
 
 export async function GET(
   request: Request,
   { params }: { params: { uuid: string } },
 ) {
   try {
-    if (!PUBLIC_API_TOKEN) {
+    if (!API_TOKEN) {
       return NextResponse.json(
         { error: 'Token de API não configurado' },
         { status: 500 },
@@ -19,7 +19,7 @@ export async function GET(
       `${API_BASE_URL}/public/animals/${params.uuid}`,
       {
         headers: {
-          Authorization: `Bearer ${PUBLIC_API_TOKEN}`,
+          Authorization: `Bearer ${API_TOKEN}`,
         },
         cache: 'no-store',
       },

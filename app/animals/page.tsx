@@ -53,7 +53,11 @@ export default function AnimalsListPage() {
   const loadAnimals = async (appliedFilters: AnimalFilters = {}) => {
     try {
       setIsLoading(true);
-      const animalsList = await apiService.getAnimals(appliedFilters);
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('É necessário estar autenticado');
+      }
+      const animalsList = await apiService.getAnimals(token, appliedFilters);
       setAnimals(animalsList);
     } catch (error) {
       const errorMessage =
@@ -299,22 +303,26 @@ export default function AnimalsListPage() {
                 {/* Imagem */}
                 <div className="relative h-48 bg-gray-200">
                   {animal.photos && animal.photos.length > 0 ? (
-                    <Image
-                      src={getFullImageUrl(animal.photos[0].photo_url)}
-                      alt={animal.name}
-                      fill
-                      className="bg-gray-100 object-center"
-                      unoptimized
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        // Evitar loop infinito - só muda se não for já o placeholder
-                        if (!target.src.includes('data:image')) {
-                          target.onerror = null; // Remove handler para evitar loop
-                          target.src =
-                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
-                        }
-                      }}
-                    />
+                    <div className="w-full">
+                      <Image
+                        src={getFullImageUrl(animal.photos[0].photo_url)}
+                        alt={animal.name}
+                        className="h-full w-full object-cover"
+                        width={0}
+                        height={0}
+                        sizes="100vh"
+                        fill
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          // Evitar loop infinito - só muda se não for já o placeholder
+                          if (!target.src.includes('data:image')) {
+                            target.onerror = null; // Remove handler para evitar loop
+                            target.src =
+                              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
+                          }
+                        }}
+                      />
+                    </div>
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <svg

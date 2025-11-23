@@ -43,7 +43,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
         if (!token) return;
 
         // Buscar animais totais (dado real disponível)
-        const animals = await apiService.getAnimals();
+        const animals = await apiService.getAnimals(token);
 
         setStats({
           totalAnimals: animals.length,
