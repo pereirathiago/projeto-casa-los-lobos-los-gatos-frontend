@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'tertiary';
   isLoading?: boolean;
   fullWidth?: boolean;
 }
@@ -25,6 +25,8 @@ export default function Button({
       'bg-[var(--ong-orange)] hover:opacity-90 text-white shadow-md hover:shadow-lg',
     outline:
       'border-2 border-[var(--ong-purple)] text-[var(--ong-purple)] hover:bg-purple-50 hover:font-bold hover:outline-1',
+    tertiary:
+      'w-full text-[var(--ong-purple)] bg-white px-6 py-3 font-semibold transition-all hover:bg-gray-100 hover:font-bold',
   };
 
   const widthStyle = fullWidth ? 'w-full' : '';

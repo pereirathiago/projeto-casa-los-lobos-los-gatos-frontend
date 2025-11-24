@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import Footer from '../../../components/Footer';
 import Navbar from '../../../components/Navbar';
 import { Dog, Cat } from 'lucide-react';
+import Link from 'next/link';
+import Button from '@/app/components/Button';
 
 interface AnimalPhoto {
   id: number;
@@ -159,10 +161,10 @@ export default function AnimalDetailPage() {
       <Navbar />
       <main className="min-h-screen bg-gray-50 pt-20">
         {/* Breadcrumb */}
-        <div className="bg-white py-4 shadow-sm">
+        <div className="pt-4">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <button
-              onClick={() => router.push('/public/animais')}
+            <Link
+              href="/public/animais"
               className="inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
             >
               <svg
@@ -179,12 +181,12 @@ export default function AnimalDetailPage() {
                 />
               </svg>
               Voltar para todos os animais
-            </button>
+            </Link>
           </div>
         </div>
 
         {/* Content */}
-        <section className="py-12 sm:py-16 lg:py-20">
+        <section className="pt-4 pb-12 sm:py-6 lg:pt-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
               {/* Galeria de Fotos */}
@@ -259,7 +261,7 @@ export default function AnimalDetailPage() {
               </div>
 
               {/* Informações */}
-              <div className="space-y-6">
+              <div className="flex flex-col justify-between gap-6">
                 <div>
                   <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl">
                     {animal.name}
@@ -318,12 +320,12 @@ export default function AnimalDetailPage() {
                     Você pode se tornar padrinho ou madrinha e fazer a diferença
                     na vida deste animal!
                   </p>
-                  <button
+                  <Button
                     onClick={() => router.push('/login')}
-                    className="w-full rounded-lg bg-white px-6 py-3 font-semibold text-[var(--ong-purple)] transition-all hover:bg-gray-100"
+                    variant="tertiary"
                   >
                     Quero Apadrinhar
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
