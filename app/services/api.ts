@@ -201,7 +201,7 @@ class ApiService {
 
   // ==================== ANIMALS CRUD ====================
 
-  async getAnimals(filters?: AnimalFilters): Promise<Animal[]> {
+  async getAnimals(token: string, filters?: AnimalFilters): Promise<Animal[]> {
     const params = new URLSearchParams();
 
     if (filters?.type) params.append('type', filters.type);
@@ -212,12 +212,20 @@ class ApiService {
     const queryString = params.toString();
     const url = `${this.baseURL}/animals${queryString ? '?' + queryString : ''}`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return this.handleResponse<Animal[]>(response);
   }
 
-  async getAnimalByUuid(uuid: string): Promise<Animal> {
-    const response = await fetch(`${this.baseURL}/animals/${uuid}`);
+  async getAnimalByUuid(token: string, uuid: string): Promise<Animal> {
+    const response = await fetch(`${this.baseURL}/animals/${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return this.handleResponse<Animal>(response);
   }
 

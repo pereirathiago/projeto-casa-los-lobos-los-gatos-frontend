@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import Animal_Shelter from './assets/icons/Animal_Shelter.svg';
 import Heart_with_dog_paw from './assets/icons/Heart_with_dog_paw.svg';
 import Medical_Doctor from './assets/icons/Medical_Doctor.svg';
@@ -136,6 +137,29 @@ export default function Home() {
                 É uma forma linda de fazer parte da vida deles, mesmo que não
                 possa adotar.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-gray-50 py-16 sm:py-20 md:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--ong-purple)] to-[var(--ong-orange)] p-8 shadow-2xl sm:p-12 md:p-16">
+            <div className="text-center">
+              <h2 className="mb-4 text-3xl font-bold text-white sm:mb-5 sm:text-4xl md:mb-6 md:text-5xl lg:text-6xl">
+                Conheça Nossos Animais
+              </h2>
+              <p className="mb-6 text-base leading-relaxed text-white/95 sm:mb-8 sm:text-lg md:mb-10 md:text-xl">
+                Veja todos os cães e gatos que estão esperando por uma família
+                ou um padrinho/madrinha. Cada um deles tem uma história única e
+                muito amor para dar.
+              </p>
+              <Link
+                href="/public/animais"
+                className="inline-block rounded-lg bg-white px-8 py-3 text-lg font-bold text-[var(--ong-orange)] shadow-xl transition-all hover:scale-105 hover:shadow-2xl sm:px-10 sm:py-4 sm:text-xl md:text-2xl"
+              >
+                Ver Animais Disponíveis
+              </Link>
             </div>
           </div>
         </div>
