@@ -1,5 +1,6 @@
 'use client';
 
+import { Cat, Dog } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -7,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import logo from '../assets/icons/logo-ong.svg';
 import Button from '../components/Button';
+import DogCard from '../components/DogCard';
 import { Animal, AnimalFilters, apiService } from '../services/api';
 import { authService } from '../services/auth';
 import { getFullImageUrl } from '../utils/imageUrl';
@@ -102,6 +104,13 @@ export default function AnimalsListPage() {
 
   const getTypeLabel = (type: 'dog' | 'cat') => {
     return type === 'dog' ? 'Cão' : 'Gato';
+  };
+
+  const getTypeIcon = (type: 'dog' | 'cat') => {
+    if (type === 'dog') {
+      return <Dog className="h-4 w-4" />;
+    }
+    return <Cat className="h-4 w-4" />;
   };
 
   if (isLoading && animals.length === 0) {
@@ -294,108 +303,19 @@ export default function AnimalsListPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {animals.map((animal) => (
-              <div
+              <DogCard
                 key={animal.uuid}
-                className="overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg"
-              >
-                {/* Imagem */}
-                <div className="relative h-48 bg-gray-200">
-                  {animal.photos && animal.photos.length > 0 ? (
-                    <div className="w-full">
-                      <Image
-                        src={getFullImageUrl(animal.photos[0].photo_url)}
-                        alt={animal.name}
-                        className="h-full w-full object-cover"
-                        width={0}
-                        height={0}
-                        sizes="100vh"
-                        fill
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          // Evitar loop infinito - só muda se não for já o placeholder
-                          if (!target.src.includes('data:image')) {
-                            target.onerror = null; // Remove handler para evitar loop
-                            target.src =
-                              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="60%25" text-anchor="middle" fill="%236b7280" font-size="16"%3ESem imagem%3C/text%3E%3C/svg%3E';
-                          }
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <svg
-                        className="h-24 w-24 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-
-                {/* Conteúdo */}
-                <div className="p-4">
-                  <h3 className="mb-2 text-xl font-bold text-gray-900">
-                    {animal.name}
-                  </h3>
-                  <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
-                    <span className="rounded-full bg-[var(--ong-purple-50)] px-2 py-1 text-[var(--ong-purple)]">
-                      {getTypeLabel(animal.type)}
-                    </span>
-                    <span>•</span>
-                    <span>{animal.breed}</span>
-                    <span>•</span>
-                    <span>
-                      {animal.age} {animal.age === 1 ? 'ano' : 'anos'}
-                    </span>
-                  </div>
-                  <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                    {animal.description}
-                  </p>
-
-                  {/* Tags */}
-                  {animal.tags && animal.tags.length > 0 && (
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {animal.tags.map((tag) => (
-                        <span
-                          key={tag.id}
-                          className="rounded-full px-2 py-1 text-xs font-medium text-white"
-                          style={{ backgroundColor: tag.color }}
-                        >
-                          {tag.label}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Ações */}
-                  <div className="flex gap-2">
-                    <Button
-                      variant="primary"
-                      onClick={() => router.push(`/animals/${animal.uuid}`)}
-                      className="flex-1 !px-4 !py-2 text-sm"
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setAnimalToDelete(animal)}
-                      className="!border-red-600 !px-4 !py-2 text-sm !text-red-600 hover:!bg-red-600 hover:!text-white"
-                    >
-                      Excluir
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                animal={animal}
+                onClick={() => router.push(`/animals/${animal.uuid}`)}
+                getFullImageUrl={getFullImageUrl}
+                getTypeIcon={getTypeIcon}
+                getTypeLabel={getTypeLabel}
+                isAdminMode={true}
+                onEdit={() => router.push(`/animals/${animal.uuid}`)}
+                onDelete={() => setAnimalToDelete(animal)}
+              />
             ))}
           </div>
         )}
