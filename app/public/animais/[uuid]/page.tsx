@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Footer from '../../../components/Footer';
 import Navbar from '../../../components/Navbar';
+import { Dog, Cat } from 'lucide-react';
 
 interface AnimalPhoto {
   id: number;
@@ -95,17 +96,9 @@ export default function AnimalDetailPage() {
 
   const getTypeIcon = (type: 'dog' | 'cat') => {
     if (type === 'dog') {
-      return (
-        <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M18 4C16.34 4 15 5.34 15 7c0 .35.07.69.18 1H8.82c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3S3 5.34 3 7c0 1.3.84 2.4 2 2.82V18c0 1.1.9 2 2 2h2v3h2v-3h4v3h2v-3h2c1.1 0 2-.9 2-2V9.82c1.16-.42 2-1.52 2-2.82 0-1.66-1.34-3-3-3z" />
-        </svg>
-      );
+      return <Dog />;
     }
-    return (
-      <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 8L10.67 8.09C9.81 7.07 7.4 4.5 5 4.5C3.76 4.5 2.75 5.5 2.75 6.75c0 1.25 1.01 2.25 2.25 2.25.37 0 .72-.09 1.03-.24C6.85 9.92 8.5 11.5 9 13.06V18c0 2.21 1.79 4 4 4s4-1.79 4-4v-4.94c.5-1.56 2.15-3.14 2.97-4.3.31.15.66.24 1.03.24 1.24 0 2.25-1 2.25-2.25 0-1.25-1.01-2.25-2.25-2.25-2.4 0-4.81 2.57-5.67 3.59L12 8z" />
-      </svg>
-    );
+    return <Cat />;
   };
 
   if (isLoading) {
