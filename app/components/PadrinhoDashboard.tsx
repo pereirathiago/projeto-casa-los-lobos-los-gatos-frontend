@@ -5,8 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import logo from '../assets/icons/logo-ong.svg';
-import { SponsorDashboard, apiService } from '../services/api';
+import {
+  MySponsoredAnimal,
+  SponsorDashboard,
+  apiService,
+} from '../services/api';
 import { authService } from '../services/auth';
+import { getFullImageUrl } from '../utils/imageUrl';
 import Button from './Button';
 import CardButton from './CardButton';
 
@@ -19,11 +24,23 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
   const [dashboardData, setDashboardData] = useState<SponsorDashboard | null>(
     null,
   );
+  const [sponsoredAnimals, setSponsoredAnimals] = useState<MySponsoredAnimal[]>(
+    [],
+  );
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoadingAnimals, setIsLoadingAnimals] = useState(true);
   const [hasNoSponsorships, setHasNoSponsorships] = useState(false);
 
+  const handleWhatsAppContact = (animalName: string) => {
+    const phone = '5542988331566';
+    const message = encodeURIComponent(
+      `Olá! Gostaria de obter mais informações sobre o(a) ${animalName} da Casa Los Lobos e Los Gatos.`,
+    );
+    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+  };
+
   useEffect(() => {
-    async function loadStats() {
+    async function loadData() {
       try {
         const token = authService.getToken();
         if (!token) {
@@ -32,28 +49,44 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
           return;
         }
 
-        const data = await apiService.getSponsorDashboard(token);
-        setDashboardData(data);
-        setHasNoSponsorships(false);
-      } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error);
-
-        if (error instanceof Error && error.message.includes('apadrinhe')) {
-          setHasNoSponsorships(true);
-          toast.info('Você ainda não apadrinou nenhum animal. Comece agora!');
-        } else {
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : 'Erro ao carregar estatísticas do dashboard',
-          );
+        // Load dashboard stats
+        try {
+          const data = await apiService.getSponsorDashboard(token);
+          setDashboardData(data);
+          setHasNoSponsorships(false);
+        } catch (error) {
+          console.error('Erro ao carregar estatísticas:', error);
+          if (error instanceof Error && error.message.includes('apadrinhe')) {
+            setHasNoSponsorships(true);
+            toast.info('Você ainda não apadrinou nenhum animal. Comece agora!');
+          } else {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : 'Erro ao carregar estatísticas do dashboard',
+            );
+          }
+        } finally {
+          setIsLoadingStats(false);
         }
-      } finally {
+
+        // Load sponsored animals
+        try {
+          const animals = await apiService.getMySponsorships(token);
+          setSponsoredAnimals(animals);
+        } catch (error) {
+          console.error('Erro ao carregar animais apadrinhados:', error);
+        } finally {
+          setIsLoadingAnimals(false);
+        }
+      } catch (error) {
+        console.error('Erro geral:', error);
         setIsLoadingStats(false);
+        setIsLoadingAnimals(false);
       }
     }
 
-    loadStats();
+    loadData();
   }, [router]);
 
   const handleLogout = async () => {
@@ -389,79 +422,104 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
               )}
             </div>
 
-            {/* My Pets - Now showing mockup data, should be fetched from API in future */}
+            {/* My Pets - Real data from API */}
             <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
               <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
                 Meus Afilhados
               </h3>
-              <p className="mb-4 text-sm text-gray-500 italic">
-                (Dados mockup - em breve com informações reais dos seus
-                afilhados)
-              </p>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]">
-                  <div className="mb-3 flex justify-center">
-                    <svg
-                      className="h-16 w-16 text-[var(--ong-purple)]"
-                      viewBox="0 0 48.839 48.839"
-                      fill="currentColor"
-                    >
-                      <path d="M39.041,36.843c2.054,3.234,3.022,4.951,3.022,6.742c0,3.537-2.627,5.252-6.166,5.252 c-1.56,0-2.567-0.002-5.112-1.326c0,0-1.649-1.509-5.508-1.354c-3.895-0.154-5.545,1.373-5.545,1.373 c-2.545,1.323-3.516,1.309-5.074,1.309c-3.539,0-6.168-1.713-6.168-5.252c0-1.791,0.971-3.506,3.024-6.742 c0,0,3.881-6.445,7.244-9.477c2.43-2.188,5.973-2.18,5.973-2.18h1.093v-0.001c0,0,3.698-0.009,5.976,2.181 C35.059,30.51,39.041,36.844,39.041,36.843z M16.631,20.878c3.7,0,6.699-4.674,6.699-10.439S20.331,0,16.631,0 S9.932,4.674,9.932,10.439S12.931,20.878,16.631,20.878z M10.211,30.988c2.727-1.259,3.349-5.723,1.388-9.971 s-5.761-6.672-8.488-5.414s-3.348,5.723-1.388,9.971C3.684,29.822,7.484,32.245,10.211,30.988z M32.206,20.878 c3.7,0,6.7-4.674,6.7-10.439S35.906,0,32.206,0s-6.699,4.674-6.699,10.439C25.507,16.204,28.506,20.878,32.206,20.878z M45.727,15.602c-2.728-1.259-6.527,1.165-8.488,5.414s-1.339,8.713,1.389,9.972c2.728,1.258,6.527-1.166,8.488-5.414 S48.455,16.861,45.727,15.602z" />
-                    </svg>
-                  </div>
-                  <h4 className="mb-2 text-center text-lg font-bold">Rex</h4>
-                  <p className="mb-2 text-center text-sm text-gray-600">
-                    Labrador, 3 anos
-                  </p>
-                  <div className="flex items-center justify-center">
-                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs text-green-800">
-                      Saudável
-                    </span>
-                  </div>
+              {isLoadingAnimals ? (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-64 w-full animate-pulse rounded-lg bg-gray-200"
+                    ></div>
+                  ))}
                 </div>
-
-                <div className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]">
-                  <div className="mb-3 flex justify-center">
-                    <svg
-                      className="h-16 w-16 text-[var(--ong-purple)]"
-                      viewBox="0 0 48.839 48.839"
-                      fill="currentColor"
+              ) : sponsoredAnimals.length === 0 ? (
+                <p className="text-center text-gray-500">
+                  Você ainda não possui animais apadrinhados.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {sponsoredAnimals.map((sponsorship) => (
+                    <div
+                      key={sponsorship.uuid}
+                      className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]"
                     >
-                      <path d="M39.041,36.843c2.054,3.234,3.022,4.951,3.022,6.742c0,3.537-2.627,5.252-6.166,5.252 c-1.56,0-2.567-0.002-5.112-1.326c0,0-1.649-1.509-5.508-1.354c-3.895-0.154-5.545,1.373-5.545,1.373 c-2.545,1.323-3.516,1.309-5.074,1.309c-3.539,0-6.168-1.713-6.168-5.252c0-1.791,0.971-3.506,3.024-6.742 c0,0,3.881-6.445,7.244-9.477c2.43-2.188,5.973-2.18,5.973-2.18h1.093v-0.001c0,0,3.698-0.009,5.976,2.181 C35.059,30.51,39.041,36.844,39.041,36.843z M16.631,20.878c3.7,0,6.699-4.674,6.699-10.439S20.331,0,16.631,0 S9.932,4.674,9.932,10.439S12.931,20.878,16.631,20.878z M10.211,30.988c2.727-1.259,3.349-5.723,1.388-9.971 s-5.761-6.672-8.488-5.414s-3.348,5.723-1.388,9.971C3.684,29.822,7.484,32.245,10.211,30.988z M32.206,20.878 c3.7,0,6.7-4.674,6.7-10.439S35.906,0,32.206,0s-6.699,4.674-6.699,10.439C25.507,16.204,28.506,20.878,32.206,20.878z M45.727,15.602c-2.728-1.259-6.527,1.165-8.488,5.414s-1.339,8.713,1.389,9.972c2.728,1.258,6.527-1.166,8.488-5.414 S48.455,16.861,45.727,15.602z" />
-                    </svg>
-                  </div>
-                  <h4 className="mb-2 text-center text-lg font-bold">Luna</h4>
-                  <p className="mb-2 text-center text-sm text-gray-600">
-                    Gata, 2 anos
-                  </p>
-                  <div className="flex items-center justify-center">
-                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs text-green-800">
-                      Saudável
-                    </span>
-                  </div>
+                      <div className="relative mb-3 flex justify-center">
+                        <div className="relative h-32 w-32 overflow-hidden rounded-full bg-gray-200">
+                          {sponsorship.animal.photo ? (
+                            <Image
+                              src={getFullImageUrl(sponsorship.animal.photo)}
+                              alt={sponsorship.animal.name}
+                              fill
+                              className="object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                if (!target.src.includes('data:image')) {
+                                  target.onerror = null;
+                                  target.src =
+                                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48.839 48.839" fill="%239333ea"%3E%3Cpath d="M39.041,36.843c2.054,3.234,3.022,4.951,3.022,6.742c0,3.537-2.627,5.252-6.166,5.252c-1.56,0-2.567-0.002-5.112-1.326c0,0-1.649-1.509-5.508-1.354c-3.895-0.154-5.545,1.373-5.545,1.373c-2.545,1.323-3.516,1.309-5.074,1.309c-3.539,0-6.168-1.713-6.168-5.252c0-1.791,0.971-3.506,3.024-6.742c0,0,3.881-6.445,7.244-9.477c2.43-2.188,5.973-2.18,5.973-2.18h1.093v-0.001c0,0,3.698-0.009,5.976,2.181C35.059,30.51,39.041,36.844,39.041,36.843z M16.631,20.878c3.7,0,6.699-4.674,6.699-10.439S20.331,0,16.631,0S9.932,4.674,9.932,10.439S12.931,20.878,16.631,20.878z M10.211,30.988c2.727-1.259,3.349-5.723,1.388-9.971s-5.761-6.672-8.488-5.414s-3.348,5.723-1.388,9.971C3.684,29.822,7.484,32.245,10.211,30.988z M32.206,20.878c3.7,0,6.7-4.674,6.7-10.439S35.906,0,32.206,0s-6.699,4.674-6.699,10.439C25.507,16.204,28.506,20.878,32.206,20.878z M45.727,15.602c-2.728-1.259-6.527,1.165-8.488,5.414s-1.339,8.713,1.389,9.972c2.728,1.258,6.527-1.166,8.488-5.414S48.455,16.861,45.727,15.602z"/%3E%3C/svg%3E';
+                                }
+                              }}
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <svg
+                                className="h-16 w-16 text-[var(--ong-purple)]"
+                                viewBox="0 0 48.839 48.839"
+                                fill="currentColor"
+                              >
+                                <path d="M39.041,36.843c2.054,3.234,3.022,4.951,3.022,6.742c0,3.537-2.627,5.252-6.166,5.252 c-1.56,0-2.567-0.002-5.112-1.326c0,0-1.649-1.509-5.508-1.354c-3.895-0.154-5.545,1.373-5.545,1.373 c-2.545,1.323-3.516,1.309-5.074,1.309c-3.539,0-6.168-1.713-6.168-5.252c0-1.791,0.971-3.506,3.024-6.742 c0,0,3.881-6.445,7.244-9.477c2.43-2.188,5.973-2.18,5.973-2.18h1.093v-0.001c0,0,3.698-0.009,5.976,2.181 C35.059,30.51,39.041,36.844,39.041,36.843z M16.631,20.878c3.7,0,6.699-4.674,6.699-10.439S20.331,0,16.631,0 S9.932,4.674,9.932,10.439S12.931,20.878,16.631,20.878z M10.211,30.988c2.727-1.259,3.349-5.723,1.388-9.971 s-5.761-6.672-8.488-5.414s-3.348,5.723-1.388,9.971C3.684,29.822,7.484,32.245,10.211,30.988z M32.206,20.878 c3.7,0,6.7-4.674,6.7-10.439S35.906,0,32.206,0s-6.699,4.674-6.699,10.439C25.507,16.204,28.506,20.878,32.206,20.878z M45.727,15.602c-2.728-1.259-6.527,1.165-8.488,5.414s-1.339,8.713,1.389,9.972c2.728,1.258,6.527-1.166,8.488-5.414 S48.455,16.861,45.727,15.602z" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <h4 className="mb-1 text-center text-lg font-bold">
+                        {sponsorship.animal.name}
+                      </h4>
+                      <p className="mb-2 text-center text-sm text-gray-600">
+                        {sponsorship.animal.breed}, {sponsorship.animal.age}{' '}
+                        {sponsorship.animal.age === 1 ? 'ano' : 'anos'}
+                      </p>
+                      {sponsorship.animal.tags.length > 0 && (
+                        <div className="mb-3 flex flex-wrap items-center justify-center gap-1">
+                          {sponsorship.animal.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="rounded-full px-2 py-1 text-xs text-white"
+                              style={{ backgroundColor: tag.color }}
+                            >
+                              {tag.label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <p className="mb-3 text-center text-xs text-gray-500">
+                        Apadrinhado desde{' '}
+                        {new Date(
+                          sponsorship.sponsoredSince,
+                        ).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </p>
+                      <Button
+                        variant="secondary"
+                        fullWidth
+                        onClick={() =>
+                          handleWhatsAppContact(sponsorship.animal.name)
+                        }
+                      >
+                        Pedir Informações
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-
-                <div className="rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]">
-                  <div className="mb-3 flex justify-center">
-                    <svg
-                      className="h-16 w-16 text-[var(--ong-purple)]"
-                      viewBox="0 0 48.839 48.839"
-                      fill="currentColor"
-                    >
-                      <path d="M39.041,36.843c2.054,3.234,3.022,4.951,3.022,6.742c0,3.537-2.627,5.252-6.166,5.252 c-1.56,0-2.567-0.002-5.112-1.326c0,0-1.649-1.509-5.508-1.354c-3.895-0.154-5.545,1.373-5.545,1.373 c-2.545,1.323-3.516,1.309-5.074,1.309c-3.539,0-6.168-1.713-6.168-5.252c0-1.791,0.971-3.506,3.024-6.742 c0,0,3.881-6.445,7.244-9.477c2.43-2.188,5.973-2.18,5.973-2.18h1.093v-0.001c0,0,3.698-0.009,5.976,2.181 C35.059,30.51,39.041,36.844,39.041,36.843z M16.631,20.878c3.7,0,6.699-4.674,6.699-10.439S20.331,0,16.631,0 S9.932,4.674,9.932,10.439S12.931,20.878,16.631,20.878z M10.211,30.988c2.727-1.259,3.349-5.723,1.388-9.971 s-5.761-6.672-8.488-5.414s-3.348,5.723-1.388,9.971C3.684,29.822,7.484,32.245,10.211,30.988z M32.206,20.878 c3.7,0,6.7-4.674,6.7-10.439S35.906,0,32.206,0s-6.699,4.674-6.699,10.439C25.507,16.204,28.506,20.878,32.206,20.878z M45.727,15.602c-2.728-1.259-6.527,1.165-8.488,5.414s-1.339,8.713,1.389,9.972c2.728,1.258,6.527-1.166,8.488-5.414 S48.455,16.861,45.727,15.602z" />
-                    </svg>
-                  </div>
-                  <h4 className="mb-2 text-center text-lg font-bold">Max</h4>
-                  <p className="mb-2 text-center text-sm text-gray-600">
-                    Vira-lata, 4 anos
-                  </p>
-                  <div className="flex items-center justify-center">
-                    <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs text-yellow-800">
-                      Tratamento
-                    </span>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Quick Actions */}
