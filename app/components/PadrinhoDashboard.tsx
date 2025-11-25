@@ -213,7 +213,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
           <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
             Ações Rápidas
           </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <CardButton
               title="Meu perfil"
               onClick={() => router.push('/sponsor/profile')}
@@ -234,7 +234,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
             </CardButton>
             <CardButton
               title="Fazer Doação Extra"
-              onClick={() => router.push('/sponsor/donate')}
+              onClick={() => router.push('/sponsor/donations/new')}
             >
               <svg
                 className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-orange)]"
@@ -247,6 +247,24 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                   strokeLinejoin="round"
                   strokeWidth={2}
                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </CardButton>
+            <CardButton
+              title="Minhas Doações"
+              onClick={() => router.push('/sponsor/donations')}
+            >
+              <svg
+                className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-purple)]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 9V7a5 5 0 00-10 0v2M5 9h14l1 12H4L5 9zm4 4h6"
                 />
               </svg>
             </CardButton>
