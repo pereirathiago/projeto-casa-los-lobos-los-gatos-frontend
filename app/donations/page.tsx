@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -65,6 +66,19 @@ export default function DonationsAdminPage() {
       setIsLoading(false);
     }
   };
+  const handleLogout = async () => {
+    try {
+      const token = authService.getToken();
+      if (token) {
+        await apiService.logout(token);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    } finally {
+      authService.clearAuth();
+      router.push('/login');
+    }
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -90,10 +104,15 @@ export default function DonationsAdminPage() {
       (item) => item.status === 'confirmed',
     ).length;
     const pending = total - confirmed;
-    const totalAmount = donations.reduce(
-      (sum, donation) => sum + donation.amount,
-      0,
-    );
+    const totalAmount = donations
+      .filter((donation) => donation.status === 'confirmed')
+      .reduce((sum, donation) => {
+        const amount =
+          typeof donation.amount === 'number'
+            ? donation.amount
+            : parseFloat(donation.amount) || 0;
+        return sum + amount;
+      }, 0);
     return { total, confirmed, pending, totalAmount };
   }, [donations]);
 
@@ -170,7 +189,7 @@ export default function DonationsAdminPage() {
                 </p>
                 <p className="text-xs text-gray-500">Administrador</p>
               </div>
-              <Button variant="outline" onClick={() => router.push('/login')}>
+              <Button variant="outline" onClick={handleLogout}>
                 Sair
               </Button>
             </div>
@@ -208,7 +227,10 @@ export default function DonationsAdminPage() {
             </p>
           </div>
           <Button onClick={() => router.push('/donations/new')}>
-            Registrar Nova Doação
+            <span className="flex items-center gap-2 text-base">
+              <Plus className="h-5 w-5" />
+              <span className="font-semibold">Nova Doação</span>
+            </span>
           </Button>
         </div>
 
@@ -243,7 +265,9 @@ export default function DonationsAdminPage() {
             <p className="mt-2 text-3xl font-bold text-gray-900">
               {formatCurrency(stats.totalAmount)}
             </p>
-            <p className="mt-1 text-sm text-gray-500">Somatório geral</p>
+            <p className="mt-1 text-sm text-gray-500">
+              Somatório das doações confirmadas
+            </p>
           </div>
         </div>
 
@@ -336,20 +360,21 @@ export default function DonationsAdminPage() {
                             Detalhes
                           </Button>
                           {donation.status === 'pending' && (
-                            <Button
-                              className="!px-3 !py-1.5 text-xs"
+                            <button
                               onClick={() => setDonationToConfirm(donation)}
+                              title="Confirmar doação"
+                              className="inline-flex items-center justify-center rounded-lg border border-green-600 p-2 text-green-600 transition-colors hover:cursor-pointer hover:bg-green-50"
                             >
-                              Confirmar
-                            </Button>
+                              <Check className="h-4 w-4" />
+                            </button>
                           )}
-                          <Button
-                            variant="outline"
-                            className="!border-red-600 !px-3 !py-1.5 text-xs !text-red-600"
+                          <button
                             onClick={() => setDonationToDelete(donation)}
+                            title="Excluir doação"
+                            className="inline-flex items-center justify-center rounded-lg border border-red-600 p-2 text-red-600 transition-colors hover:cursor-pointer hover:bg-red-50"
                           >
-                            Excluir
-                          </Button>
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -390,8 +415,8 @@ export default function DonationsAdminPage() {
       {donationToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h3 className="mb-4 text-lg font-bold text-red-600">
-              Remover Doação
+            <h3 className="mb-4 text-lg font-bold text-black">
+              Confirmar Exclusão
             </h3>
             <p className="mb-4 text-gray-700">
               Esta ação irá remover a doação de{' '}
@@ -411,7 +436,7 @@ export default function DonationsAdminPage() {
                 onClick={handleDeleteDonation}
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Removendo...' : 'Excluir'}
+                {isProcessing ? 'Removendo...' : 'Confirmar Exclusão'}
               </Button>
             </div>
           </div>

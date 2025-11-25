@@ -229,26 +229,6 @@ export default function DonationDetailsPage() {
               {donation.user.name}
             </p>
           </div>
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => loadDonation(donation.uuid)}
-            >
-              Recarregar
-            </Button>
-            {donation.status === 'pending' && (
-              <Button onClick={() => setShowConfirmModal(true)}>
-                Confirmar Doação
-              </Button>
-            )}
-            <Button
-              variant="secondary"
-              className="!bg-red-600 hover:!bg-red-500"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              Excluir
-            </Button>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -349,10 +329,12 @@ export default function DonationDetailsPage() {
                   Registrar outra doação
                 </Button>
                 <Button
-                  variant="tertiary"
-                  onClick={() => router.push('/donations')}
+                  variant="secondary"
+                  className="!bg-red-500 text-white !duration-0 hover:!bg-red-600 hover:py-2.5 hover:text-lg"
+                  fullWidth
+                  onClick={() => setShowDeleteModal(true)}
                 >
-                  Voltar para a lista
+                  Excluir
                 </Button>
               </div>
             </div>
@@ -389,8 +371,8 @@ export default function DonationDetailsPage() {
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h3 className="mb-4 text-lg font-bold text-red-600">
-              Remover Doação
+            <h3 className="mb-4 text-lg font-bold text-black">
+              Confirmar Exclusão
             </h3>
             <p className="mb-4 text-gray-700">
               Esta ação não pode ser desfeita. Deseja excluir o registro de{' '}
@@ -409,11 +391,11 @@ export default function DonationDetailsPage() {
               </Button>
               <Button
                 variant="secondary"
-                className="!bg-red-600 hover:!bg-red-500"
+                className=""
                 onClick={handleDeleteDonation}
                 disabled={isProcessing}
               >
-                {isProcessing ? 'Removendo...' : 'Excluir'}
+                {isProcessing ? 'Removendo...' : 'Confirmar Exclusão'}
               </Button>
             </div>
           </div>

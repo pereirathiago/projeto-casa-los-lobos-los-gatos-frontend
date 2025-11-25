@@ -61,9 +61,30 @@ export default function SponsorDonationsPage() {
       setIsLoading(false);
     }
   };
+  const handleLogout = async () => {
+    try {
+      const token = authService.getToken();
+      if (token) {
+        await apiService.logout(token);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    } finally {
+      authService.clearAuth();
+      router.push('/login');
+    }
+  };
 
   const totalDonated = useMemo(() => {
-    return donations.reduce((sum, donation) => sum + donation.amount, 0);
+    return donations
+      .filter((donation) => donation.status === 'confirmed')
+      .reduce((sum, donation) => {
+        const amount =
+          typeof donation.amount === 'number'
+            ? donation.amount
+            : parseFloat(donation.amount) || 0;
+        return sum + amount;
+      }, 0);
   }, [donations]);
 
   const pendingDonations = useMemo(() => {
@@ -117,11 +138,8 @@ export default function SponsorDonationsPage() {
                 </p>
                 <p className="text-xs text-gray-500">Padrinho</p>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => router.push('/dashboard')}
-              >
-                Voltar
+              <Button variant="outline" onClick={handleLogout}>
+                Sair
               </Button>
             </div>
           </div>
@@ -129,6 +147,25 @@ export default function SponsorDonationsPage() {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <Link
+          href="/dashboard"
+          className="mb-4 inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
+        >
+          <svg
+            className="mr-2 h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Voltar para a Dashboard
+        </Link>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-[var(--ong-purple)]">

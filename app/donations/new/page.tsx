@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import AsyncSelect from 'react-select/async';
 import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
 import Button from '../../components/Button';
@@ -17,8 +18,7 @@ export default function NewAdminDonationPage() {
   const router = useRouter();
   const [adminName, setAdminName] = useState('Administrador');
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoadingSponsors, setIsLoadingSponsors] = useState(true);
+  const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     sponsorUuid: '',
@@ -29,7 +29,6 @@ export default function NewAdminDonationPage() {
 
   const loadSponsors = useCallback(async () => {
     try {
-      setIsLoadingSponsors(true);
       const token = authService.getToken();
       if (!token) {
         toast.error('Sessão expirada. Faça login novamente.');
@@ -43,10 +42,35 @@ export default function NewAdminDonationPage() {
       const message =
         error instanceof Error ? error.message : 'Erro ao carregar padrinhos';
       toast.error(message);
-    } finally {
-      setIsLoadingSponsors(false);
     }
   }, [router]);
+
+  const loadSponsorOptions = (inputValue: string) => {
+    return new Promise<
+      Array<{ value: string; label: string; sponsor: Sponsor }>
+    >((resolve) => {
+      if (!inputValue || inputValue.length < 2) {
+        resolve([]);
+        return;
+      }
+
+      const normalizedInput = inputValue.toLowerCase();
+      const filtered = sponsors
+        .filter(
+          (sponsor) =>
+            sponsor.name.toLowerCase().includes(normalizedInput) ||
+            sponsor.email.toLowerCase().includes(normalizedInput),
+        )
+        .filter((sponsor) => sponsor.active && !sponsor.deleted)
+        .map((sponsor) => ({
+          value: sponsor.uuid,
+          label: `${sponsor.name} • ${sponsor.email}`,
+          sponsor,
+        }));
+
+      resolve(filtered);
+    });
+  };
 
   useEffect(() => {
     async function init() {
@@ -72,41 +96,6 @@ export default function NewAdminDonationPage() {
 
     init();
   }, [router, loadSponsors]);
-
-  const sortedSponsors = useMemo(() => {
-    return [...sponsors].sort((a, b) => a.name.localeCompare(b.name));
-  }, [sponsors]);
-
-  const visibleSponsors = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return sortedSponsors;
-    }
-
-    const normalizedTerm = searchTerm.toLowerCase();
-    const filtered = sortedSponsors.filter((sponsor) =>
-      `${sponsor.name} ${sponsor.email}`.toLowerCase().includes(normalizedTerm),
-    );
-
-    if (
-      formData.sponsorUuid &&
-      !filtered.some((sponsor) => sponsor.uuid === formData.sponsorUuid)
-    ) {
-      const selected = sortedSponsors.find(
-        (sponsor) => sponsor.uuid === formData.sponsorUuid,
-      );
-      if (selected) {
-        return [selected, ...filtered];
-      }
-    }
-
-    return filtered;
-  }, [sortedSponsors, searchTerm, formData.sponsorUuid]);
-
-  const selectedSponsor = useMemo(() => {
-    return (
-      sponsors.find((sponsor) => sponsor.uuid === formData.sponsorUuid) || null
-    );
-  }, [sponsors, formData.sponsorUuid]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -223,47 +212,71 @@ export default function NewAdminDonationPage() {
           <div className="space-y-6">
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
-                Buscar padrinho (nome ou e-mail)
+                Padrinho/Madrinha *
               </label>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Ex.: Ana, ana@email.com"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)] focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Selecione o padrinho/madrinha *
-              </label>
-              <select
-                value={formData.sponsorUuid}
-                onChange={(event) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    sponsorUuid: event.target.value,
-                  }))
+              <AsyncSelect
+                cacheOptions
+                defaultOptions={false}
+                loadOptions={loadSponsorOptions}
+                value={
+                  selectedSponsor
+                    ? {
+                        value: selectedSponsor.uuid,
+                        label: `${selectedSponsor.name} • ${selectedSponsor.email}`,
+                        sponsor: selectedSponsor,
+                      }
+                    : null
                 }
-                disabled={isLoadingSponsors}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)] focus:outline-none"
-                required
-              >
-                <option value="">
-                  {isLoadingSponsors
-                    ? 'Carregando padrinhos...'
-                    : 'Selecione um padrinho'}
-                </option>
-                {visibleSponsors.map((sponsor) => (
-                  <option key={sponsor.uuid} value={sponsor.uuid}>
-                    {sponsor.name} • {sponsor.email}
-                  </option>
-                ))}
-              </select>
-              {!isLoadingSponsors && visibleSponsors.length === 0 && (
-                <p className="mt-2 text-sm text-red-500">
-                  Nenhum padrinho encontrado para o termo pesquisado.
+                onChange={(option) => {
+                  if (option) {
+                    setSelectedSponsor(option.sponsor);
+                    setFormData((prev) => ({
+                      ...prev,
+                      sponsorUuid: option.value,
+                    }));
+                  } else {
+                    setSelectedSponsor(null);
+                    setFormData((prev) => ({
+                      ...prev,
+                      sponsorUuid: '',
+                    }));
+                  }
+                }}
+                placeholder="Digite o nome ou email do padrinho..."
+                noOptionsMessage={({ inputValue }) =>
+                  inputValue.length < 2
+                    ? 'Digite pelo menos 2 caracteres'
+                    : 'Nenhum padrinho ativo encontrado'
+                }
+                loadingMessage={() => 'Buscando...'}
+                isClearable
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderColor: '#d1d5db',
+                    borderRadius: '0.5rem',
+                    padding: '0.125rem',
+                    '&:hover': {
+                      borderColor: '#472B74',
+                    },
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isFocused ? '#f3e8ff' : 'white',
+                    color: '#1f2937',
+                    '&:hover': {
+                      backgroundColor: '#f3e8ff',
+                    },
+                  }),
+                }}
+              />
+              <p className="mt-2 text-sm text-gray-500">
+                Digite o nome ou email para pesquisar. Apenas padrinhos ativos
+                serão exibidos.
+              </p>
+              {sponsors.length === 0 && (
+                <p className="mt-2 text-sm text-red-600">
+                  Nenhum padrinho cadastrado no sistema.
                 </p>
               )}
             </div>
