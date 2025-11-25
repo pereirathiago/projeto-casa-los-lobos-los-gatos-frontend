@@ -129,37 +129,6 @@ export interface UpdateSponsorData {
   password?: string;
 }
 
-export type DonationStatus = 'pending' | 'confirmed';
-
-export interface CreateDonationData {
-  amount: number;
-  donationDate: string;
-  notes?: string;
-  userId?: string;
-}
-
-export interface SponsorDonation {
-  uuid: string;
-  amount: number;
-  donationDate: string;
-  status: DonationStatus;
-  notes?: string;
-  confirmedAt: string | null;
-  createdAt: string;
-}
-
-export interface AdminDonation extends SponsorDonation {
-  user: {
-    uuid: string;
-    name: string;
-    email: string;
-  };
-  confirmedBy: {
-    uuid: string;
-    name: string;
-  } | null;
-}
-
 export interface Sponsorship {
   uuid: string;
   user: {
@@ -192,6 +161,95 @@ export interface UpdateSponsorshipData {
 
 export interface ApiError {
   error: string;
+}
+
+// ==================== DASHBOARD INTERFACES ====================
+
+export interface AdminDashboard {
+  animals: {
+    total: number;
+    active: number;
+  };
+  sponsors: {
+    total: number;
+    active: number;
+    deleted: number;
+  };
+  sponsorships: {
+    totalActive: number;
+  };
+  donations: {
+    total: number;
+    thisMonth: number;
+    general: {
+      total: number;
+      average: number;
+    };
+    day: {
+      total: number;
+      average: number;
+    };
+    week: {
+      total: number;
+      average: number;
+    };
+    month: {
+      total: number;
+      average: number;
+    };
+    year: {
+      total: number;
+      average: number;
+    };
+  };
+  topAnimals: Array<{
+    uuid: string;
+    name: string;
+    type: 'dog' | 'cat';
+    sponsorshipCount: number;
+  }>;
+  topSponsors: Array<{
+    uuid: string;
+    name: string;
+    email: string;
+    totalDonations: number;
+  }>;
+}
+
+export interface SponsorDashboard {
+  godchildren: {
+    total: number;
+  };
+  contributions: {
+    total: number;
+  };
+  monthsAsSponsor: number;
+  donations: {
+    general: {
+      total: number;
+      average: number;
+    };
+    day: {
+      total: number;
+      average: number;
+    };
+    week: {
+      total: number;
+      average: number;
+    };
+    month: {
+      total: number;
+      average: number;
+    };
+    year: {
+      total: number;
+      average: number;
+    };
+  };
+  history: {
+    firstSponsorshipDate: string;
+    totalSponsorshipsEver: number;
+  };
 }
 
 class ApiService {
@@ -615,96 +673,26 @@ class ApiService {
     }
   }
 
-  // ==================== DONATIONS ====================
+  // ==================== DASHBOARDS ====================
 
-  async createSponsorDonation(
-    token: string,
-    data: CreateDonationData,
-  ): Promise<SponsorDonation> {
-    const response = await fetch(`${this.baseURL}/users/me/donations`, {
-      method: 'POST',
+  async getAdminDashboard(token: string): Promise<AdminDashboard> {
+    const response = await fetch(`${this.baseURL}/admin/dashboard`, {
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(data),
     });
 
-    return this.handleResponse<SponsorDonation>(response);
+    return this.handleResponse<AdminDashboard>(response);
   }
 
-  async getMyDonations(token: string): Promise<SponsorDonation[]> {
-    const response = await fetch(`${this.baseURL}/users/me/donations`, {
+  async getSponsorDashboard(token: string): Promise<SponsorDashboard> {
+    const response = await fetch(`${this.baseURL}/users/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    return this.handleResponse<SponsorDonation[]>(response);
-  }
-
-  async createAdminDonation(
-    token: string,
-    data: CreateDonationData,
-  ): Promise<AdminDonation> {
-    const response = await fetch(`${this.baseURL}/donations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-
-    return this.handleResponse<AdminDonation>(response);
-  }
-
-  async getDonations(token: string): Promise<AdminDonation[]> {
-    const response = await fetch(`${this.baseURL}/donations`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return this.handleResponse<AdminDonation[]>(response);
-  }
-
-  async getDonationByUuid(token: string, uuid: string): Promise<AdminDonation> {
-    const response = await fetch(`${this.baseURL}/donations/${uuid}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return this.handleResponse<AdminDonation>(response);
-  }
-
-  async confirmDonation(token: string, uuid: string): Promise<void> {
-    const response = await fetch(`${this.baseURL}/donations/${uuid}/confirm`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Erro ao confirmar doação');
-    }
-  }
-
-  async deleteDonation(token: string, uuid: string): Promise<void> {
-    const response = await fetch(`${this.baseURL}/donations/${uuid}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Erro ao deletar doação');
-    }
+    return this.handleResponse<SponsorDashboard>(response);
   }
 }
 

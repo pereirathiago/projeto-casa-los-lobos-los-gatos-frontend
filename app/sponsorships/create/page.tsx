@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
@@ -48,59 +48,6 @@ export default function CreateSponsorshipPage() {
       ? { href: '/sponsors', label: 'Voltar para Padrinhos' }
       : { href: '/sponsorships', label: 'Voltar para Apadrinhamentos' };
 
-  const handleSearchSponsor = useCallback(
-    async (emailToSearch?: string) => {
-      const email = emailToSearch || sponsorEmail;
-
-      if (!email.trim()) {
-        toast.error('Digite um email para buscar');
-        return;
-      }
-
-      try {
-        setSponsorSearching(true);
-        setSponsorNotFound(false);
-        setFoundSponsor(null);
-
-        const token = authService.getToken();
-        if (!token) return;
-
-        const result = await apiService.searchSponsorByEmail(token, email);
-
-        // A API pode retornar um objeto único ou um array
-        const sponsors = Array.isArray(result) ? result : [result];
-
-        if (sponsors.length > 0 && sponsors[0]) {
-          const sponsor = sponsors[0];
-
-          // Verificar se tem as propriedades active e deleted, senão assumir como ativo
-          const isActive = sponsor.active !== undefined ? sponsor.active : true;
-          const isDeleted =
-            sponsor.deleted !== undefined ? sponsor.deleted : false;
-
-          if (!isActive || isDeleted) {
-            toast.error('Este padrinho não está ativo');
-            setSponsorNotFound(true);
-            return;
-          }
-
-          setFoundSponsor(sponsor);
-          setFormData((prev) => ({ ...prev, userId: sponsor.uuid }));
-        } else {
-          setSponsorNotFound(true);
-        }
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : 'Erro ao buscar padrinho',
-        );
-        setSponsorNotFound(true);
-      } finally {
-        setSponsorSearching(false);
-      }
-    },
-    [sponsorEmail],
-  );
-
   useEffect(() => {
     async function init() {
       if (!authService.isAuthenticated()) {
@@ -132,7 +79,7 @@ export default function CreateSponsorshipPage() {
     }
 
     init();
-  }, [router, searchParams, handleSearchSponsor]);
+  }, [router, searchParams]);
 
   const loadInitialData = async () => {
     try {
@@ -148,6 +95,56 @@ export default function CreateSponsorshipPage() {
       );
     } finally {
       setIsLoadingData(false);
+    }
+  };
+
+  const handleSearchSponsor = async (emailToSearch?: string) => {
+    const email = emailToSearch || sponsorEmail;
+
+    if (!email.trim()) {
+      toast.error('Digite um email para buscar');
+      return;
+    }
+
+    try {
+      setSponsorSearching(true);
+      setSponsorNotFound(false);
+      setFoundSponsor(null);
+
+      const token = authService.getToken();
+      if (!token) return;
+
+      const result = await apiService.searchSponsorByEmail(token, email);
+
+      // A API pode retornar um objeto único ou um array
+      const sponsors = Array.isArray(result) ? result : [result];
+
+      if (sponsors.length > 0 && sponsors[0]) {
+        const sponsor = sponsors[0];
+
+        // Verificar se tem as propriedades active e deleted, senão assumir como ativo
+        const isActive = sponsor.active !== undefined ? sponsor.active : true;
+        const isDeleted =
+          sponsor.deleted !== undefined ? sponsor.deleted : false;
+
+        if (!isActive || isDeleted) {
+          toast.error('Este padrinho não está ativo');
+          setSponsorNotFound(true);
+          return;
+        }
+
+        setFoundSponsor(sponsor);
+        setFormData({ ...formData, userId: sponsor.uuid });
+      } else {
+        setSponsorNotFound(true);
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : 'Erro ao buscar padrinho',
+      );
+      setSponsorNotFound(true);
+    } finally {
+      setSponsorSearching(false);
     }
   };
 

@@ -183,7 +183,7 @@ export default function SponsorshipsPage() {
               router.push('/sponsorships/create?source=sponsorships')
             }
           >
-            + Novo Apadrinhamento
+            Novo Apadrinhamento
           </Button>
         </div>
 
@@ -321,7 +321,7 @@ export default function SponsorshipsPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
           <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
             <h3 className="mb-4 text-lg font-bold text-gray-900">
               Confirmar Exclusão
@@ -334,13 +334,12 @@ export default function SponsorshipsPage() {
               <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
                 Cancelar
               </Button>
-              <Button
-                variant="secondary"
+              <button
                 onClick={() => handleDelete(deleteConfirm)}
-                className="px-4 py-2"
+                className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
               >
-                Confirmar Exclusão
-              </Button>
+                Excluir
+              </button>
             </div>
           </div>
         </div>
