@@ -163,6 +163,95 @@ export interface ApiError {
   error: string;
 }
 
+// ==================== DASHBOARD INTERFACES ====================
+
+export interface AdminDashboard {
+  animals: {
+    total: number;
+    active: number;
+  };
+  sponsors: {
+    total: number;
+    active: number;
+    deleted: number;
+  };
+  sponsorships: {
+    totalActive: number;
+  };
+  donations: {
+    total: number;
+    thisMonth: number;
+    general: {
+      total: number;
+      average: number;
+    };
+    day: {
+      total: number;
+      average: number;
+    };
+    week: {
+      total: number;
+      average: number;
+    };
+    month: {
+      total: number;
+      average: number;
+    };
+    year: {
+      total: number;
+      average: number;
+    };
+  };
+  topAnimals: Array<{
+    uuid: string;
+    name: string;
+    type: 'dog' | 'cat';
+    sponsorshipCount: number;
+  }>;
+  topSponsors: Array<{
+    uuid: string;
+    name: string;
+    email: string;
+    totalDonations: number;
+  }>;
+}
+
+export interface SponsorDashboard {
+  godchildren: {
+    total: number;
+  };
+  contributions: {
+    total: number;
+  };
+  monthsAsSponsor: number;
+  donations: {
+    general: {
+      total: number;
+      average: number;
+    };
+    day: {
+      total: number;
+      average: number;
+    };
+    week: {
+      total: number;
+      average: number;
+    };
+    month: {
+      total: number;
+      average: number;
+    };
+    year: {
+      total: number;
+      average: number;
+    };
+  };
+  history: {
+    firstSponsorshipDate: string;
+    totalSponsorshipsEver: number;
+  };
+}
+
 class ApiService {
   private baseURL: string;
 
@@ -582,6 +671,28 @@ class ApiService {
     if (!response.ok) {
       throw new Error('Erro ao deletar apadrinhamento');
     }
+  }
+
+  // ==================== DASHBOARDS ====================
+
+  async getAdminDashboard(token: string): Promise<AdminDashboard> {
+    const response = await fetch(`${this.baseURL}/admin/dashboard`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<AdminDashboard>(response);
+  }
+
+  async getSponsorDashboard(token: string): Promise<SponsorDashboard> {
+    const response = await fetch(`${this.baseURL}/users/dashboard`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<SponsorDashboard>(response);
   }
 }
 

@@ -3,8 +3,12 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import logo from '../assets/icons/logo-ong.svg';
-import { apiService } from '../services/api';
+import {
+  AdminDashboard as AdminDashboardData,
+  apiService,
+} from '../services/api';
 import { authService } from '../services/auth';
 import Button from './Button';
 import CardButton from './CardButton';
@@ -19,48 +23,39 @@ interface AdminDashboardProps {
   };
 }
 
-interface DashboardStats {
-  totalAnimals: number;
-  totalSponsors: number;
-  monthlyAdoptions: number;
-  monthlyDonations: string;
-}
-
 export default function AdminDashboard({ user }: AdminDashboardProps) {
   const router = useRouter();
-  const [stats, setStats] = useState<DashboardStats>({
-    totalAnimals: 0,
-    totalSponsors: 0,
-    monthlyAdoptions: 0,
-    monthlyDonations: 'R$ 0',
-  });
+  const [dashboardData, setDashboardData] = useState<AdminDashboardData | null>(
+    null,
+  );
   const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   useEffect(() => {
     async function loadStats() {
       try {
         const token = authService.getToken();
-        if (!token) return;
+        if (!token) {
+          toast.error('Sessão expirada. Faça login novamente.');
+          router.push('/login');
+          return;
+        }
 
-        // Buscar animais totais (dado real disponível)
-        const animals = await apiService.getAnimals(token);
-
-        setStats({
-          totalAnimals: animals.length,
-          // Dados mockup (aguardando endpoints do backend)
-          totalSponsors: 28,
-          monthlyAdoptions: 12,
-          monthlyDonations: 'R$ 12.5k',
-        });
+        const data = await apiService.getAdminDashboard(token);
+        setDashboardData(data);
       } catch (error) {
         console.error('Erro ao carregar estatísticas:', error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : 'Erro ao carregar estatísticas do dashboard',
+        );
       } finally {
         setIsLoadingStats(false);
       }
     }
 
     loadStats();
-  }, []);
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -138,9 +133,11 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             ) : (
               <>
                 <p className="text-3xl font-bold text-[var(--ong-purple)]">
-                  {stats.totalAnimals}
+                  {dashboardData?.animals.total ?? 0}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">Sob cuidado da ONG</p>
+                <p className="mt-1 text-sm text-gray-500">
+                  {dashboardData?.animals.active ?? 0} ativos
+                </p>
               </>
             )}
           </div>
@@ -167,19 +164,20 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             ) : (
               <>
                 <p className="text-3xl font-bold text-[var(--ong-orange)]">
-                  {stats.totalSponsors}
+                  {dashboardData?.sponsors.active ?? 0}
                 </p>
                 <p className="mt-1 text-sm text-gray-500">
-                  Contribuindo ativamente
+                  de {dashboardData?.sponsors.total ?? 0} cadastrados
                 </p>
-                <p className="mt-1 text-xs text-gray-400 italic">(mockup)</p>
               </>
             )}
           </div>
 
           <div className="rounded-lg bg-white p-6 shadow-md">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-700">Adoções</h3>
+              <h3 className="text-lg font-semibold text-gray-700">
+                Apadrinhamentos
+              </h3>
               <svg
                 className="h-8 w-8 text-[var(--ong-purple)]"
                 fill="none"
@@ -190,7 +188,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                 />
               </svg>
             </div>
@@ -199,10 +197,9 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             ) : (
               <>
                 <p className="text-3xl font-bold text-[var(--ong-purple)]">
-                  {stats.monthlyAdoptions}
+                  {dashboardData?.sponsorships.totalActive ?? 0}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">Este mês</p>
-                <p className="mt-1 text-xs text-gray-400 italic">(mockup)</p>
+                <p className="mt-1 text-sm text-gray-500">Ativos no momento</p>
               </>
             )}
           </div>
@@ -229,12 +226,15 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             ) : (
               <>
                 <p className="text-3xl font-bold text-[var(--ong-orange)]">
-                  {stats.monthlyDonations}
+                  R${' '}
+                  {(dashboardData?.donations.month.total ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
                 </p>
                 <p className="mt-1 text-sm text-gray-500">
-                  Arrecadado este mês
+                  {dashboardData?.donations.thisMonth ?? 0} doações este mês
                 </p>
-                <p className="mt-1 text-xs text-gray-400 italic">(mockup)</p>
               </>
             )}
           </div>
@@ -354,82 +354,200 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
         </div>
 
         {/* Recent Activities */}
+        <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Top Animals */}
+          <div className="rounded-lg bg-white p-6 shadow-md">
+            <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
+              Top 5 Animais Mais Apadrinhados
+            </h3>
+            {isLoadingStats ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-16 w-full animate-pulse rounded bg-gray-200"
+                  ></div>
+                ))}
+              </div>
+            ) : dashboardData?.topAnimals &&
+              dashboardData.topAnimals.length > 0 ? (
+              <div className="space-y-3">
+                {dashboardData.topAnimals.map((animal, index) => (
+                  <div
+                    key={animal.uuid}
+                    className="flex items-center justify-between rounded-lg border border-gray-200 p-3 transition-colors hover:border-[var(--ong-purple)]"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ong-purple)] text-sm font-bold text-white">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {animal.name}
+                        </p>
+                        <p className="text-xs text-gray-500 capitalize">
+                          {animal.type === 'dog' ? 'Cachorro' : 'Gato'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-[var(--ong-purple)]">
+                        {animal.sponsorshipCount}
+                      </p>
+                      <p className="text-xs text-gray-500">padrinhos</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="py-4 text-center text-gray-500">
+                Nenhum dado disponível
+              </p>
+            )}
+          </div>
+
+          {/* Top Sponsors */}
+          <div className="rounded-lg bg-white p-6 shadow-md">
+            <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
+              Top 5 Padrinhos Contribuintes
+            </h3>
+            {isLoadingStats ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-16 w-full animate-pulse rounded bg-gray-200"
+                  ></div>
+                ))}
+              </div>
+            ) : dashboardData?.topSponsors &&
+              dashboardData.topSponsors.length > 0 ? (
+              <div className="space-y-3">
+                {dashboardData.topSponsors.map((sponsor, index) => (
+                  <div
+                    key={sponsor.uuid}
+                    className="flex items-center justify-between rounded-lg border border-gray-200 p-3 transition-colors hover:border-[var(--ong-orange)]"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ong-orange)] text-sm font-bold text-white">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {sponsor.name}
+                        </p>
+                        <p className="text-xs text-gray-500">{sponsor.email}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-[var(--ong-orange)]">
+                        R${' '}
+                        {sponsor.totalDonations.toLocaleString('pt-BR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                      <p className="text-xs text-gray-500">total doado</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="py-4 text-center text-gray-500">
+                Nenhum dado disponível
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Donation Stats */}
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h3 className="mb-4 text-xl font-bold text-[var(--ong-purple)]">
-            Atividades Recentes
+            Estatísticas de Doações
           </h3>
-          <div className="space-y-4">
-            <div className="flex items-start border-l-4 border-[var(--ong-purple)] bg-purple-50 p-3">
-              <svg
-                className="mr-3 h-6 w-6 flex-shrink-0 text-[var(--ong-purple)]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <p className="font-semibold text-gray-800">
-                  Novo animal resgatado
+          {isLoadingStats ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-20 w-full animate-pulse rounded bg-gray-200"
+                ></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-lg border-2 border-gray-200 p-4">
+                <p className="mb-1 text-sm text-gray-600">Total Geral</p>
+                <p className="text-2xl font-bold text-[var(--ong-purple)]">
+                  R${' '}
+                  {(dashboardData?.donations.general.total ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
                 </p>
-                <p className="text-sm text-gray-600">
-                  Max, um labrador de 2 anos, foi resgatado hoje.
+                <p className="mt-1 text-xs text-gray-500">
+                  {dashboardData?.donations.total ?? 0} doações • Média: R${' '}
+                  {(
+                    dashboardData?.donations.general.average ?? 0
+                  ).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </p>
-                <p className="mt-1 text-xs text-gray-500">Há 2 horas</p>
+              </div>
+              <div className="rounded-lg border-2 border-gray-200 p-4">
+                <p className="mb-1 text-sm text-gray-600">Este Ano</p>
+                <p className="text-2xl font-bold text-[var(--ong-orange)]">
+                  R${' '}
+                  {(dashboardData?.donations.year.total ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Média: R${' '}
+                  {(dashboardData?.donations.year.average ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
+                </p>
+              </div>
+              <div className="rounded-lg border-2 border-gray-200 p-4">
+                <p className="mb-1 text-sm text-gray-600">Esta Semana</p>
+                <p className="text-2xl font-bold text-[var(--ong-purple)]">
+                  R${' '}
+                  {(dashboardData?.donations.week.total ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Média: R${' '}
+                  {(dashboardData?.donations.week.average ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
+                </p>
+              </div>
+              <div className="rounded-lg border-2 border-gray-200 p-4">
+                <p className="mb-1 text-sm text-gray-600">Hoje</p>
+                <p className="text-2xl font-bold text-[var(--ong-orange)]">
+                  R${' '}
+                  {(dashboardData?.donations.day.total ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Média: R${' '}
+                  {(dashboardData?.donations.day.average ?? 0).toLocaleString(
+                    'pt-BR',
+                    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+                  )}
+                </p>
               </div>
             </div>
-            <div className="flex items-start border-l-4 border-[var(--ong-orange)] bg-orange-50 p-3">
-              <svg
-                className="mr-3 h-6 w-6 flex-shrink-0 text-[var(--ong-orange)]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
-              </svg>
-              <div>
-                <p className="font-semibold text-gray-800">
-                  Novo padrinho cadastrado
-                </p>
-                <p className="text-sm text-gray-600">
-                  Maria Silva se tornou madrinha do Rex.
-                </p>
-                <p className="mt-1 text-xs text-gray-500">Há 5 horas</p>
-              </div>
-            </div>
-            <div className="flex items-start border-l-4 border-[var(--ong-purple)] bg-purple-50 p-3">
-              <svg
-                className="mr-3 h-6 w-6 flex-shrink-0 text-[var(--ong-purple)]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <p className="font-semibold text-gray-800">Animal adotado</p>
-                <p className="text-sm text-gray-600">
-                  Bella foi adotada pela família Santos.
-                </p>
-                <p className="mt-1 text-xs text-gray-500">Ontem</p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
