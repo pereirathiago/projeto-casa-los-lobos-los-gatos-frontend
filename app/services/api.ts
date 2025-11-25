@@ -252,6 +252,25 @@ export interface SponsorDashboard {
   };
 }
 
+export interface MySponsoredAnimal {
+  uuid: string;
+  animal: {
+    uuid: string;
+    name: string;
+    type: string;
+    breed: string;
+    age: number;
+    description: string;
+    photo: string | null;
+    tags: Array<{
+      label: string;
+      color: string;
+    }>;
+  };
+  active: boolean;
+  sponsoredSince: string;
+}
+
 class ApiService {
   private baseURL: string;
 
@@ -693,6 +712,16 @@ class ApiService {
     });
 
     return this.handleResponse<SponsorDashboard>(response);
+  }
+
+  async getMySponsorships(token: string): Promise<MySponsoredAnimal[]> {
+    const response = await fetch(`${this.baseURL}/users/me/sponsorships`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<MySponsoredAnimal[]>(response);
   }
 }
 
