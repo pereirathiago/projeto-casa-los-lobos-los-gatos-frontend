@@ -38,9 +38,10 @@ function DogCard({
               src={getFullImageUrl(animal.photos[0].photo_url)}
               alt={animal.name}
               className="h-full w-full object-cover"
-              width={400}
-              height={300}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              width={0}
+              height={0}
+              sizes="100vh"
+              fill
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 if (!target.src.includes('data:image')) {

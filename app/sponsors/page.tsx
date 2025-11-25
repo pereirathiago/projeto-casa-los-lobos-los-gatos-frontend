@@ -234,12 +234,15 @@ export default function SponsorsListPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Status
                   </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {filteredSponsors.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-6 py-12 text-center">
+                    <td colSpan={4} className="px-6 py-12 text-center">
                       <div className="text-gray-500">
                         <svg
                           className="mx-auto h-12 w-12 text-gray-400"
@@ -297,6 +300,35 @@ export default function SponsorsListPage() {
                             Inativo
                           </span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
+                        <Button
+                          onClick={() =>
+                            router.push(
+                              `/sponsorships/create?email=${encodeURIComponent(
+                                sponsor.email,
+                              )}&source=sponsors`,
+                            )
+                          }
+                          variant="outline"
+                          className="!px-3 !py-1.5 text-sm"
+                          disabled={sponsor.deleted || !sponsor.active}
+                        >
+                          <svg
+                            className="mr-1.5 inline h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                          Apadrinhar
+                        </Button>
                       </td>
                     </tr>
                   ))
