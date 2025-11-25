@@ -305,7 +305,9 @@ export default function SponsorsListPage() {
                         <Button
                           onClick={() =>
                             router.push(
-                              `/sponsorships/create?email=${encodeURIComponent(sponsor.email)}`,
+                              `/sponsorships/create?email=${encodeURIComponent(
+                                sponsor.email,
+                              )}&source=sponsors`,
                             )
                           }
                           variant="outline"

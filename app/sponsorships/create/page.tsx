@@ -42,6 +42,11 @@ export default function CreateSponsorshipPage() {
 
   // Estado para animal selecionado
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+  const sourcePage = searchParams.get('source');
+  const backLink =
+    sourcePage === 'sponsors'
+      ? { href: '/sponsors', label: 'Voltar para Padrinhos' }
+      : { href: '/sponsorships', label: 'Voltar para Apadrinhamentos' };
 
   useEffect(() => {
     async function init() {
@@ -268,7 +273,7 @@ export default function CreateSponsorshipPage() {
         {/* Page Header */}
         <div className="mb-6">
           <Link
-            href="/sponsorships"
+            href={backLink.href}
             className="mb-4 inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
           >
             <svg
@@ -284,8 +289,9 @@ export default function CreateSponsorshipPage() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Voltar para Apadrinhamentos
+            {backLink.label}
           </Link>
+
           <h1 className="text-3xl font-bold text-[var(--ong-purple)] sm:text-4xl">
             Novo Apadrinhamento
           </h1>

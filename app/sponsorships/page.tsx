@@ -178,7 +178,11 @@ export default function SponsorshipsPage() {
               Gerencie os apadrinhamentos entre padrinhos e animais
             </p>
           </div>
-          <Button onClick={() => router.push('/sponsorships/create')}>
+          <Button
+            onClick={() =>
+              router.push('/sponsorships/create?source=sponsorships')
+            }
+          >
             Novo Apadrinhamento
           </Button>
         </div>
