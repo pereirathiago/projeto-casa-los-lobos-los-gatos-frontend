@@ -565,6 +565,24 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                   </svg>
                 </CardButton>
                 <CardButton
+                  title="Minhas Doações"
+                  onClick={() => router.push('/sponsor/donations')}
+                >
+                  <svg
+                    className="mb-2 h-8 w-8 justify-self-center text-[var(--ong-purple)]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 9V7a5 5 0 00-10 0v2M5 9h14l1 12H4L5 9zm4 4h6"
+                    />
+                  </svg>
+                </CardButton>
+                <CardButton
                   title="Ver Fotos"
                   onClick={() => router.push('/sponsor/photos')}
                 >
