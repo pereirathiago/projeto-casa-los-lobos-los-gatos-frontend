@@ -129,6 +129,36 @@ export interface UpdateSponsorData {
   password?: string;
 }
 
+export interface Sponsorship {
+  uuid: string;
+  user: {
+    uuid: string;
+    name: string;
+    email: string;
+  };
+  animal: {
+    uuid: string;
+    name: string;
+    type: 'dog' | 'cat';
+    breed: string;
+  };
+  monthlyAmount: number;
+  active: boolean;
+  date: string;
+}
+
+export interface CreateSponsorshipData {
+  userId: string;
+  animalId: string;
+  monthlyAmount: number;
+}
+
+export interface UpdateSponsorshipData {
+  animalId?: string;
+  monthlyAmount?: number;
+  active?: boolean;
+}
+
 export interface ApiError {
   error: string;
 }
@@ -469,6 +499,89 @@ class ApiService {
     });
 
     return this.handleResponse<Sponsor[]>(response);
+  }
+
+  async searchSponsorByEmail(token: string, email: string): Promise<Sponsor[]> {
+    const response = await fetch(
+      `${this.baseURL}/admin/sponsors/search?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return this.handleResponse<Sponsor[]>(response);
+  }
+
+  // ==================== SPONSORSHIPS CRUD ====================
+
+  async createSponsorship(
+    token: string,
+    data: CreateSponsorshipData,
+  ): Promise<Sponsorship> {
+    const response = await fetch(`${this.baseURL}/sponsorships`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    return this.handleResponse<Sponsorship>(response);
+  }
+
+  async getSponsorships(token: string): Promise<Sponsorship[]> {
+    const response = await fetch(`${this.baseURL}/sponsorships`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<Sponsorship[]>(response);
+  }
+
+  async getSponsorshipByUuid(
+    token: string,
+    uuid: string,
+  ): Promise<Sponsorship> {
+    const response = await fetch(`${this.baseURL}/sponsorships/${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<Sponsorship>(response);
+  }
+
+  async updateSponsorship(
+    token: string,
+    uuid: string,
+    data: UpdateSponsorshipData,
+  ): Promise<Sponsorship> {
+    const response = await fetch(`${this.baseURL}/sponsorships/${uuid}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    return this.handleResponse<Sponsorship>(response);
+  }
+
+  async deleteSponsorship(token: string, uuid: string): Promise<void> {
+    const response = await fetch(`${this.baseURL}/sponsorships/${uuid}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao deletar apadrinhamento');
+    }
   }
 }
 
