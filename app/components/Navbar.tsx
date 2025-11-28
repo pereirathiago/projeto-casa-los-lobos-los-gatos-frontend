@@ -1,84 +1,219 @@
+'use client';
+
 import Image from 'next/image';
-import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import logo from '../assets/icons/logo-ong.svg';
 
 interface NavbarProps {
   className?: string;
 }
 
-export default function Navbar({ className = '' }: NavbarProps) {
+export default function Navbar({ className }: NavbarProps) {
+  const pathname = usePathname();
+  const isPublicAnimalsPage = pathname?.startsWith('/public/animais');
+  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 810) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
+  const navLinks = isPublicAnimalsPage
+    ? [
+        // Apenas botão de Entrar na página de animais
+        <Link
+          key="entrar"
+          href="/login"
+          className="rounded-lg bg-[var(--ong-purple)] px-6 py-2 text-[20px] font-bold text-white transition-all hover:opacity-90 min-[810px]:mt-0 min-[810px]:ml-4"
+        >
+          Entrar
+        </Link>,
+      ]
+    : [
+        // Menu completo na landing page
+        <Link
+          key="sobre"
+          href="#sobre"
+          onClick={() => setIsOpen(false)}
+          className="block px-4 py-2 text-white transition-colors hover:text-white/80 max-[810px]:text-white min-[810px]:p-0 min-[810px]:text-[24px] min-[810px]:font-bold"
+        >
+          Sobre
+        </Link>,
+        <Link
+          key="como-atuamos"
+          href="#como-atuamos"
+          onClick={() => setIsOpen(false)}
+          className="block px-4 py-2 text-white transition-colors hover:text-white/80 max-[810px]:text-white min-[810px]:p-0 min-[810px]:text-[24px] min-[810px]:font-bold"
+        >
+          Como atuamos
+        </Link>,
+        <Link
+          key="como-ajudar"
+          href="#como-ajudar"
+          onClick={() => setIsOpen(false)}
+          className="block px-4 py-2 text-white transition-colors hover:text-white/80 max-[810px]:text-white min-[810px]:p-0 min-[810px]:text-[24px] min-[810px]:font-bold"
+        >
+          Como ajudar
+        </Link>,
+        <Link
+          key="entrar"
+          href="/login"
+          className="rounded-lg bg-[var(--ong-purple)] px-6 py-2 text-[20px] font-bold text-white transition-all hover:opacity-90 min-[810px]:mt-0 min-[810px]:ml-4"
+        >
+          Entrar
+        </Link>,
+      ];
+
+  const navStateClasses = isPublicAnimalsPage
+    ? 'bg-[#CD6B16]'
+    : isOpen
+      ? 'bg-[#CD6B16] shadow-lg'
+      : isScrolled
+        ? 'bg-[#CD6B16]/60 shadow-lg backdrop-blur-md'
+        : 'bg-transparent max-sm:bg-transparent sm:bg-[#CD6B16] lg:bg-transparent';
+
   return (
-    <nav className={`top-0 w-full bg-transparent shadow-none ${className}`}>
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between px-28">
-          {/* Logo */}
-          <div className="flex-shrink-0 pl-45">
-            <div className="flex items-center">
+    <nav
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${navStateClasses} ${className}`}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:pr-4 lg:pl-8">
+        <div className="flex h-20 items-center justify-between">
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center">
               <Image
-                className="z-50"
                 src={logo}
                 alt="Logo Casa Los Lobos Los Gatos"
                 width={140}
                 height={70}
+                priority
               />
-            </div>
+            </Link>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="z-50 hidden md:block">
-            <div className="flex items-baseline space-x-8">
-              <a
-                href="#sobre"
-                className="text-[24px] font-bold text-white transition-colors hover:text-white/80"
-              >
-                Sobre
-              </a>
-              <a
-                href="#como-atuamos"
-                className="text-[24px] font-bold text-white transition-colors hover:text-white/80"
-              >
-                Como atuamos
-              </a>
-              <a
-                href="#como-ajudar"
-                className="text-[24px] font-bold text-white transition-colors hover:text-white/80"
-              >
-                Como ajudar
-              </a>
-              <a
+          {/* Desktop nav */}
+          <div className="hidden items-baseline space-x-8 min-[810px]:flex">
+            {navLinks}
+          </div>
+
+          {/* Mobile nav: hamburger + login */}
+          <div className="flex min-[810px]:hidden">
+            {/* Mostrar botão Entrar em mobile quando estiver na página de animais */}
+            {isPublicAnimalsPage && (
+              <Link
                 href="/login"
                 className="rounded-lg bg-[var(--ong-purple)] px-6 py-2 text-[20px] font-bold text-white transition-all hover:opacity-90"
               >
                 Entrar
-              </a>
-            </div>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              type="button"
-              className="rounded-md bg-transparent p-2 text-white hover:bg-white/10 hover:text-white focus:outline-none"
-            >
-              <span className="sr-only">Abrir menu principal</span>
-              <svg
-                className="h-6 w-6"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              </Link>
+            )}
+            {/* Hamburguer apenas se não estiver na página de animais */}
+            {!isPublicAnimalsPage && (
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                type="button"
+                className={`relative z-[70] h-12 w-12 cursor-pointer rounded-md bg-transparent p-2 focus:outline-none ${
+                  isScrolled || isOpen
+                    ? 'text-white'
+                    : 'text-black sm:text-white'
+                }`}
+                aria-controls="mobile-menu"
+                aria-expanded={isOpen}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
+                <span className="sr-only">Abrir menu principal</span>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+                  <span
+                    aria-hidden="true"
+                    className={`block h-0.5 w-6 transform bg-current transition duration-300 ease-in-out ${
+                      isOpen ? 'rotate-45' : '-translate-y-1.5'
+                    }`}
+                  ></span>
+                  <span
+                    aria-hidden="true"
+                    className={`block h-0.5 w-6 transform bg-current transition duration-300 ease-in-out ${
+                      isOpen ? 'opacity-0' : ''
+                    }`}
+                  ></span>
+                  <span
+                    aria-hidden="true"
+                    className={`block h-0.5 w-6 transform bg-current transition duration-300 ease-in-out ${
+                      isOpen ? '-rotate-45' : 'translate-y-1.5'
+                    }`}
+                  ></span>
+                </div>
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {!isPublicAnimalsPage && (
+        <div className="min-[810px]:hidden" id="mobile-menu">
+          {/* Dropdown for sm screens (orange background) with slide-down animation */}
+          <div className="hidden sm:block">
+            <div
+              className={`overflow-hidden bg-[#CD6B16] transition-all duration-300 ease-out ${
+                isOpen
+                  ? 'max-h-48 translate-y-0 opacity-100'
+                  : 'pointer-events-none max-h-0 -translate-y-2 opacity-0'
+              }`}
+            >
+              <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
+                {navLinks.slice(0, 3)}
+              </div>
+            </div>
+          </div>
+
+          {/* Side menu for xs screens */}
+          <div className="sm:hidden">
+            <div
+              className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+                isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+              }`}
+              aria-hidden="true"
+              onClick={() => setIsOpen(false)}
+            ></div>
+            <div
+              className={`fixed top-0 right-0 bottom-0 z-[60] w-3/4 max-w-sm p-6 shadow-2xl transition-all duration-300 ease-in-out ${
+                isOpen
+                  ? 'translate-x-0 opacity-100'
+                  : 'translate-x-full opacity-0'
+              }`}
+              style={{ backgroundColor: '#CD6B16' }}
+            >
+              <div className="mt-16 space-y-4">{navLinks.slice(0, 3)}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

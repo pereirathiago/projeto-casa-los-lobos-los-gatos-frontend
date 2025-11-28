@@ -16,11 +16,21 @@ export default function Card({
 }: CardProps) {
   return (
     <div className="text-center">
-      <div className="mb-6 flex justify-center">
-        <Image src={icon} alt={iconAlt} width={80} height={80} />
+      <div className="mb-4 flex justify-center sm:mb-5 md:mb-6">
+        <Image
+          src={icon}
+          alt={iconAlt}
+          width={64}
+          height={64}
+          className="h-16 w-16 sm:h-20 sm:w-20"
+        />
       </div>
-      <h3 className="mb-4 text-xl font-bold text-black">{title}</h3>
-      <p className="text-sm leading-relaxed text-black">{description}</p>
+      <h3 className="mb-3 text-lg font-bold text-black sm:mb-4 sm:text-xl md:text-2xl">
+        {title}
+      </h3>
+      <p className="text-sm leading-relaxed text-black sm:text-base md:text-lg">
+        {description}
+      </p>
     </div>
   );
 }

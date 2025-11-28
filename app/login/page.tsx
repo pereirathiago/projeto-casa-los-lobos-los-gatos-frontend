@@ -1,42 +1,57 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import Button from '../components/Button';
 import LoginForm from '../components/LoginForm';
+import { authService } from '../services/auth';
 
 export default function LoginPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-orange-50 px-4">
-      {/* Background decorativo */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-[var(--ong-purple)] opacity-20"></div>
-        <div className="absolute right-10 bottom-20 h-96 w-96 rounded-full bg-[var(--ong-orange)] opacity-20"></div>
-      </div>
+  const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
 
+  useEffect(() => {
+    // Verificar autenticação imediatamente
+    if (authService.isAuthenticated()) {
+      toast.info('Você já está conectado! Redirecionando...');
+      router.replace('/dashboard');
+    } else {
+      setIsChecking(false);
+    }
+  }, [router]);
+
+  // Não renderizar nada enquanto verifica ou está redirecionando
+  if (isChecking) {
+    return null;
+  }
+
+  return (
+    <div className="paw-pattern-bg flex min-h-screen items-center justify-center px-4 py-20 sm:py-12">
       {/* Conteúdo */}
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         <LoginForm />
       </div>
 
       {/* Link para voltar à home */}
-      <div className="absolute top-4 left-4">
-        <Link
-          href="/"
-          className="flex items-center text-gray-600 transition-colors hover:text-gray-800"
-        >
-          <svg
-            className="mr-2 h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Voltar para home
+      <div className="absolute top-3 left-3 z-50 sm:top-4 sm:left-4">
+        <Link href="/" className="flex items-center">
+          <Button variant="primary" className="px-3 py-2 sm:px-4 sm:py-3">
+            <svg
+              className="h-4 w-4 sm:h-5 sm:w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </Button>
         </Link>
       </div>
     </div>
