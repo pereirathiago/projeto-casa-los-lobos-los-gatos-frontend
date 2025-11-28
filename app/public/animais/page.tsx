@@ -1,11 +1,11 @@
 'use client';
 
+import DogCard from '@/app/components/DogCard';
+import { Cat, Dog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Footer from '../../components/Footer';
-import Navbar from '../../components/Navbar';
-import DogCard from '@/app/components/DogCard';
-import { Dog, Cat } from 'lucide-react';
+import PublicNavbar from '../../components/PublicNavbar';
 
 interface AnimalPhoto {
   id: number;
@@ -94,7 +94,7 @@ export default function PublicAnimalsPage() {
   if (isLoading) {
     return (
       <>
-        <Navbar />
+        <PublicNavbar />
         <div className="flex min-h-screen items-center justify-center bg-gray-50 pt-20">
           <div className="text-center">
             <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-[var(--ong-purple)]"></div>
@@ -109,7 +109,7 @@ export default function PublicAnimalsPage() {
   if (error) {
     return (
       <>
-        <Navbar />
+        <PublicNavbar />
         <div className="flex min-h-screen items-center justify-center bg-gray-50 pt-20">
           <div className="text-center">
             <svg
@@ -141,7 +141,7 @@ export default function PublicAnimalsPage() {
 
   return (
     <>
-      <Navbar />
+      <PublicNavbar />
       <main className="min-h-screen bg-gray-50 pt-20">
         {/* Hero Section */}
         <section className="bg-gray-50 from-[var(--ong-orange)] to-[var(--ong-orange)]/80 pt-16 text-white">

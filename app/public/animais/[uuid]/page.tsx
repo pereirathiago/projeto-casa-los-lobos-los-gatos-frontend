@@ -1,13 +1,14 @@
 'use client';
 
+import Button from '@/app/components/Button';
+import { authService } from '@/app/services/auth';
+import { Cat, Dog } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Footer from '../../../components/Footer';
-import Navbar from '../../../components/Navbar';
-import { Dog, Cat } from 'lucide-react';
-import Link from 'next/link';
-import Button from '@/app/components/Button';
+import PublicNavbar from '../../../components/PublicNavbar';
 
 interface AnimalPhoto {
   id: number;
@@ -58,6 +59,20 @@ export default function AnimalDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [user, setUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  } | null>(null);
+
+  useEffect(() => {
+    // Verificar se o usuário está logado
+    const currentUser = authService.getUser();
+    if (currentUser) {
+      setUser(currentUser);
+    }
+  }, []);
 
   useEffect(() => {
     if (uuid) {
@@ -65,6 +80,15 @@ export default function AnimalDetailPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uuid]);
+
+  const handleWhatsAppSponsorship = (animalName: string) => {
+    const phone = '5542988331566';
+    const userName = user?.name || 'Interessado';
+    const message = encodeURIComponent(
+      `Olá! Vim pelo site da Casa Los Lobos e Los Gatos. Meu nome é ${userName} e gostaria de apadrinhar o(a) ${animalName}. Vi que o valor de apadrinhamento é R$ 20,00 por mês. Como posso proceder?`,
+    );
+    window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+  };
 
   const loadAnimal = async () => {
     try {
@@ -106,7 +130,7 @@ export default function AnimalDetailPage() {
   if (isLoading) {
     return (
       <>
-        <Navbar />
+        <PublicNavbar />
         <div className="flex min-h-screen items-center justify-center bg-gray-50 pt-20">
           <div className="text-center">
             <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-b-4 border-[var(--ong-purple)]"></div>
@@ -121,7 +145,7 @@ export default function AnimalDetailPage() {
   if (error || !animal) {
     return (
       <>
-        <Navbar />
+        <PublicNavbar />
         <div className="flex min-h-screen items-center justify-center bg-gray-50 pt-20">
           <div className="text-center">
             <svg
@@ -158,7 +182,7 @@ export default function AnimalDetailPage() {
 
   return (
     <>
-      <Navbar />
+      <PublicNavbar />
       <main className="min-h-screen bg-gray-50 pt-20">
         {/* Breadcrumb */}
         <div className="pt-4">
@@ -320,12 +344,21 @@ export default function AnimalDetailPage() {
                     Você pode se tornar padrinho ou madrinha e fazer a diferença
                     na vida deste animal!
                   </p>
-                  <Button
-                    onClick={() => router.push('/login')}
-                    variant="tertiary"
-                  >
-                    Quero Apadrinhar
-                  </Button>
+                  {user && user.role === 'sponsor' ? (
+                    <Button
+                      onClick={() => handleWhatsAppSponsorship(animal.name)}
+                      variant="tertiary"
+                    >
+                      Quero Apadrinhar
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => router.push('/login')}
+                      variant="tertiary"
+                    >
+                      Quero Apadrinhar
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
