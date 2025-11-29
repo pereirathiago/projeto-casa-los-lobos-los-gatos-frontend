@@ -124,16 +124,14 @@ export default function Navbar({ className }: NavbarProps) {
           </div>
 
           {/* Mobile nav: hamburger + login */}
-          <div className="flex min-[810px]:hidden">
-            {/* Mostrar botão Entrar em mobile quando estiver na página de animais */}
-            {isPublicAnimalsPage && (
-              <Link
-                href="/login"
-                className="rounded-lg bg-[var(--ong-purple)] px-6 py-2 text-[20px] font-bold text-white transition-all hover:opacity-90"
-              >
-                Entrar
-              </Link>
-            )}
+          <div className="flex items-center gap-2 min-[810px]:hidden">
+            {/* Mostrar botão Entrar em mobile */}
+            <Link
+              href="/login"
+              className="rounded-lg bg-[var(--ong-purple)] px-4 py-2 text-base font-bold text-white transition-all hover:opacity-90 sm:px-6 sm:text-[20px]"
+            >
+              Entrar
+            </Link>
             {/* Hamburguer apenas se não estiver na página de animais */}
             {!isPublicAnimalsPage && (
               <button
