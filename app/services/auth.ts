@@ -1,3 +1,4 @@
+import { jwtDecode } from 'jwt-decode';
 import { LoginResponse } from './api';
 
 const TOKEN_KEY = 'ong_auth_token';
@@ -13,6 +14,9 @@ class AuthService {
       // Salvar dados
       storage.setItem(TOKEN_KEY, authData.token);
       storage.setItem(USER_KEY, JSON.stringify(authData.user));
+
+      const maxAge = rememberMe ? 60 * 60 * 24 * 7 : '';
+      document.cookie = `authToken=${authData.token}; path=/; ${maxAge ? `max-age=${maxAge};` : ''} SameSite=Lax`;
 
       // Salvar preferência de lembrar
       if (rememberMe) {
@@ -52,7 +56,20 @@ class AuthService {
 
   // Verificar se está autenticado
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const decoded = jwtDecode(token);
+      if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+        this.clearAuth();
+        return false;
+      }
+      return true;
+    } catch {
+      this.clearAuth();
+      return false;
+    }
   }
 
   // Limpar autenticação
@@ -66,6 +83,9 @@ class AuthService {
       // Limpar sessionStorage
       sessionStorage.removeItem(TOKEN_KEY);
       sessionStorage.removeItem(USER_KEY);
+
+      // Limpar cookie
+      document.cookie = 'authToken=; path=/; max-age=0';
     }
   }
 
