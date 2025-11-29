@@ -5,7 +5,7 @@ const API_TOKEN = process.env.API_TOKEN;
 
 export async function GET(
   request: Request,
-  { params }: { params: { uuid: string } },
+  { params }: { params: Promise<{ uuid: string }> },
 ) {
   try {
     if (!API_TOKEN) {
@@ -15,15 +15,14 @@ export async function GET(
       );
     }
 
-    const response = await fetch(
-      `${API_BASE_URL}/public/animals/${params.uuid}`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-        },
-        cache: 'no-store',
+    const { uuid } = await params;
+
+    const response = await fetch(`${API_BASE_URL}/public/animals/${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${API_TOKEN}`,
       },
-    );
+      cache: 'no-store',
+    });
 
     if (!response.ok) {
       if (response.status === 404) {

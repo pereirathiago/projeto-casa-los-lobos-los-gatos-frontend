@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
@@ -16,7 +16,7 @@ import {
 } from '../../services/api';
 import { authService } from '../../services/auth';
 
-export default function CreateSponsorshipPage() {
+function CreateSponsorshipForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [user, setUser] = useState<{
@@ -553,5 +553,19 @@ export default function CreateSponsorshipPage() {
         </form>
       </main>
     </div>
+  );
+}
+
+export default function CreateSponsorshipPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-16 w-16 animate-spin rounded-full border-b-4 border-[var(--ong-purple)]"></div>
+        </div>
+      }
+    >
+      <CreateSponsorshipForm />
+    </Suspense>
   );
 }
