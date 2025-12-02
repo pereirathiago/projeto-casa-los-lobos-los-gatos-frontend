@@ -114,7 +114,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
   };
 
   const getMonthsText = (months: number) => {
-    if (months === 0) return 'Novo padrinho';
+    if (months === 0) return null;
     if (months === 1) return '1 mês';
     if (months < 12) return `${months} meses`;
     const years = Math.floor(months / 12);
@@ -280,7 +280,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                 ) : (
                   <>
                     <p className="text-3xl font-bold text-[var(--ong-purple)]">
-                      {getMonthsText(dashboardData?.monthsAsSponsor ?? 0)}
+                      {getMonthsText(dashboardData?.monthsAsSponsor ?? 0) ?? dashoardData?.firstSponsorshipDate}
                     </p>
                     <p className="mt-1 text-sm text-gray-500">Como padrinho</p>
                   </>
