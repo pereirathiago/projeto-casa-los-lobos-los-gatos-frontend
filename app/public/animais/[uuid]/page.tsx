@@ -286,53 +286,55 @@ export default function AnimalDetailPage() {
 
               {/* Informações */}
               <div className="flex flex-col justify-between gap-6">
-                <div>
-                  <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl">
-                    {animal.name}
-                  </h1>
-
-                  <div className="flex flex-wrap gap-3">
-                    <span className="flex items-center gap-2 rounded-full bg-[var(--ong-purple)] px-4 py-2 text-lg font-semibold text-white">
-                      {getTypeIcon(animal.type)}
-                      {getTypeLabel(animal.type)}
-                    </span>
-                    <span className="rounded-full bg-gray-200 px-4 py-2 text-lg font-semibold text-gray-800">
-                      {animal.breed}
-                    </span>
-                    <span className="rounded-full bg-gray-200 px-4 py-2 text-lg font-semibold text-gray-800">
-                      {animal.age} {animal.age === 1 ? 'ano' : 'anos'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                {animal.tags && animal.tags.length > 0 && (
+                <div className="">
                   <div>
-                    <h2 className="mb-3 text-lg font-semibold text-gray-900">
-                      Características
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                      {animal.tags.map((tag) => (
-                        <span
-                          key={tag.id}
-                          className="rounded-full px-3 py-1.5 text-sm font-medium text-white"
-                          style={{ backgroundColor: tag.color }}
-                        >
-                          {tag.label}
-                        </span>
-                      ))}
+                    <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl">
+                      {animal.name}
+                    </h1>
+
+                    <div className="mb-8 flex flex-wrap gap-3">
+                      <span className="flex items-center gap-2 rounded-full bg-[var(--ong-purple)] px-4 py-2 text-lg font-semibold text-white">
+                        {getTypeIcon(animal.type)}
+                        {getTypeLabel(animal.type)}
+                      </span>
+                      <span className="rounded-full bg-gray-200 px-4 py-2 text-lg font-semibold text-gray-800">
+                        {animal.breed}
+                      </span>
+                      <span className="rounded-full bg-gray-200 px-4 py-2 text-lg font-semibold text-gray-800">
+                        {animal.age} {animal.age === 1 ? 'ano' : 'anos'}
+                      </span>
                     </div>
                   </div>
-                )}
 
-                {/* Descrição */}
-                <div>
-                  <h2 className="mb-3 text-lg font-semibold text-gray-900">
-                    Sobre {animal.name}
-                  </h2>
-                  <p className="leading-relaxed whitespace-pre-line text-gray-700">
-                    {animal.description}
-                  </p>
+                  {/* Tags */}
+                  {animal.tags && animal.tags.length > 0 && (
+                    <div>
+                      <h2 className="mb-3 text-lg font-semibold text-gray-900">
+                        Características
+                      </h2>
+                      <div className="mb-8 flex flex-wrap gap-2">
+                        {animal.tags.map((tag) => (
+                          <span
+                            key={tag.id}
+                            className="rounded-full px-3 py-1.5 text-sm font-medium text-white"
+                            style={{ backgroundColor: tag.color }}
+                          >
+                            {tag.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Descrição */}
+                  <div>
+                    <h2 className="mb-3 text-lg font-semibold text-gray-900">
+                      Sobre {animal.name}
+                    </h2>
+                    <p className="leading-relaxed whitespace-pre-line text-gray-700">
+                      {animal.description}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Call to Action */}
