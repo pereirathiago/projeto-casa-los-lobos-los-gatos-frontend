@@ -130,7 +130,7 @@ export default function LoginForm() {
             disabled={isLoading}
           />
 
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex items-center">
             <label className="flex cursor-pointer items-center">
               <input
                 type="checkbox"
@@ -144,12 +144,6 @@ export default function LoginForm() {
                 Lembrar-me
               </span>
             </label>
-            <a
-              href="#"
-              className="text-xs font-medium text-[var(--ong-purple)] hover:underline sm:text-sm"
-            >
-              Esqueceu a senha?
-            </a>
           </div>
 
           <Button
