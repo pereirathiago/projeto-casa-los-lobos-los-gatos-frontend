@@ -43,10 +43,26 @@ export default function NewSponsorDonationPage() {
     init();
   }, [router]);
 
+  const handleLogout = async () => {
+    try {
+      const token = authService.getToken();
+      if (token) {
+        await apiService.logout(token);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    } finally {
+      authService.clearAuth();
+      router.push('/login');
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const amountNumber = parseFloat(formData.amount);
+    const amountNumber = parseFloat(
+      formData.amount.replace(/\./g, '').replace(',', '.'),
+    );
     if (Number.isNaN(amountNumber) || amountNumber <= 0) {
       toast.error('Informe um valor válido maior que zero.');
       return;
@@ -98,12 +114,15 @@ export default function NewSponsorDonationPage() {
                 height={70}
               />
             </Link>
-            <Button
-              variant="outline"
-              onClick={() => router.push('/sponsor/donations')}
-            >
-              Ver Minhas Doações
-            </Button>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm font-medium text-gray-900">{userName}</p>
+                <p className="text-xs text-gray-500">Padrinho</p>
+              </div>
+              <Button variant="outline" onClick={handleLogout}>
+                Sair
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -149,18 +168,24 @@ export default function NewSponsorDonationPage() {
                 Valor da Doação (R$) *
               </label>
               <input
-                type="number"
-                min="0"
-                step="0.01"
+                type="text"
+                inputMode="numeric"
                 value={formData.amount}
-                onChange={(event) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    amount: event.target.value,
-                  }))
-                }
-                placeholder="150,00"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)] focus:outline-none"
+                onChange={(event) => {
+                  const raw = event.target.value.replace(/\D/g, '');
+                  if (raw === '') {
+                    setFormData((prev) => ({ ...prev, amount: '' }));
+                    return;
+                  }
+                  const cents = parseInt(raw, 10);
+                  const formatted = (cents / 100).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  });
+                  setFormData((prev) => ({ ...prev, amount: formatted }));
+                }}
+                placeholder="0,00"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-left text-lg focus:border-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)] focus:outline-none"
                 required
               />
               <p className="mt-2 text-sm text-gray-500">

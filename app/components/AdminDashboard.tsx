@@ -400,7 +400,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                 {dashboardData.topAnimals.map((animal, index) => (
                   <div
                     key={animal.uuid}
-                    className="flex items-center justify-between rounded-lg border border-gray-200 p-3 transition-colors hover:border-[var(--ong-purple)]"
+                    className="flex items-center justify-between rounded-lg border border-gray-200 p-3"
                   >
                     <div className="flex items-center space-x-3">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ong-purple)] text-sm font-bold text-white">
@@ -451,7 +451,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                 {dashboardData.topSponsors.map((sponsor, index) => (
                   <div
                     key={sponsor.uuid}
-                    className="flex items-center justify-between rounded-lg border border-gray-200 p-3 transition-colors hover:border-[var(--ong-orange)]"
+                    className="flex items-center justify-between rounded-lg border border-gray-200 p-3"
                   >
                     <div className="flex items-center space-x-3">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ong-orange)] text-sm font-bold text-white">

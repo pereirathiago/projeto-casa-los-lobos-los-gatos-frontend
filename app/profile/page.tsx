@@ -298,29 +298,6 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              {/* ID */}
-              <div className="space-y-2">
-                <label className="text-sm font-semibold tracking-wider text-gray-500 uppercase">
-                  ID do Sistema
-                </label>
-                <p className="flex items-center font-mono text-sm text-gray-700">
-                  <svg
-                    className="mr-3 h-5 w-5 text-[var(--ong-purple)]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
-                    />
-                  </svg>
-                  {adminData.id}
-                </p>
-              </div>
-
               {/* Tipo de conta */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold tracking-wider text-gray-500 uppercase">

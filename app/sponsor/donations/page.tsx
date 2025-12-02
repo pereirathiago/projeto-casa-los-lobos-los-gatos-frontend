@@ -236,12 +236,15 @@ export default function SponsorDonationsPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                     Confirmado em
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {donations.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center">
+                    <td colSpan={6} className="px-6 py-12 text-center">
                       <div className="text-gray-500">
                         <svg
                           className="mx-auto mb-4 h-12 w-12 text-gray-400"
@@ -295,6 +298,17 @@ export default function SponsorDonationsPage() {
                         {donation.confirmedAt
                           ? formatDate(donation.confirmedAt)
                           : 'Aguardando'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Button
+                          variant="outline"
+                          onClick={() =>
+                            router.push(`/sponsor/donations/${donation.uuid}`)
+                          }
+                          className="text-xs"
+                        >
+                          Ver Detalhes
+                        </Button>
                       </td>
                     </tr>
                   ))

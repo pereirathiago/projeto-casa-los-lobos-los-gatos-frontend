@@ -784,6 +784,19 @@ class ApiService {
     return this.handleResponse<SponsorDonation[]>(response);
   }
 
+  async getMyDonationByUuid(
+    token: string,
+    uuid: string,
+  ): Promise<SponsorDonation> {
+    const response = await fetch(`${this.baseURL}/users/me/donations/${uuid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return this.handleResponse<SponsorDonation>(response);
+  }
+
   async createAdminDonation(
     token: string,
     data: CreateDonationData,
