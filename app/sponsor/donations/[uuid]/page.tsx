@@ -5,22 +5,19 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import logo from '../../assets/icons/logo-ong.svg';
-import Button from '../../components/Button';
-import type { AdminDonation } from '../../services/api';
-import { apiService } from '../../services/api';
-import { authService } from '../../services/auth';
+import logo from '../../../assets/icons/logo-ong.svg';
+import Button from '../../../components/Button';
+import type { SponsorDonation } from '../../../services/api';
+import { apiService } from '../../../services/api';
+import { authService } from '../../../services/auth';
 
-export default function DonationDetailsPage() {
+export default function SponsorDonationDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const donationUuid = params?.uuid as string;
-  const [adminName, setAdminName] = useState('Administrador');
-  const [donation, setDonation] = useState<AdminDonation | null>(null);
+  const [userName, setUserName] = useState('');
+  const [donation, setDonation] = useState<SponsorDonation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const loadDonation = useCallback(
     async (uuid: string) => {
@@ -33,7 +30,7 @@ export default function DonationDetailsPage() {
           return;
         }
 
-        const response = await apiService.getDonationByUuid(token, uuid);
+        const response = await apiService.getMyDonationByUuid(token, uuid);
         setDonation(response);
       } catch (error) {
         const message =
@@ -55,20 +52,20 @@ export default function DonationDetailsPage() {
         return;
       }
 
-      const adminUser = await authService.refreshAdminUser(apiService);
-      if (!adminUser || adminUser.role !== 'admin') {
-        toast.error('Acesso exclusivo para administradores.');
+      const sponsorUser = await authService.refreshSponsorUser(apiService);
+      if (!sponsorUser || sponsorUser.role !== 'sponsor') {
+        toast.error('Acesso exclusivo para padrinhos.');
         router.push('/dashboard');
         return;
       }
 
-      if (adminUser.name) {
-        setAdminName(adminUser.name);
+      if (sponsorUser.name) {
+        setUserName(sponsorUser.name);
       }
 
       if (!donationUuid) {
         toast.error('Doação não encontrada.');
-        router.push('/donations');
+        router.push('/sponsor/donations');
         return;
       }
 
@@ -96,53 +93,17 @@ export default function DonationDetailsPage() {
     });
   };
 
-  const handleConfirmDonation = async () => {
-    if (!donation) return;
-
+  const handleLogout = async () => {
     try {
-      setIsProcessing(true);
       const token = authService.getToken();
-      if (!token) {
-        toast.error('Sessão expirada. Faça login novamente.');
-        router.push('/login');
-        return;
+      if (token) {
+        await apiService.logout(token);
       }
-
-      await apiService.confirmDonation(token, donation.uuid);
-      toast.success('Doação confirmada com sucesso!');
-      setShowConfirmModal(false);
-      loadDonation(donation.uuid);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Erro ao confirmar doação';
-      toast.error(message);
+      console.error('Erro ao fazer logout:', error);
     } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleDeleteDonation = async () => {
-    if (!donation) return;
-
-    try {
-      setIsProcessing(true);
-      const token = authService.getToken();
-      if (!token) {
-        toast.error('Sessão expirada. Faça login novamente.');
-        router.push('/login');
-        return;
-      }
-
-      await apiService.deleteDonation(token, donation.uuid);
-      toast.success('Doação removida com sucesso.');
-      setShowDeleteModal(false);
-      router.push('/donations');
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Erro ao remover doação';
-      toast.error(message);
-    } finally {
-      setIsProcessing(false);
+      authService.clearAuth();
+      router.push('/login');
     }
   };
 
@@ -162,8 +123,11 @@ export default function DonationDetailsPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="text-lg text-gray-600">Doação não encontrada.</p>
-          <Button onClick={() => router.push('/donations')} className="mt-4">
-            Voltar para Doações
+          <Button
+            onClick={() => router.push('/sponsor/donations')}
+            className="mt-4"
+          >
+            Voltar para Minhas Doações
           </Button>
         </div>
       </div>
@@ -185,9 +149,12 @@ export default function DonationDetailsPage() {
             </Link>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{adminName}</p>
-                <p className="text-xs text-gray-500">Administrador</p>
+                <p className="text-sm font-medium text-gray-900">{userName}</p>
+                <p className="text-xs text-gray-500">Padrinho</p>
               </div>
+              <Button variant="outline" onClick={handleLogout}>
+                Sair
+              </Button>
             </div>
           </div>
         </div>
@@ -197,7 +164,7 @@ export default function DonationDetailsPage() {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
-              href="/donations"
+              href="/sponsor/donations"
               className="mb-2 inline-flex items-center text-sm text-[var(--ong-purple)] transition-colors hover:opacity-80"
             >
               <svg
@@ -213,14 +180,13 @@ export default function DonationDetailsPage() {
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-              Voltar para Doações
+              Voltar para Minhas Doações
             </Link>
             <h1 className="text-3xl font-bold text-[var(--ong-purple)]">
               Detalhes da Doação
             </h1>
             <p className="mt-2 text-gray-600">
-              Registro completo da contribuição realizada por{' '}
-              {donation.user.name}
+              Registro completo da sua contribuição
             </p>
           </div>
         </div>
@@ -248,7 +214,7 @@ export default function DonationDetailsPage() {
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <div>
                 <p className="text-sm font-medium text-gray-500">
-                  Data informada pelo padrinho
+                  Data informada
                 </p>
                 <p className="text-lg text-gray-900">
                   {formatDateTime(donation.donationDate)}
@@ -260,14 +226,6 @@ export default function DonationDetailsPage() {
                 </p>
                 <p className="text-lg text-gray-900">
                   {formatDateTime(donation.createdAt)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">
-                  Confirmado por
-                </p>
-                <p className="text-lg text-gray-900">
-                  {donation.confirmedBy ? donation.confirmedBy.name : '—'}
                 </p>
               </div>
               <div>
@@ -290,103 +248,75 @@ export default function DonationDetailsPage() {
 
           <div className="space-y-6">
             <div className="rounded-lg bg-white p-6 shadow">
-              <p className="text-sm font-medium text-gray-500">
-                Padrinho responsável
-              </p>
-              <p className="mt-2 text-xl font-semibold text-gray-900">
-                {donation.user.name}
-              </p>
-              <p className="text-sm text-gray-500">{donation.user.email}</p>
+              <p className="text-sm font-medium text-gray-500">Status</p>
+              <div className="mt-4">
+                {donation.status === 'confirmed' ? (
+                  <div className="flex items-center gap-3 rounded-lg bg-green-50 p-4">
+                    <svg
+                      className="h-8 w-8 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div>
+                      <p className="font-semibold text-green-800">
+                        Doação Confirmada
+                      </p>
+                      <p className="text-sm text-green-600">
+                        A ONG confirmou o recebimento.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 rounded-lg bg-yellow-50 p-4">
+                    <svg
+                      className="h-8 w-8 text-yellow-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div>
+                      <p className="font-semibold text-yellow-800">
+                        Aguardando Confirmação
+                      </p>
+                      <p className="text-sm text-yellow-600">
+                        A ONG irá verificar em breve.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="rounded-lg bg-white p-6 shadow">
-              <p className="text-sm font-medium text-gray-500">Ações rápidas</p>
+              <p className="text-sm font-medium text-gray-500">Ações</p>
               <div className="mt-4 space-y-3">
-                {donation.status === 'pending' && (
-                  <Button fullWidth onClick={() => setShowConfirmModal(true)}>
-                    Confirmar agora
-                  </Button>
-                )}
                 <Button
                   variant="outline"
                   fullWidth
-                  onClick={() => router.push('/donations/new')}
+                  onClick={() => router.push('/sponsor/donations/new')}
                 >
                   Registrar outra doação
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="!bg-red-500 text-white !duration-0 hover:!bg-red-600 hover:py-2.5 hover:text-lg"
-                  fullWidth
-                  onClick={() => setShowDeleteModal(true)}
-                >
-                  Excluir
                 </Button>
               </div>
             </div>
           </div>
         </div>
       </main>
-
-      {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h3 className="mb-4 text-lg font-bold text-gray-900">
-              Confirmar Doação
-            </h3>
-            <p className="mb-4 text-gray-700">
-              Tem certeza que deseja confirmar a doação de{' '}
-              <strong>{formatCurrency(donation.amount)}</strong> do padrinho{' '}
-              <strong>{donation.user.name}</strong>?
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowConfirmModal(false)}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={handleConfirmDonation} disabled={isProcessing}>
-                {isProcessing ? 'Confirmando...' : 'Confirmar'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h3 className="mb-4 text-lg font-bold text-black">
-              Confirmar Exclusão
-            </h3>
-            <p className="mb-4 text-gray-700">
-              Esta ação não pode ser desfeita. Deseja excluir o registro de{' '}
-              <strong>{formatCurrency(donation.amount)}</strong> da data{' '}
-              <strong>
-                {new Date(donation.donationDate).toLocaleDateString('pt-BR')}
-              </strong>
-              ?
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="secondary"
-                className=""
-                onClick={handleDeleteDonation}
-                disabled={isProcessing}
-              >
-                {isProcessing ? 'Removendo...' : 'Confirmar Exclusão'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
