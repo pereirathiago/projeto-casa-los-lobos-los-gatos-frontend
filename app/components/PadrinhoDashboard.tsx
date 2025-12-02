@@ -280,7 +280,8 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                 ) : (
                   <>
                     <p className="text-3xl font-bold text-[var(--ong-purple)]">
-                      {getMonthsText(dashboardData?.monthsAsSponsor ?? 0) ?? dashboardData?.firstSponsorshipDate}
+                      {getMonthsText(dashboardData?.monthsAsSponsor ?? 0) ??
+                        dashboardData?.firstSponsorshipDate}
                     </p>
                     <p className="mt-1 text-sm text-gray-500">Como padrinho</p>
                   </>
@@ -530,7 +531,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                   {sponsoredAnimals.map((sponsorship) => (
                     <div
                       key={sponsorship.uuid}
-                      className="relative flex h-full flex-col rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]"
+                      className="relative flex h-full flex-col justify-center rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-[var(--ong-purple)]"
                     >
                       <div className="relative mb-3 flex justify-center">
                         <div className="relative h-32 w-32 overflow-hidden rounded-full bg-gray-200">
@@ -592,26 +593,40 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                           year: 'numeric',
                         })}
                       </p>
-                      <div className="mt-auto flex flex-col gap-2">
-                        <Button
-                          variant="secondary"
-                          fullWidth
-                          onClick={() =>
-                            handleWhatsAppContact(sponsorship.animal.name)
-                          }
-                        >
-                          Pedir Informações
-                        </Button>
-                        <Button
-                          variant="outline"
-                          fullWidth
-                          onClick={() =>
-                            handleWhatsAppPhotos(sponsorship.animal.name)
-                          }
-                        >
-                          Pedir Fotos
-                        </Button>
-                      </div>
+                      {sponsorship.active ? (
+                        <div className="mt-auto flex flex-col gap-2">
+                          <Button
+                            variant="secondary"
+                            fullWidth
+                            onClick={() =>
+                              handleWhatsAppContact(sponsorship.animal.name)
+                            }
+                          >
+                            Pedir Informações
+                          </Button>
+                          <Button
+                            variant="outline"
+                            fullWidth
+                            onClick={() =>
+                              handleWhatsAppPhotos(sponsorship.animal.name)
+                            }
+                          >
+                            Pedir Fotos
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="justify-center text-center">
+                          <span
+                            className={`inline-flex rounded-full px-2 text-xs leading-5 font-semibold ${
+                              sponsorship.active
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {sponsorship.active ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
