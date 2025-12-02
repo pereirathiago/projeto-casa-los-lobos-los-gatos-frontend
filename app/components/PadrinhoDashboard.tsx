@@ -280,7 +280,7 @@ export default function PadrinhoDashboard({ user }: PadrinhoDashboardProps) {
                 ) : (
                   <>
                     <p className="text-3xl font-bold text-[var(--ong-purple)]">
-                      {getMonthsText(dashboardData?.monthsAsSponsor ?? 0) ?? dashoardData?.firstSponsorshipDate}
+                      {getMonthsText(dashboardData?.monthsAsSponsor ?? 0) ?? dashboardData?.firstSponsorshipDate}
                     </p>
                     <p className="mt-1 text-sm text-gray-500">Como padrinho</p>
                   </>
