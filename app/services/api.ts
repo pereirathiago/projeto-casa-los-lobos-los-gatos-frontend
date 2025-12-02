@@ -255,6 +255,7 @@ export interface SponsorDashboard {
     total: number;
   };
   monthsAsSponsor: number;
+  firstSponsorshipDate: string;
   donations: {
     general: {
       total: number;
