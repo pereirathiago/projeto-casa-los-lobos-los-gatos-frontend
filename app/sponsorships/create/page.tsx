@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { toast } from 'sonner';
 import logo from '../../assets/icons/logo-ong.svg';
@@ -25,81 +25,26 @@ function CreateSponsorshipForm() {
     email: string;
     role: string;
   } | null>(null);
+
   const [formData, setFormData] = useState<CreateSponsorshipData>({
     userId: '',
     animalId: '',
     monthlyAmount: 0,
   });
+
   const [animals, setAnimals] = useState<Animal[]>([]);
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+  const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // Estados para busca de padrinho
-  const [sponsorEmail, setSponsorEmail] = useState('');
-  const [sponsorSearching, setSponsorSearching] = useState(false);
-  const [foundSponsor, setFoundSponsor] = useState<Sponsor | null>(null);
-  const [sponsorNotFound, setSponsorNotFound] = useState(false);
-
-  // Estado para animal selecionado
-  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
   const sourcePage = searchParams.get('source');
   const backLink =
     sourcePage === 'sponsors'
       ? { href: '/sponsors', label: 'Voltar para Padrinhos' }
       : { href: '/sponsorships', label: 'Voltar para Apadrinhamentos' };
-
-  const handleSearchSponsor = useCallback(
-    async (emailToSearch?: string) => {
-      const email = emailToSearch || sponsorEmail;
-
-      if (!email.trim()) {
-        toast.error('Digite um email para buscar');
-        return;
-      }
-
-      try {
-        setSponsorSearching(true);
-        setSponsorNotFound(false);
-        setFoundSponsor(null);
-
-        const token = authService.getToken();
-        if (!token) return;
-
-        const result = await apiService.searchSponsorByEmail(token, email);
-
-        // A API pode retornar um objeto único ou um array
-        const sponsors = Array.isArray(result) ? result : [result];
-
-        if (sponsors.length > 0 && sponsors[0]) {
-          const sponsor = sponsors[0];
-
-          // Verificar se tem as propriedades active e deleted, senão assumir como ativo
-          const isActive = sponsor.active !== undefined ? sponsor.active : true;
-          const isDeleted =
-            sponsor.deleted !== undefined ? sponsor.deleted : false;
-
-          if (!isActive || isDeleted) {
-            toast.error('Este padrinho não está ativo');
-            setSponsorNotFound(true);
-            return;
-          }
-
-          setFoundSponsor(sponsor);
-          setFormData((prev) => ({ ...prev, userId: sponsor.uuid }));
-        } else {
-          setSponsorNotFound(true);
-        }
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : 'Erro ao buscar padrinho',
-        );
-        setSponsorNotFound(true);
-      } finally {
-        setSponsorSearching(false);
-      }
-    },
-    [sponsorEmail],
-  );
 
   useEffect(() => {
     async function init() {
@@ -118,30 +63,50 @@ function CreateSponsorshipForm() {
       }
 
       setUser(userData);
-      await loadInitialData();
 
-      // Verificar se há email na URL e buscar automaticamente
       const emailParam = searchParams.get('email');
-      if (emailParam) {
-        setSponsorEmail(emailParam);
-        // Pequeno delay para garantir que os dados foram carregados e passar o email diretamente
-        setTimeout(() => {
-          handleSearchSponsor(emailParam);
-        }, 500);
-      }
+      await loadInitialData(emailParam);
     }
 
     init();
-  }, [router, searchParams, handleSearchSponsor]);
+     
+  }, [router, searchParams]);
 
-  const loadInitialData = async () => {
+  const loadInitialData = async (emailParam?: string | null) => {
     try {
       setIsLoadingData(true);
       const token = authService.getToken();
       if (!token) return;
 
-      const animalsData = await apiService.getAnimals(token);
+      const [animalsData, sponsorsData] = await Promise.all([
+        apiService.getAnimals(token),
+        apiService.getAllSponsors(token),
+      ]);
+
       setAnimals(animalsData);
+      setSponsors(sponsorsData);
+
+      // Se vier email na URL, pré-seleciona o padrinho correspondente (ativo e não deletado)
+      if (emailParam) {
+        const sponsorFromParam = sponsorsData.find(
+          (s) =>
+            s.email.toLowerCase() === emailParam.toLowerCase() &&
+            s.active &&
+            !s.deleted,
+        );
+
+        if (sponsorFromParam) {
+          setSelectedSponsor(sponsorFromParam);
+          setFormData((prev) => ({
+            ...prev,
+            userId: sponsorFromParam.uuid,
+          }));
+        } else {
+          toast.error(
+            'Nenhum padrinho ativo encontrado para o email informado.',
+          );
+        }
+      }
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : 'Erro ao carregar dados',
@@ -165,13 +130,42 @@ function CreateSponsorshipForm() {
           )
           .map((animal) => ({
             value: animal.uuid,
-            label: `${animal.name} - ${animal.breed} (${animal.type === 'dog' ? 'Cão' : 'Gato'})`,
+            label: `${animal.name} - ${animal.breed} (${
+              animal.type === 'dog' ? 'Cão' : 'Gato'
+            })`,
             animal,
           }));
 
         resolve(filtered);
       },
     );
+  };
+
+  const loadSponsorOptions = (inputValue: string) => {
+    return new Promise<
+      Array<{ value: string; label: string; sponsor: Sponsor }>
+    >((resolve) => {
+      if (!inputValue || inputValue.length < 2) {
+        resolve([]);
+        return;
+      }
+
+      const normalizedInput = inputValue.toLowerCase();
+      const filtered = sponsors
+        .filter(
+          (sponsor) =>
+            sponsor.name.toLowerCase().includes(normalizedInput) ||
+            sponsor.email.toLowerCase().includes(normalizedInput),
+        )
+        .filter((sponsor) => sponsor.active && !sponsor.deleted)
+        .map((sponsor) => ({
+          value: sponsor.uuid,
+          label: `${sponsor.name} • ${sponsor.email}`,
+          sponsor,
+        }));
+
+      resolve(filtered);
+    });
   };
 
   const validateMonthlyAmount = (value: string): string | null => {
@@ -188,8 +182,8 @@ function CreateSponsorshipForm() {
     e.preventDefault();
 
     // Validações
-    if (!foundSponsor || !formData.userId) {
-      toast.error('Busque e confirme um padrinho válido');
+    if (!selectedSponsor || !formData.userId) {
+      toast.error('Selecione um padrinho válido');
       return;
     }
 
@@ -308,106 +302,95 @@ function CreateSponsorshipForm() {
           className="rounded-lg bg-white p-6 shadow"
         >
           <div className="space-y-6">
-            {/* Sponsor Search */}
+            {/* Sponsor AsyncSelect */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Padrinho/Madrinha *
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={sponsorEmail}
-                  onChange={(e) => {
-                    setSponsorEmail(e.target.value);
-                    setFoundSponsor(null);
-                    setSponsorNotFound(false);
-                  }}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleSearchSponsor();
-                    }
-                  }}
-                  placeholder="Digite o email do padrinho"
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)] focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleSearchSponsor()}
-                  disabled={
-                    !!sponsorSearching ||
-                    !sponsorEmail.trim() ||
-                    !!(
-                      foundSponsor && foundSponsor.email === sponsorEmail.trim()
-                    )
+              <AsyncSelect
+                cacheOptions
+                defaultOptions={false}
+                loadOptions={loadSponsorOptions}
+                value={
+                  selectedSponsor
+                    ? {
+                        value: selectedSponsor.uuid,
+                        label: `${selectedSponsor.name} • ${selectedSponsor.email}`,
+                        sponsor: selectedSponsor,
+                      }
+                    : null
+                }
+                onChange={(option) => {
+                  if (option) {
+                    setSelectedSponsor(option.sponsor);
+                    setFormData((prev) => ({
+                      ...prev,
+                      userId: option.value,
+                    }));
+                  } else {
+                    setSelectedSponsor(null);
+                    setFormData((prev) => ({
+                      ...prev,
+                      userId: '',
+                    }));
                   }
-                  className="rounded-lg bg-[var(--ong-purple)] px-6 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {sponsorSearching ? 'Buscando...' : 'Buscar'}
-                </button>
-              </div>
-
-              {/* Sponsor Found Card */}
-              {foundSponsor && (
-                <div className="mt-3 rounded-lg border-2 border-green-500 bg-green-50 p-4">
-                  <div className="flex items-start">
-                    <svg
-                      className="mr-3 h-6 w-6 flex-shrink-0 text-green-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-green-900">
-                        Padrinho Encontrado
-                      </h4>
-                      <p className="mt-1 text-sm text-green-800">
-                        <span className="font-medium">{foundSponsor.name}</span>
-                      </p>
-                      <p className="text-sm text-green-700">
-                        {foundSponsor.email}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Sponsor Not Found */}
-              {sponsorNotFound && (
-                <div className="mt-3 rounded-lg border-2 border-red-500 bg-red-50 p-4">
-                  <div className="flex items-start">
-                    <svg
-                      className="mr-3 h-6 w-6 flex-shrink-0 text-red-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <div>
-                      <h4 className="font-semibold text-red-900">
-                        Padrinho Não Encontrado
-                      </h4>
-                      <p className="mt-1 text-sm text-red-800">
-                        Nenhum padrinho ativo encontrado com este email.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                }}
+                placeholder="Digite o nome ou email do padrinho..."
+                noOptionsMessage={({ inputValue }) =>
+                  inputValue.length < 2
+                    ? 'Digite pelo menos 2 caracteres'
+                    : 'Nenhum padrinho ativo encontrado'
+                }
+                loadingMessage={() => 'Buscando...'}
+                isClearable
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderColor: '#d1d5db',
+                    borderRadius: '0.5rem',
+                    padding: '0.125rem',
+                    '&:hover': {
+                      borderColor: '#472B74',
+                    },
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isFocused ? '#f3e8ff' : 'white',
+                    color: '#1f2937',
+                    '&:hover': {
+                      backgroundColor: '#f3e8ff',
+                    },
+                  }),
+                }}
+              />
+              <p className="mt-2 text-sm text-gray-500">
+                Digite o nome ou email para pesquisar. Apenas padrinhos ativos
+                serão exibidos.
+              </p>
+              {sponsors.length === 0 && (
+                <p className="mt-2 text-sm text-red-600">
+                  Nenhum padrinho cadastrado no sistema.
+                </p>
               )}
             </div>
+
+            {selectedSponsor && (
+              <div className="rounded-lg bg-purple-50 p-4 text-sm text-gray-700">
+                <p className="font-semibold text-[var(--ong-purple)]">
+                  Padrinho selecionado
+                </p>
+                <p>{selectedSponsor.name}</p>
+                <p className="text-gray-600">{selectedSponsor.email}</p>
+                <p className="mt-2 text-xs text-gray-500">
+                  Status:{' '}
+                  {selectedSponsor.deleted
+                    ? 'Removido'
+                    : selectedSponsor.active
+                      ? 'Ativo'
+                      : 'Inativo'}
+                </p>
+              </div>
+            )}
 
             {/* Animal AsyncSelect */}
             <div>
@@ -421,10 +404,13 @@ function CreateSponsorshipForm() {
                 onChange={(option) => {
                   if (option) {
                     setSelectedAnimal(option.animal);
-                    setFormData({ ...formData, animalId: option.value });
+                    setFormData((prev) => ({
+                      ...prev,
+                      animalId: option.value,
+                    }));
                   } else {
                     setSelectedAnimal(null);
-                    setFormData({ ...formData, animalId: '' });
+                    setFormData((prev) => ({ ...prev, animalId: '' }));
                   }
                 }}
                 placeholder="Digite o nome do animal para buscar..."
@@ -476,10 +462,10 @@ function CreateSponsorshipForm() {
                 min="0"
                 value={formData.monthlyAmount}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
+                  setFormData((prev) => ({
+                    ...prev,
                     monthlyAmount: parseFloat(e.target.value) || 0,
-                  })
+                  }))
                 }
                 placeholder="150.00"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--ong-purple)] focus:ring-2 focus:ring-[var(--ong-purple)] focus:outline-none"
@@ -498,7 +484,10 @@ function CreateSponsorshipForm() {
                     key={amount}
                     type="button"
                     onClick={() =>
-                      setFormData({ ...formData, monthlyAmount: amount })
+                      setFormData((prev) => ({
+                        ...prev,
+                        monthlyAmount: amount,
+                      }))
                     }
                     className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-[var(--ong-purple)] hover:text-white"
                   >
@@ -542,7 +531,7 @@ function CreateSponsorshipForm() {
               type="submit"
               disabled={
                 isLoading ||
-                !foundSponsor ||
+                !selectedSponsor ||
                 !selectedAnimal ||
                 animals.length === 0
               }
